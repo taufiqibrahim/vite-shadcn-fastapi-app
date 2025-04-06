@@ -1,16 +1,37 @@
+import { request } from "@/lib/api";
 import { AuthAdapter, LoginCredentials, LoginResponse } from "./AuthAdapter";
-
-const demoEmail = import.meta.env.VITE_DEMO_USERNAME;
-const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+import { ACCESS_TOKEN_KEY } from "@/constants";
 
 export class UserPasswordAuthAdapter implements AuthAdapter {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    if (
-      credentials.email === demoEmail &&
-      credentials.password === demoPassword
-    ) {
-      return { token: "dummytoken", message: "Login successful" };
-    } else return { token: null, message: "Invalid username or password" };
+    try {
+      // Prepare form data for FastAPI OAuth2 login
+      const form = new URLSearchParams();
+      form.append("username", credentials.email);
+      form.append("password", credentials.password);
+
+      // Send the request using your global API handler
+      const data = await request("/auth/login", "POST", form, {
+        "Content-Type": "application/x-www-form-urlencoded",
+      });
+
+      console.log(data)
+
+      // Store token
+      if (data.access_token) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token);
+      }
+
+      return {
+        token: data.access_token,
+        message: data.message ?? "Login successful",
+      };
+    } catch (err: any) {
+      return {
+        token: null,
+        message: err?.message || err?.detail || "Login failed",
+      };
+    }
   }
 
   logout() {}
