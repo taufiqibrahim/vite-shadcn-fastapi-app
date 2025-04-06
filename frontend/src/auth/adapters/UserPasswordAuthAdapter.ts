@@ -15,8 +15,6 @@ export class UserPasswordAuthAdapter implements AuthAdapter {
         "Content-Type": "application/x-www-form-urlencoded",
       });
 
-      console.log(data)
-
       // Store token
       if (data.access_token) {
         localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token);
