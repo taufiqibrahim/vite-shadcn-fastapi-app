@@ -1,0 +1,6 @@
+fastapi[standard]
+sqlalchemy
+sqlmodel
+alembic
+pydantic-settings
+passlib
