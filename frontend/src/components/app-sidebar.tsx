@@ -10,15 +10,15 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Blocks, Boxes, FolderTree, Home, Settings } from "lucide-react";
+import { Blocks, Boxes, FolderTree, Settings } from "lucide-react";
 
 export function AppSidebar() {
   const items = [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: Home,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: Home,
+    // },
     {
       title: "Apps",
       url: "/apps",
@@ -41,7 +41,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuButton size="lg" asChild>
-            <a href="/dashboard">
+            <a href="/apps">
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <Blocks className="size-4" />
               </div>

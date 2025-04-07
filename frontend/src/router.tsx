@@ -22,18 +22,18 @@ export const router = createBrowserRouter([
     path: "/",
     element: <ProtectedRoute />,
     children: [
-      {
-        path: "dashboard",
-        // element: <ProtectedRoute />,
-        children: [
-          {
-            path: "",
-            lazy: async () => ({
-              Component: (await import("@/pages/dashboard")).default,
-            }),
-          },
-        ],
-      },
+      // {
+      //   path: "dashboard",
+      //   // element: <ProtectedRoute />,
+      //   children: [
+      //     {
+      //       path: "",
+      //       lazy: async () => ({
+      //         Component: (await import("@/pages/dashboard")).default,
+      //       }),
+      //     },
+      //   ],
+      // },
       {
         path: "apps",
         // element: <ProtectedRoute />,

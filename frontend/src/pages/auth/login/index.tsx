@@ -36,7 +36,7 @@ export default function Page() {
 
     if (token) {
       // If login successful, navigate to dashboard
-      nav("/dashboard");
+      nav("/apps");
     } else {
       // If login fails, show error message
       setErrorMessage(message);
