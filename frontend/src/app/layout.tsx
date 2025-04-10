@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </header>
         </div>
-        <div className="px-2">{children}</div>
+        <div className="p-2">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

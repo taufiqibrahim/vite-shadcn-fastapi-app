@@ -31,7 +31,7 @@ export const request = async (
   url: string,
   method: "GET" | "POST" | "OPTION" | "PUT" | "PATCH" | "DELETE",
   data?: any,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
 ) => {
   const isForm = data instanceof URLSearchParams;
 
@@ -40,7 +40,9 @@ export const request = async (
       url,
       method,
       headers: {
-        ...(isForm ? { "Content-Type": "application/x-www-form-urlencoded" } : {}),
+        ...(isForm
+          ? { "Content-Type": "application/x-www-form-urlencoded" }
+          : {}),
         ...headers,
       },
       ...(method === "GET" ? { params: data } : { data }),
@@ -49,7 +51,8 @@ export const request = async (
     return response.data;
   } catch (error: any) {
     // Axios error object shape
-    const message = error.response?.data?.detail || error.message || "Request failed";
+    const message =
+      error.response?.data?.detail || error.message || "Request failed";
 
     // Optionally re-throw with a better message
     throw new Error(message);
