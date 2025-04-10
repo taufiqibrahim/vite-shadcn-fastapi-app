@@ -3,6 +3,8 @@ import logging
 from sqlmodel import Session, select
 from apps.users.models import User, UserCreate
 from apps.users import user_crud
+from apps.apps.models import App, AppCreate
+from apps.apps import apps_crud
 from core.config import settings
 from core.database import engine
 
@@ -11,30 +13,48 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def init_db(session: Session) -> None:
-    # superuser = session.exec(
-    #     select(User).where(User.email == settings.FIRST_SUPERUSER_EMAIL)
-    # ).first()
-    # if not superuser:
-    #     superuser_create = UserCreate(
-    #         email=settings.FIRST_SUPERUSER_EMAIL,
-    #         password=settings.FIRST_SUPERUSER_PASSWORD,
-    #         is_superuser=True,
-    #     )
-    #     print(superuser_create)
-    #     # user = crud.create_user(session=session, user_create=user_create)
+def init_db_users(session: Session) -> None:
+    pass
 
-    demouser = session.exec(
-        select(User).where(User.email == settings.DEMO_USER_EMAIL)
-    ).first()
-    if not demouser:
-        demouser_create = UserCreate(
+
+def init_db(session: Session) -> None:
+
+    users = [
+        UserCreate(
+            email=settings.FIRST_SUPERUSER_EMAIL,
+            password=settings.FIRST_SUPERUSER_PASSWORD,
+            is_superuser=True
+        ),
+        UserCreate(
             email=settings.DEMO_USER_EMAIL,
             password=settings.DEMO_USER_PASSWORD,
             is_superuser=True,
         )
-        print(demouser_create)
-        user = user_crud.create_user(session=session, user_create=demouser_create)
+    ]
+
+    for u in users:
+        logger.info(f"Creating user: {u.email}")
+        user = session.exec(
+            select(User).where(User.email == u.email)
+        ).first()
+        if not user:
+            user = user_crud.create_user(session=session, user_create=u)
+
+    apps = [
+        AppCreate(
+            name='geospatial-mapping-app',
+            description='A modular platform that enables users to upload geospatial datasets, configure and run cloud-hosted spatial algorithms, and interactively visualize the results on a map'
+        ),
+    ]
+
+    for a in apps:
+        logger.info(f"Creating app: {a.name}")
+        _app = session.exec(
+            select(App).where(App.name == a.name)
+        ).first()
+
+        if not _app:
+            _app = apps_crud.create_app(session=session, app_create=a)
 
 
 def init() -> None:
