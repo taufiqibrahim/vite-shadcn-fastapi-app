@@ -32,8 +32,15 @@ export default function Page() {
               </CardDescription>
             </CardHeader>
             <CardFooter className="flex justify-start gap-4 mt-auto">
-              <Button className="w-full rounded-lg" size="sm" onClick={() => navigate(`/apps/${app.name}`)}>
-                <span className="flex gap-2 items-center"><Rocket />Launch Demo</span>
+              <Button
+                className="w-full rounded-lg"
+                size="sm"
+                onClick={() => navigate(`/apps/${app.name}`)}
+              >
+                <span className="flex gap-2 items-center">
+                  <Rocket />
+                  Launch Demo
+                </span>
               </Button>
             </CardFooter>
           </Card>

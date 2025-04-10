@@ -50,7 +50,8 @@ export default function Page() {
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
             <CardDescription>
-              Enter your email below to login to your account.<br/>
+              Enter your email below to login to your account.
+              <br />
               Password: <strong>demo@123</strong>
             </CardDescription>
           </CardHeader>

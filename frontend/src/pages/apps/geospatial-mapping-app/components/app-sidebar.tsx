@@ -1,33 +1,26 @@
+import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Blocks, Boxes, FolderTree, Settings } from "lucide-react";
+import { ArrowLeftCircle, Blocks, Boxes, StepBack } from "lucide-react";
 
-export function AppSidebar() {
+const APP_NAME = "Geospatial Mapping App";
+const APP_VERSION = "0.0.1";
+
+export function GeospatialMappingAppSidebar() {
   const items = [
     {
-      title: "Apps",
-      url: "/apps",
+      title: "Datasets",
+      url: "/apps/geospatial-mapping-app/datasets",
       icon: Boxes,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
-    },
-    {
-      title: "Administration",
-      url: "#",
-      icon: FolderTree,
     },
   ];
 
@@ -35,22 +28,31 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuButton size="lg" asChild>
+          <SidebarMenuButton size="sm" asChild>
             <a href="/apps">
+              <div className="flex aspect-square size-8 items-center justify-center">
+                <ArrowLeftCircle className="size-4" />
+              </div>
+              Back to Apps
+            </a>
+          </SidebarMenuButton>
+          <Separator />
+          <SidebarMenuButton size="lg" asChild>
+            <div>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <Blocks className="size-4" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">vite-shadcn-fastapi</span>
-                <span className="text-xs text-zinc-500">v0.0.0</span>
+                <span className="font-semibold">{APP_NAME}</span>
+                <span className="text-xs text-zinc-500">{APP_VERSION}</span>
               </div>
-            </a>
+            </div>
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
+      <Separator />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
