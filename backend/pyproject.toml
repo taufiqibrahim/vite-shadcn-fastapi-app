@@ -24,6 +24,10 @@ uploadthing-py = "^0.3.3"
 pytest-randomly = "^3.16.0"  
 pytest = "^8.3.5"
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

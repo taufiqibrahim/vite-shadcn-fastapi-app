@@ -5,8 +5,12 @@ TODO: description
 ## Installation
 Install necessary packages using:
 ```bash
-pip install -r requirements.txt
+pip install poetry
+poetry install
 ```
+
+## Environment Variables
+Create `backend/.env` based on `backend/.env.example` and update accordingly.
 
 ## Database
 
