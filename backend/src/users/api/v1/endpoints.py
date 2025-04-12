@@ -12,7 +12,7 @@ from src.auth.services import (
     get_current_active_account_or_400,
 )
 
-router = APIRouter(prefix="/users", tags=["Users"])  # Define the tag here
+router = APIRouter(prefix="/api/v1/users", tags=["Users"])  # Define the tag here
 
 
 @router.get("/me", response_model=schemas.UserProfile)

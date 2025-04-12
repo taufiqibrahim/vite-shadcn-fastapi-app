@@ -2,6 +2,13 @@
 
 TODO: description
 
+## Quickstart
+```bash
+cd backend
+poetry install
+poetry run fastapi dev src/main.py
+```
+
 ## Installation
 Install necessary packages using:
 ```bash

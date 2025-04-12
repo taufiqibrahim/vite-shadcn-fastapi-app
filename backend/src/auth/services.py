@@ -2,18 +2,21 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, APIKeyHeader
 from datetime import datetime, timedelta, timezone
 from sqlmodel import Session, select
-import jwt  # Import pyjwt
+import jwt
 import secrets
 from typing import Optional
 
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning, module="passlib")
+
 from src.auth import schemas
-from src.auth import models  # Import the Account and APIKey model
-from src.core.config import settings
+from src.auth import models
+from src.core.config import settings, secret_settings
 from src.database.session import get_db
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")  #  Adjust the tokenUrl
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 api_key_header = APIKeyHeader(name="X-API-Key")
 
 
@@ -31,12 +34,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(
-            minutes=settings.access_token_expire_minutes
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )  # Default expiration
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        to_encode, settings.secret_key, algorithm=settings.algorithm
-    )  #  Use settings
+        to_encode, secret_settings.SECRET_KEY, algorithm=settings.JWT_ENCODE_ALGORITHM
+    )
     return encoded_jwt
 
 
@@ -50,14 +53,14 @@ async def get_current_account(
     )
     try:
         payload = jwt.decode(
-            token, settings.secret_key, algorithms=[settings.algorithm]
+            token, settings.SECRET_KEY, algorithms=[settings.algorithm]
         )  #  Use settings
         email: str = payload.get("sub")
         account_id: int = payload.get("id") # Get the account ID from the token
         if email is None:
             raise credentials_exception
         token_data = schemas.TokenData(email=email, account_id=account_id) # Pass the account ID
-    except JWTError:
+    except jwt.PyJWTError:
         raise credentials_exception
     account = (
         db.exec(select(models.Account).where(models.Account.email == token_data.email)).first()

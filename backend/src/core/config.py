@@ -50,6 +50,8 @@ class Settings(BaseSettings):
             self.FRONTEND_HOST
         ]
 
+    JWT_ENCODE_ALGORITHM: str = "HS256"
+
 
 settings = Settings()
 secret_settings = SecretSettings()
