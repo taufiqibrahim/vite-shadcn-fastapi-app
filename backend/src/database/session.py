@@ -2,7 +2,7 @@ from sqlmodel import create_engine, Session, SQLModel
 from src.core.config import secret_settings
 
 engine = create_engine(
-    "sqlite:///./app.db",  #  Use a fixed URL for simplicity
+    secret_settings.SQLALCHEMY_DATABASE_URI,
     connect_args={"check_same_thread": False},
 )
 
