@@ -15,9 +15,11 @@ class Account(SQLModel, table=True):
     email: str = Field(unique=True, index=True)
     hashed_password: Optional[str]
     disabled: bool = False
-    account_type: AccountType = Field(sa_column=Column(Enum(AccountType)), default=AccountType.USER) # Add the account type
+    account_type: AccountType = Field(
+        sa_column=Column(Enum(AccountType)), default=AccountType.USER
+    )  # Add the account type
     api_keys: List["APIKey"] = Relationship(back_populates="account")
-    profile: Optional["UserProfile"] = Relationship(back_populates="account") # Add profile relationship
+    profile: Optional["UserProfile"] = Relationship(back_populates="account")  # Add profile relationship
 
 
 class APIKey(SQLModel, table=True):
@@ -27,7 +29,7 @@ class APIKey(SQLModel, table=True):
     account_id: Optional[int] = Field(default=None, foreign_key="account.id")
     account: Optional[Account] = Relationship(back_populates="api_keys")
     is_active: bool = True
-    level: int = Field(default=1) # Add a level for the API key
+    level: int = Field(default=1)  # Add a level for the API key
 
 
 class UserProfile(SQLModel, table=True):

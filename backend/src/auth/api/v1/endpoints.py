@@ -14,12 +14,8 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])  #  Define th
 
 
 @router.post("/login", response_model=schemas.Token)
-async def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
-    account = db.exec(
-        select(models.Account).where(models.Account.email == form_data.username)
-    ).first()
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    account = db.exec(select(models.Account).where(models.Account.email == form_data.username)).first()
 
     if not account or account.account_type != models.AccountType.USER:
         raise HTTPException(
@@ -33,9 +29,7 @@ async def login(
             detail="Incorrect email or password",
         )
 
-    access_token_expires = timedelta(
-        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-    )
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = services.create_access_token(
         data={"sub": account.email, "id": account.id},
         expires_delta=access_token_expires,

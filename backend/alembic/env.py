@@ -22,7 +22,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from src.auth.models import Account, APIKey, UserProfile # noqa
+from src.auth.models import Account, APIKey, UserProfile  # noqa
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = SQLModel.metadata

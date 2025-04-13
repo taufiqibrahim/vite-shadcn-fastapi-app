@@ -6,9 +6,11 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
 )
 
+
 def get_db():
     with Session(engine) as session:
         yield session
+
 
 def create_db_and_tables():
     engine = create_engine(secret_settings.SQLALCHEMY_DATABASE_URI)

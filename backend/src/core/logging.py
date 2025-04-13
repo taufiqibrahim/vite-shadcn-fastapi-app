@@ -1,4 +1,4 @@
 import logging
 
-# logging.basicConfig()
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger()

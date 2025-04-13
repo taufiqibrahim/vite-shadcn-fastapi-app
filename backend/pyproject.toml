@@ -19,14 +19,19 @@ pydantic-settings = ">=2.8.1,<3.0.0"
 passlib = ">=1.7.4,<2.0.0"
 pyjwt = "^2.8"
 uploadthing-py = "^0.3.3"
+bcrypt = "<4.1.0"
 
 [tool.poetry.group.test.dependencies]  
 pytest-randomly = "^3.16.0"  
 pytest = "^8.3.5"
+pytest-cov = "^6.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.1.0"
+
+[tool.black]
+line-length = 120
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

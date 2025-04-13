@@ -46,7 +46,4 @@ logger.warning(f"FRONTEND_HOST={settings.FRONTEND_HOST}")
 
 @app.get("/health", tags=["Default"])
 def health_check():
-    return {
-        "project_name": settings.PROJECT_NAME,
-        "status": "ok"
-    }
+    return {"project_name": settings.PROJECT_NAME, "status": "ok"}
