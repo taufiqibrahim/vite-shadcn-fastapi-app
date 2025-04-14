@@ -38,6 +38,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    LOG_LEVEL: str = "warning"
     PROJECT_NAME: str = "fastapi-backend"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     FRONTEND_HOST: str = "http://localhost:5173"
