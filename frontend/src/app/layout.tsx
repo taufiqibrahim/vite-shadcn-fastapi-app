@@ -6,6 +6,7 @@ import {
 import { AppSidebar } from "@/components/app-sidebar";
 import { NavUser } from "@/components/nav-user";
 import { ComponentType, ReactNode } from "react";
+import { Toaster } from "sonner";
 
 interface LayoutProps {
   children: ReactNode;
@@ -48,6 +49,7 @@ export default function Layout({ children, SidebarComponent }: LayoutProps) {
           </header>
         </div>
         <div className="p-2">{children}</div>
+        <Toaster />
       </SidebarInset>
     </SidebarProvider>
   );

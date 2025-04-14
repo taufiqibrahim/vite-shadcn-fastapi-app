@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ArrowLeftCircle, Blocks, Boxes, StepBack } from "lucide-react";
+import { ArrowLeftCircle, Blocks, Boxes } from "lucide-react";
 
 const APP_NAME = "Geospatial Mapping App";
 const APP_VERSION = "0.0.1";

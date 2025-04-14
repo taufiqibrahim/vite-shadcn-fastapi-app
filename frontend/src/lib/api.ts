@@ -1,8 +1,8 @@
-import { ACCESS_TOKEN_KEY, API_BASE_URL, LOGIN_URL } from "@/constants";
+import { ACCESS_TOKEN_KEY, API_BASE_URL } from "@/constants";
 import axios from "axios";
 
 // Base API instance
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
 });
@@ -20,7 +20,6 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
-      // window.location.href = LOGIN_URL;
       return Promise.reject(error);
     }
     return Promise.reject(error);

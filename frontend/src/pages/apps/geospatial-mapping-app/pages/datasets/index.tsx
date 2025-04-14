@@ -10,14 +10,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useUploadFile } from "@/hooks/use-upload-file";
+import { backendApiUploader } from "@/lib/uploader/backend-uploader";
 import { UploadProvider } from "@/lib/uploader/context";
-import { uploadthingUploader } from "@/lib/uploader/uploadthing";
 import { GeospatialMappingAppSidebar } from "@/pages/apps/geospatial-mapping-app/components/app-sidebar";
 import { useDatasetList } from "@/pages/apps/geospatial-mapping-app/hooks/use-datasets";
+import { useEffect, useRef, useState } from "react";
 
 export default function Page() {
   return (
-    <UploadProvider uploader={uploadthingUploader}>
+    <UploadProvider uploader={backendApiUploader}>
       <PageContent />
     </UploadProvider>
   );
@@ -25,7 +26,16 @@ export default function Page() {
 
 function PageContent() {
   const { data: datasets, isFetching } = useDatasetList();
-  const { onUpload, uploadedFiles, isUploading, progresses } = useUploadFile();
+  const { onUpload, isUploading, progresses } = useUploadFile();
+  const prevIsUploading = useRef(isUploading);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (prevIsUploading.current === true && isUploading === false) {
+      setDialogOpen(false);
+    }
+    prevIsUploading.current = isUploading;
+  }, [isUploading]);
 
   return (
     <Layout SidebarComponent={GeospatialMappingAppSidebar}>
@@ -34,9 +44,13 @@ function PageContent() {
           <h1 className="scroll-m-20 text-2xl font-bold">Datasets</h1>
 
           {/* New dataset dialogue */}
-          <Dialog open={true}>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" className="text-xs">
+              <Button
+                size="sm"
+                className="text-xs"
+                onClick={() => setDialogOpen(true)}
+              >
                 New dataset
               </Button>
             </DialogTrigger>
@@ -46,11 +60,6 @@ function PageContent() {
               </DialogHeader>
 
               <FileUploader
-                // accept={{
-                //   "image/*": [],
-                //   "application/*": [],
-                //   "text/*": ["geojson"],
-                // }}
                 maxFileCount={1}
                 maxSize={10 * 1024 * 1024}
                 progresses={progresses}
