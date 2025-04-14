@@ -104,47 +104,6 @@ async def get_current_active_account_or_400(
     return account
 
 
-# async def get_current_account(
-#     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-# ):
-#     logger.debug(f"get_current_account")
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-
-#     try:
-#         payload = jwt.decode(token, secret_settings.SECRET_KEY, algorithms=[settings.JWT_ENCODE_ALGORITHM])
-#         email: str = payload.get("sub")
-#         account_id: int = payload.get("id")
-#         logger.debug(f"get_current_account payload={payload}")
-#         if email is None:
-#             raise credentials_exception
-#         token_data = schemas.TokenData(email=email, account_id=account_id)
-#         logger.debug(f"get_current_account token_data={token_data}")
-#     except jwt.PyJWTError:
-#         raise credentials_exception
-#     account = (
-#         db.exec(select(models.Account).where(models.Account.email == token_data.email)).first()
-#     )
-#     logger.debug(f"get_current_account account={account}")
-
-#     if account is None:
-#         raise credentials_exception
-#     return account
-
-
-# async def get_current_active_account(
-#     current_account: models.Account = Depends(get_current_account)
-# ):
-#     logger.debug(f"get_current_active_account current_account={current_account}")
-#     if current_account.disabled:
-#         raise HTTPException(status_code=400, detail="Inactive user")
-
-#     return current_account
-
-
 # def create_api_key(db: Session, account_id: int, level: int = 1) -> str:
 #     """
 #     Creates a new API key for the given account.
@@ -183,44 +142,4 @@ async def get_current_active_account_or_400(
 #             status_code=status.HTTP_401_UNAUTHORIZED,
 #             detail="Invalid API Key",
 #         )
-#     return account
-
-
-# async def get_current_account_or_400(
-#     current_account: models.Account = Depends(get_current_account),
-#     account_by_api_key: Optional[models.Account] = Depends(get_account_by_api_key),
-# ) -> models.Account:
-#     """
-#     Dependency that resolves the current account from either a session token
-#     or an API key.  If both are provided, the session token takes precedence.
-#     If neither is provided, it raises a 400 error.
-#     """
-#     if current_account:
-#         return current_account
-#     elif account_by_api_key:
-#         return account_by_api_key
-#     else:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Either a session token or an API key must be provided",
-#         )
-
-
-# async def get_current_active_account_or_400(
-#     current_account: models.Account = Depends(get_current_active_account),
-#     account_by_api_key: Optional[models.Account] = Depends(get_account_by_api_key),
-# ) -> models.Account:
-#     """
-#     Dependency that resolves the current active account from either a session
-#     token or an API key.  If both are provided, the session token takes
-#     precedence.  If neither is provided, it raises a 400 error.
-#     """
-#     logger.debug("get_current_active_account_or_400")
-#     account = await get_current_account_or_400(
-#         current_account=current_account, account_by_api_key=account_by_api_key
-#     )
-#     logger.debug(f"get_current_active_account_or_400 current_account={current_account} account={account}")
-
-#     if account.disabled:
-#         raise HTTPException(status_code=400, detail="Inactive account")
 #     return account

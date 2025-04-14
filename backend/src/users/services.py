@@ -20,9 +20,7 @@ def get_accounts(db: Session, skip: int = 0, limit: int = 100):
 
 def create_account(db: Session, account: schemas.AccountCreate):
     logger.debug(f"create_account account={account}")
-    hashed_password = (
-        get_password_hash(account.password) if account.password else None
-    )  # Use the function from auth.services
+    hashed_password = get_password_hash(account.password) if account.password else None
     db_account = models.Account(
         email=account.email,
         hashed_password=hashed_password,

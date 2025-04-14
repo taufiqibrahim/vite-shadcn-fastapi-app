@@ -7,8 +7,9 @@ from src.core.config import settings
 from src.core.logging import logger
 
 
-from src.auth.api.v1 import endpoints as auth_endpoints
-from src.users.api.v1 import endpoints as users_endpoints
+from src.auth.api.v1 import endpoints as auth_endpoints_v1
+from src.users.api.v1 import endpoints as users_endpoints_v1
+from src.apps.api.v1 import endpoints as apps_endpoints_v1
 
 
 # @asynccontextmanager
@@ -21,8 +22,9 @@ app = FastAPI(
 )
 
 # Include the authentication and users routers
-app.include_router(auth_endpoints.router)
-app.include_router(users_endpoints.router)
+app.include_router(auth_endpoints_v1.router)
+app.include_router(users_endpoints_v1.router)
+app.include_router(apps_endpoints_v1.router)
 
 # # Call the function to create the database and tables on startup
 # @app.on_event("startup")
