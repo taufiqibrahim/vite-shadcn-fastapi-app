@@ -1,16 +1,16 @@
+from src.database.session import get_db
+from src.auth.models import Account
+from src.main import app
 import sys
 import os
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 from sqlmodel.pool import StaticPool
+from src.users.schemas import AccountCreate
 
 # Ensure the src directory is in the import path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
-
-from src.main import app
-from src.auth.models import Account
-from src.database.session import get_db
 
 
 # Create an in-memory SQLite engine for isolated tests
@@ -48,11 +48,26 @@ def client():
         yield c
 
 
-# Optionally create a test user
-@pytest.fixture()
-def test_user(db: Session):
-    user = Account(email="test@example.com", hashed_password="password", account_type="user")
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+@pytest.fixture
+def create_test_user() -> AccountCreate:
+    return AccountCreate(email="adminuser@example.com", password="password", full_name="Admin User")
+
+
+@pytest.fixture
+def auth_token(client: TestClient, create_test_user):
+    # Create user
+    response = client.post("/api/v1/users/", json=create_test_user.model_dump())
+    assert response.status_code == 201
+
+    # Log in user
+    login_response = client.post(
+        "/api/v1/auth/login",
+        data={"username": create_test_user.email, "password": create_test_user.password},
+    )
+    assert login_response.status_code == 200
+    return login_response.json()["access_token"]
+
+
+@pytest.fixture
+def authorized_headers(auth_token):
+    return {"Authorization": f"Bearer {auth_token}"}
