@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
@@ -9,6 +10,21 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  test: {
+    environment: "jsdom",
+    coverage: {
+      provider: "istanbul",
+      reporter: ["text", "html"],
+      // exclude: [
+      //   'src/main.tsx',
+      //   'src/constants.ts',
+      //   'src/components/ui/**',
+      //   '**/*.d.ts',
+      //   'src/app/layout.tsx',
+      // ],
+      // include: ['src/**']
     },
   },
 });

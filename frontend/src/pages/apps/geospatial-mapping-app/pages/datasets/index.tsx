@@ -10,11 +10,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useUploadFile } from "@/hooks/use-upload-file";
-// import { UploadDropzone } from "@/lib/uploadthing";
+import { UploadProvider } from "@/lib/uploader/context";
+import { uploadthingUploader } from "@/lib/uploader/uploadthing";
 import { GeospatialMappingAppSidebar } from "@/pages/apps/geospatial-mapping-app/components/app-sidebar";
 import { useDatasetList } from "@/pages/apps/geospatial-mapping-app/hooks/use-datasets";
 
 export default function Page() {
+  return (
+    <UploadProvider uploader={uploadthingUploader}>
+      <PageContent />
+    </UploadProvider>
+  );
+}
+
+function PageContent() {
   const { data: datasets, isFetching } = useDatasetList();
   const { onUpload, uploadedFiles, isUploading, progresses } = useUploadFile();
 

@@ -25,10 +25,21 @@ export class UserPasswordAuthAdapter implements AuthAdapter {
         message: data.message ?? "Login successful",
       };
     } catch (err: any) {
+      console.error("Login error:", err);
+
+      let errorMessage = "Login failed";
+      if (typeof err === "string") errorMessage = err;
+      else if (err?.message) errorMessage = err.message;
+      else if (err?.detail) errorMessage = err.detail;
+
       return {
         token: null,
-        message: err?.message || err?.detail || "Login failed",
+        message: errorMessage,
       };
+      // return {
+      //   token: null,
+      //   message: err?.message || err?.detail || "Login failed",
+      // };
     }
   }
 

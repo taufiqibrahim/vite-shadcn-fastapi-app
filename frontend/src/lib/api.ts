@@ -20,7 +20,8 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem(ACCESS_TOKEN_KEY);
-      window.location.href = LOGIN_URL;
+      // window.location.href = LOGIN_URL;
+      return Promise.reject(error);
     }
     return Promise.reject(error);
   },

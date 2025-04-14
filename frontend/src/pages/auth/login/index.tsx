@@ -24,6 +24,8 @@ export default function Page() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    console.log("Form submit triggered");
+
     setErrorMessage(null);
 
     // Extract form data
