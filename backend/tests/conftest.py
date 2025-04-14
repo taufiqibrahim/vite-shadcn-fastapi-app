@@ -1,3 +1,4 @@
+import uuid
 from src.database.session import get_db
 from src.auth.models import Account
 from src.main import app
@@ -50,13 +51,15 @@ def client():
 
 @pytest.fixture
 def create_test_user() -> AccountCreate:
-    return AccountCreate(email="adminuser@example.com", password="password", full_name="Admin User")
+    unique_email = f"testuser_{uuid.uuid4().hex[:8]}@example.com"
+    return AccountCreate(email=unique_email, password="password", full_name="Admin User")
 
 
 @pytest.fixture
 def auth_token(client: TestClient, create_test_user):
     # Create user
     response = client.post("/api/v1/users/", json=create_test_user.model_dump())
+    print("response", response.json())
     assert response.status_code == 201
 
     # Log in user

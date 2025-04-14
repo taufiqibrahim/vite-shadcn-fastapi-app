@@ -27,6 +27,9 @@ class SecretSettings(BaseSettings):
     DEMO_USER_EMAIL: EmailStr
     DEMO_USER_PASSWORD: str
 
+    # UploadThing
+    UPLOADTHING_SECRET: str = None
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -47,6 +50,9 @@ class Settings(BaseSettings):
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
 
     JWT_ENCODE_ALGORITHM: str = "HS256"
+
+    UPLOAD_BACKEND: Literal["s3", "uploadthing"] = "uploadthing"
+    UPLOAD_BACKEND_S3_BUCKET_NAME: str = None
 
 
 settings = Settings()
