@@ -9,7 +9,7 @@ from src.core.config import settings, secret_settings
 from src.database.session import engine
 from src.core.logging import logger
 from src.users.schemas import AccountCreate, UserProfileCreate
-from src.users.services import create_account, create_user_profile, get_account_by_email
+from src.users.services import create_user_account, create_user_profile, get_account_by_email
 
 
 def load_data(session: Session) -> None:
@@ -33,7 +33,7 @@ def load_data(session: Session) -> None:
         if db_account:
             logger.info("Email already registered")
         else:
-            created_account = create_account(db=session, account=u)
+            created_account = create_user_account(db=session, account=u)
             profile_create = UserProfileCreate(account_id=created_account.id, full_name=u.full_name)
             create_user_profile(db=session, account_id=created_account.id, profile=profile_create)
             user_profile = session.exec(select(UserProfile).where(UserProfile.id == created_account.id)).first()

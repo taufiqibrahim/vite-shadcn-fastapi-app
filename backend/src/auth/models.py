@@ -18,9 +18,7 @@ class Account(SQLModel, table=True):
     email: str = Field(unique=True, index=True)
     hashed_password: Optional[str]
     disabled: bool = False
-    account_type: AccountType = Field(
-        sa_column=Column(Enum(AccountType)), default=AccountType.USER
-    )  # Add the account type
+    account_type: AccountType = Field(sa_column=Column(Enum(AccountType)), default=AccountType.USER)
     api_keys: List["APIKey"] = Relationship(back_populates="account")
     profile: Optional["UserProfile"] = Relationship(back_populates="account")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

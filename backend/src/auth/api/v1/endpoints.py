@@ -8,6 +8,7 @@ from src.auth import schemas
 from src.auth import services
 from src.auth import models  # Import the Account and APIKey model
 from src.core.config import settings
+from src.core.logging import logger
 from src.database.session import get_db
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])  #  Define the tag here
@@ -16,6 +17,7 @@ router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])  #  Define th
 @router.post("/login", response_model=schemas.Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     account = db.exec(select(models.Account).where(models.Account.email == form_data.username)).first()
+    logger.debug(f"login {account}")
 
     if not account or account.account_type != models.AccountType.USER:
         raise HTTPException(

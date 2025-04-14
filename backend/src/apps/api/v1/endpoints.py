@@ -5,9 +5,12 @@ from sqlmodel import Session, select
 from src.apps import services
 from src.apps.models import App
 from src.apps.schemas import AppCreate, AppRead
+from src.auth.services import get_current_active_account_or_400
 from src.database.session import get_db
 
-router = APIRouter(prefix="/api/v1/apps", tags=["Applications"])
+router = APIRouter(
+    prefix="/api/v1/apps", tags=["Applications"], dependencies=[Depends(get_current_active_account_or_400)]
+)
 
 
 @router.post("/", response_model=AppRead, status_code=status.HTTP_201_CREATED)

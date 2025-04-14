@@ -33,12 +33,12 @@ async def read_users_me(
 
 @router.post("/", response_model=schemas.UserAccount, status_code=status.HTTP_201_CREATED)
 async def create_user(account: schemas.AccountCreate, db: Session = Depends(get_db)):
-    account.account_type = models.AccountType.USER
+
     db_account = services.get_account_by_email(db, email=account.email)
     if db_account:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    created_account = services.create_account(db=db, account=account)
+    created_account = services.create_user_account(db=db, account=account)
     profile = schemas.UserProfileCreate(account_id=created_account.id, full_name=account.full_name)
     services.create_user_profile(db, created_account.id, profile)
 

@@ -11,7 +11,6 @@ class AccountBase(SQLModel):
 
 class AccountCreate(AccountBase):
     password: str
-    account_type: Optional[str] = None
     full_name: Optional[str] = None
 
 
