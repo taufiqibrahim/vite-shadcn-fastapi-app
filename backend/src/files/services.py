@@ -43,13 +43,13 @@ transfer_config = TransferConfig(
 )
 
 
-async def handle_upload_s3(file: UploadFile):
+async def handle_upload_s3(file: UploadFile, account_uid: str):
     logger.debug("Using S3 upload handler")
 
     try:
         await file.seek(0)
 
-        s3_key = f"uploads/{file.filename}"
+        s3_key = f"uploads/{account_uid}/{file.filename}"
 
         s3.upload_fileobj(Fileobj=file.file, Bucket=BUCKET_NAME, Key=s3_key, Config=transfer_config)
 
