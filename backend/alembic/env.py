@@ -25,6 +25,10 @@ if config.config_file_name is not None:
 from src.auth.models import Account, APIKey, UserProfile  # noqa
 from src.apps.models import App  # noqa
 
+# geospatial-mapping-app
+from src.geospatial_mapping.models import Dataset  # noqa
+
+
 # target_metadata = mymodel.Base.metadata
 target_metadata = SQLModel.metadata
 

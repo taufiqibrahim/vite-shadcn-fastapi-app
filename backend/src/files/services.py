@@ -4,7 +4,9 @@ from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import NoCredentialsError
 from fastapi import UploadFile
 from src.core.config import settings, secret_settings
-from src.core.logging import logger
+from src.core.logging import get_logger
+
+logger = get_logger(__name__)
 from uploadthing_py import create_route_handler, create_uploadthing
 
 

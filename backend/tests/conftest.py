@@ -1,6 +1,6 @@
 import uuid
+from src.core.logging import setup_logging
 from src.database.session import get_db
-from src.auth.models import Account
 from src.main import app
 import sys
 import os
@@ -12,6 +12,8 @@ from src.users.schemas import AccountCreate
 
 # Ensure the src directory is in the import path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+
+setup_logging()
 
 
 # Create an in-memory SQLite engine for isolated tests
@@ -59,7 +61,6 @@ def create_test_user() -> AccountCreate:
 def auth_token(client: TestClient, create_test_user):
     # Create user
     response = client.post("/api/v1/users/", json=create_test_user.model_dump())
-    print("response", response.json())
     assert response.status_code == 201
 
     # Log in user

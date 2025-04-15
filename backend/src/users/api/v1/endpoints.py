@@ -9,7 +9,9 @@ from src.auth.services import (
     get_current_active_account,
     get_current_active_account_or_400,
 )
-from src.core.logging import logger
+from src.core.logging import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 

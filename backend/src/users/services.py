@@ -1,6 +1,8 @@
 from sqlmodel import Session, select
 import uuid
-from src.core.logging import logger
+from src.core.logging import get_logger
+
+logger = get_logger(__name__)
 from src.auth import models
 from src.auth.services import get_password_hash
 from src.users import schemas
@@ -19,7 +21,7 @@ def get_accounts(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user_account(db: Session, account: schemas.AccountCreate):
-    logger.debug(f"create_user_account account={account}")
+    logger.debug(f"create_user_account")
     hashed_password = get_password_hash(account.password) if account.password else None
     db_account = models.Account(
         email=account.email,

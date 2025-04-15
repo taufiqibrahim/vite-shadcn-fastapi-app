@@ -2,7 +2,9 @@ import uuid
 from sqlmodel import Session, select
 from src.apps.models import App
 from src.apps.schemas import AppCreate, AppRead
-from src.core.logging import logger
+from src.core.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 def create_app(db: Session, app: AppCreate):

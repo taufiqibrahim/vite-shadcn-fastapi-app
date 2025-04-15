@@ -13,7 +13,9 @@ warnings.filterwarnings("ignore", category=DeprecationWarning, module="passlib")
 from src.auth import schemas
 from src.auth import models
 from src.core.config import settings, secret_settings
-from src.core.logging import logger
+from src.core.logging import get_logger
+
+logger = get_logger(__name__)
 from src.database.session import get_db
 from passlib.context import CryptContext
 

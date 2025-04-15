@@ -7,7 +7,10 @@ from src.apps.services import create_app
 from src.auth.models import UserProfile
 from src.core.config import settings, secret_settings
 from src.database.session import engine
-from src.core.logging import logger
+from src.core.logging import get_logger, setup_logging
+
+setup_logging()
+logger = get_logger(__name__)
 from src.users.schemas import AccountCreate, UserProfileCreate
 from src.users.services import create_user_account, create_user_profile, get_account_by_email
 

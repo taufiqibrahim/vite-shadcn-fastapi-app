@@ -1,8 +1,8 @@
-"""initial tables
+"""add initial tables
 
-Revision ID: 65cba85a4cd0
+Revision ID: 001
 Revises:
-Create Date: 2025-04-14 12:16:55.229599
+Create Date: 2025-04-15 13:38:07.963843
 
 """
 
@@ -14,7 +14,7 @@ import sqlmodel
 
 
 # revision identifiers, used by Alembic.
-revision: str = "65cba85a4cd0"
+revision: str = "001"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -69,6 +69,26 @@ def upgrade() -> None:
     op.create_index(op.f("ix_api_key_key"), "api_key", ["key"], unique=True)
     op.create_index(op.f("ix_api_key_uid"), "api_key", ["uid"], unique=True)
     op.create_table(
+        "dataset",
+        sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("uid", sa.Uuid(), nullable=False),
+        sa.Column("account_id", sa.Integer(), nullable=False),
+        sa.Column("name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("description", sqlmodel.sql.sqltypes.AutoString(), nullable=True),
+        sa.Column("file_name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("storage_uri", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+        sa.Column("status", sa.Enum("uploaded", "processing", "ready", "failed", name="datasetstatus"), nullable=False),
+        sa.Column("created_at", sa.DateTime(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["account_id"],
+            ["account.id"],
+        ),
+        sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
+    )
+    op.create_index(op.f("ix_dataset_id"), "dataset", ["id"], unique=False)
+    op.create_index(op.f("ix_dataset_uid"), "dataset", ["uid"], unique=True)
+    op.create_table(
         "user_profile",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("uid", sa.Uuid(), nullable=False),
@@ -92,6 +112,9 @@ def downgrade() -> None:
     op.drop_index(op.f("ix_user_profile_uid"), table_name="user_profile")
     op.drop_index(op.f("ix_user_profile_id"), table_name="user_profile")
     op.drop_table("user_profile")
+    op.drop_index(op.f("ix_dataset_uid"), table_name="dataset")
+    op.drop_index(op.f("ix_dataset_id"), table_name="dataset")
+    op.drop_table("dataset")
     op.drop_index(op.f("ix_api_key_uid"), table_name="api_key")
     op.drop_index(op.f("ix_api_key_key"), table_name="api_key")
     op.drop_index(op.f("ix_api_key_id"), table_name="api_key")

@@ -45,7 +45,7 @@ alembic upgrade head
 3. Prepare the migration
     ```bash
     # Example for creating user table
-    alembic revision --autogenerate -m "Add user table"
+    alembic revision --autogenerate -m "add user table" --rev-id 002
     ```
 
 4. Run the migration
