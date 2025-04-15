@@ -1,7 +1,8 @@
 import { ReactNode, useState } from "react";
-import { AuthAdapter, LoginResponse } from "./adapters/AuthAdapter";
+import { AuthAdapter, LoginResponse, UserMe } from "./adapters/AuthAdapter";
 import { AuthContext } from "./AuthContext";
 import { ACCESS_TOKEN_KEY } from "@/constants";
+import { useQuery } from "@tanstack/react-query";
 
 // AuthProvider supplies authentication state and logic to the app
 export const AuthProvider: React.FC<{
@@ -23,6 +24,15 @@ export const AuthProvider: React.FC<{
     return { token, message };
   };
 
+  const { data: user } = useQuery<UserMe>({
+    queryKey: ["auth", "user"],
+    queryFn: () => adapter.getUser(),
+    enabled: !!accessToken, // only run query if accessToken is set
+    retry: false, // disable retries if needed
+    refetchOnWindowFocus: false,
+  });
+
+
   // Logs out the user and clears authentication state
   const logout = () => {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
@@ -32,7 +42,7 @@ export const AuthProvider: React.FC<{
 
   // Provide authentication state and actions to child components
   return (
-    <AuthContext.Provider value={{ accessToken, user: null, login, logout }}>
+    <AuthContext.Provider value={{ accessToken, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
