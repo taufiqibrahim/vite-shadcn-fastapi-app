@@ -1,3 +1,4 @@
+from uploadthing_py import create_route_handler, create_uploadthing
 import os
 import boto3
 from boto3.s3.transfer import TransferConfig
@@ -7,7 +8,6 @@ from src.core.config import settings, secret_settings
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
-from uploadthing_py import create_route_handler, create_uploadthing
 
 
 f = create_uploadthing()
@@ -53,7 +53,11 @@ async def handle_upload_s3(file: UploadFile, account_uid: str):
 
         s3.upload_fileobj(Fileobj=file.file, Bucket=BUCKET_NAME, Key=s3_key, Config=transfer_config)
 
-        return {"url": f"https://{BUCKET_NAME}.s3.amazonaws.com/{s3_key}"}
+        return {
+            "name": file.filename,
+            "url": f"https://{BUCKET_NAME}.s3.amazonaws.com/{s3_key}",
+            "storage_uri": f"s3://{BUCKET_NAME}.s3.amazonaws.com/{s3_key}",
+        }
 
     except NoCredentialsError:
         raise Exception("AWS credentials not found")

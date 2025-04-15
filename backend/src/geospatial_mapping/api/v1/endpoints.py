@@ -19,7 +19,7 @@ router = APIRouter(
 async def create_dataset(
     dataset: DatasetCreate, db: Session = Depends(get_db), account: Account = Depends(get_current_active_account_or_400)
 ):
-    db_dataset_count = db.exec(select(func.count(Dataset.id)).where(Dataset.name == dataset.name)).one()
+    db_dataset_count = db.exec(select(func.count(Dataset.id)).where(Dataset.file_name == dataset.file_name)).one()
     dataset.account_id = account.id
 
     if db_dataset_count > 0:

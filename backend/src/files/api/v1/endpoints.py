@@ -9,7 +9,12 @@ router = APIRouter(prefix="/api/v1/files", tags=["Files"], dependencies=[Depends
 
 
 @router.post("/upload")
-async def upload_file(request: Request, response: Response, files: UploadFile = File(...), account: Account = Depends(get_current_active_account_or_400)):
+async def upload_file(
+    request: Request,
+    response: Response,
+    files: UploadFile = File(...),
+    account: Account = Depends(get_current_active_account_or_400),
+):
     try:
         if settings.UPLOAD_BACKEND == "uploadthing":
             result = await uploadthing_handlers["POST"](
@@ -26,13 +31,3 @@ async def upload_file(request: Request, response: Response, files: UploadFile = 
         # return JSONResponse(content={"message": "Upload successful", "result": results})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# @router.get("/", response_model=List[App])
-# async def read_apps(
-#     skip: int = 0,
-#     limit: int = 100,
-#     db: Session = Depends(get_db),
-# ):
-#     apps = services.get_apps(db, skip=skip, limit=limit)
-#     return apps
