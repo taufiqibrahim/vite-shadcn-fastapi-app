@@ -28,7 +28,7 @@ class SecretSettings(BaseSettings):
     DEMO_USER_PASSWORD: str
 
     # UploadThing
-    UPLOADTHING_SECRET: str = None
+    UPLOAD_BACKEND_UPLOADTHING_SECRET: str = None
 
 
 class Settings(BaseSettings):
@@ -52,9 +52,23 @@ class Settings(BaseSettings):
 
     JWT_ENCODE_ALGORITHM: str = "HS256"
 
-    UPLOAD_BACKEND: Literal["s3", "uploadthing"] = "uploadthing"
+    UPLOAD_BACKEND: Literal["minio", "s3", "uploadthing"] = "minio"
     UPLOAD_BACKEND_S3_BUCKET_NAME: str = None
+
+
+class MinioSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_ignore_empty=True,
+        extra="ignore",
+    )
+    MINIO_ENDPOINT: str = "localhost:9000"
+    MINIO_ACCESS_KEY: str = "minio"
+    MINIO_SECRET_KEY: str = "changeme123"
+    MINIO_BUCKET_NAME: str = "mybucket"
+    MINIO_SECURE: bool = False
 
 
 settings = Settings()
 secret_settings = SecretSettings()
+minio_settings = MinioSettings()

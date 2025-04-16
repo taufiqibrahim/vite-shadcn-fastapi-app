@@ -1,11 +1,9 @@
-import logging
-
 from sqlmodel import Session, select
 from src.apps.models import App
 from src.apps.schemas import AppCreate
 from src.apps.services import create_app
 from src.auth.models import UserProfile
-from src.core.config import settings, secret_settings
+from src.core.config import secret_settings
 from src.database.session import engine
 from src.core.logging import get_logger, setup_logging
 
