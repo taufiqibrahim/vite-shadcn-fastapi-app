@@ -1,4 +1,5 @@
 import uuid
+import jwt
 from src.core.logging import setup_logging
 from src.database.session import get_db
 from src.main import app
@@ -75,3 +76,14 @@ def auth_token(client: TestClient, create_test_user):
 @pytest.fixture
 def authorized_headers(auth_token):
     return {"Authorization": f"Bearer {auth_token}"}
+
+
+@pytest.fixture
+def authorized_account_id(auth_token):
+    decoded = jwt.decode(auth_token, options={"verify_signature": False})
+    return decoded["id"]
+
+
+@pytest.fixture
+def temporal_backend():
+    return TemporalBackend()

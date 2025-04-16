@@ -1,4 +1,6 @@
 # import uuid
+import asyncio
+import uuid
 from sqlmodel import Session, select
 from src.geospatial_mapping.models import Dataset
 from src.geospatial_mapping.schemas import DatasetCreate
@@ -18,3 +20,16 @@ def create_dataset(db: Session, dataset: DatasetCreate):
 
 def list_datasets(db: Session, account_id: int, skip: int = 0, limit: int = 100):
     return db.exec(select(Dataset).where(Dataset.account_id == account_id).offset(skip).limit(limit)).all()
+
+
+def get_dataset(db: Session, dataset_uid, account_id: int):
+    return db.exec(select(Dataset).where(Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
+
+
+# def start_workflow_post_create_dataset(temporal_client, dataset: Dataset):
+#     logger.debug(f"temporal_client={temporal_client} dataset={dataset}")
+#     asyncio.create_task(temporal_client.start_workflow(
+#         "DatasetPostUploadWF",
+#         id=f"post-create-dataset-{uuid.uuid4()}",
+#         task_queue="geospatial-mapping-app-queue",
+#     ))

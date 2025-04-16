@@ -24,6 +24,7 @@ boto3 = "^1.37.33"
 python-multipart = "^0.0.20"
 psycopg2-binary = "^2.9.10"
 minio = "^7.2.15"
+temporalio = "^1.10.0"
 
 [tool.poetry.group.test.dependencies]  
 pytest-randomly = "^3.16.0"  

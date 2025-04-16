@@ -55,6 +55,9 @@ class Settings(BaseSettings):
     UPLOAD_BACKEND: Literal["minio", "s3", "uploadthing"] = "minio"
     UPLOAD_BACKEND_S3_BUCKET_NAME: str = None
 
+    WORKFLOW_BACKEND: Literal["temporal"] = "temporal"
+    TEMPORAL_SERVER: str = "localhost:7233"
+
 
 class MinioSettings(BaseSettings):
     model_config = SettingsConfigDict(
