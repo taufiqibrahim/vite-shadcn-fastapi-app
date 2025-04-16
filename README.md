@@ -4,6 +4,13 @@ A modern, fullstack web application built to showcase real-world architecture, c
 
 ---
 
+## Quickstart (Docker Compose)
+Run this command (make sure `docker` is installed)
+```bash
+docker compose build
+docker compose up -d
+```
+
 ## 🚀 Features
 
 ### 🔐 Authentication
