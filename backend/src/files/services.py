@@ -1,4 +1,4 @@
-from minio import Minio
+from minio import Minio, S3Error
 from uploadthing_py import create_route_handler, create_uploadthing
 import os
 import boto3
