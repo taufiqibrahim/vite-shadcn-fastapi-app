@@ -32,7 +32,6 @@ export const AuthProvider: React.FC<{
     refetchOnWindowFocus: false,
   });
 
-
   // Logs out the user and clears authentication state
   const logout = () => {
     localStorage.removeItem(ACCESS_TOKEN_KEY);

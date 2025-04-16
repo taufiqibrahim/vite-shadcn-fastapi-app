@@ -1,11 +1,15 @@
 import { request } from "@/lib/api";
-import { AuthAdapter, LoginCredentials, LoginResponse, UserMe } from "./AuthAdapter";
+import {
+  AuthAdapter,
+  LoginCredentials,
+  LoginResponse,
+  UserMe,
+} from "./AuthAdapter";
 import { ACCESS_TOKEN_KEY } from "@/constants";
 
 export class UserPasswordAuthAdapter implements AuthAdapter {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     try {
-
       // Prepare form data for FastAPI OAuth2 login
       const form = new URLSearchParams();
       form.append("username", credentials.email);
@@ -44,11 +48,11 @@ export class UserPasswordAuthAdapter implements AuthAdapter {
     }
   }
 
-  logout() { }
+  logout() {}
 
   async getUser(): Promise<UserMe> {
-    return await request("/users/me", "GET")
+    return await request("/users/me", "GET");
   }
 
-  async refreshToken(): Promise<any> { }
+  async refreshToken(): Promise<any> {}
 }

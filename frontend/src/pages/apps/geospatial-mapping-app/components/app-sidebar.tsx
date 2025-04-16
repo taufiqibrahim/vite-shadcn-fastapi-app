@@ -10,7 +10,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ArrowLeftCircle, Blocks, Boxes } from "lucide-react";
+import {
+  ArrowLeftCircle,
+  Blocks,
+  DatabaseIcon,
+  Map,
+  WorkflowIcon,
+} from "lucide-react";
 
 const APP_NAME = "Geospatial Mapping App";
 const APP_VERSION = "0.0.1";
@@ -20,7 +26,17 @@ export function GeospatialMappingAppSidebar() {
     {
       title: "Datasets",
       url: "/apps/geospatial-mapping-app/datasets",
-      icon: Boxes,
+      icon: DatabaseIcon,
+    },
+    {
+      title: "Maps",
+      url: "/apps/geospatial-mapping-app/maps",
+      icon: Map,
+    },
+    {
+      title: "Workflows",
+      url: "/apps/geospatial-mapping-app/workflows",
+      icon: WorkflowIcon,
     },
   ];
 

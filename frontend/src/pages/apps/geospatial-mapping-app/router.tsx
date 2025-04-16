@@ -12,5 +12,21 @@ export const GeospatialMappingAppRoutes: RouteObject = {
         ).default,
       }),
     },
+    {
+      path: "maps",
+      lazy: async () => ({
+        Component: (
+          await import("@/pages/apps/geospatial-mapping-app/pages/maps")
+        ).default,
+      }),
+    },
+    {
+      path: "workflows",
+      lazy: async () => ({
+        Component: (
+          await import("@/pages/apps/geospatial-mapping-app/pages/workflows")
+        ).default,
+      }),
+    },
   ],
 };

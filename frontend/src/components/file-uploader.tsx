@@ -1,6 +1,5 @@
 import * as React from "react";
-// import Image from "next/image"
-import { FileText, Upload, X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import Dropzone, {
   type DropzoneProps,
   type FileRejection,
@@ -270,7 +269,7 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
   return (
     <div className="relative flex items-center gap-2.5">
       <div className="flex flex-1 gap-2.5">
-        {isFileWithPreview(file) ? <FilePreview file={file} /> : null}
+        {/* {isFileWithPreview(file) ? <FilePreview file={file} /> : null} */}
         <div className="flex w-full flex-col gap-2">
           <div className="flex flex-col gap-px">
             <p className="line-clamp-1 text-sm font-medium text-foreground/80">
@@ -303,26 +302,25 @@ function isFileWithPreview(file: File): file is File & { preview: string } {
   return "preview" in file && typeof file.preview === "string";
 }
 
-interface FilePreviewProps {
-  file: File & { preview: string };
-}
+// interface FilePreviewProps {
+//   file: File & { preview: string };
+// }
 
-function FilePreview({ file }: FilePreviewProps) {
-  console.log(file);
-  // if (file.type.startsWith("image/")) {
-  //   return (
-  //     <Image
-  //       src={file.preview}
-  //       alt={file.name}
-  //       width={48}
-  //       height={48}
-  //       loading="lazy"
-  //       className="aspect-square shrink-0 rounded-md object-cover"
-  //     />
-  //   );
-  // }
+// function FilePreview({ file }: FilePreviewProps) {
+//   if (file.type.startsWith("image/")) {
+//     return (
+//       <Image
+//         src={file.preview}
+//         alt={file.name}
+//         width={48}
+//         height={48}
+//         loading="lazy"
+//         className="aspect-square shrink-0 rounded-md object-cover"
+//       />
+//     );
+//   }
 
-  return (
-    <FileText className="size-10 text-muted-foreground" aria-hidden="true" />
-  );
-}
+//   return (
+//     <FileText className="size-10 text-muted-foreground" aria-hidden="true" />
+//   );
+// }

@@ -1,5 +1,7 @@
 import Layout from "@/app/layout";
+import { useAuth } from "@/auth/use-auth";
 import { Loading } from "@/components/app-loading";
+import { BasicEmptyState } from "@/components/empty-state";
 import { FileUploader } from "@/components/file-uploader";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,10 +12,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useUploadFile } from "@/hooks/use-upload-file";
+import { UploadedFile } from "@/lib/uploader";
 import { backendApiUploader } from "@/lib/uploader/backend-uploader";
 import { UploadProvider } from "@/lib/uploader/context";
 import { GeospatialMappingAppSidebar } from "@/pages/apps/geospatial-mapping-app/components/app-sidebar";
-import { useDatasetList } from "@/pages/apps/geospatial-mapping-app/hooks/use-datasets";
+import {
+  useCreateDataset,
+  useDatasetList,
+} from "@/pages/apps/geospatial-mapping-app/hooks/use-datasets";
 import { useEffect, useRef, useState } from "react";
 
 export default function Page() {
@@ -25,14 +31,30 @@ export default function Page() {
 }
 
 function PageContent() {
+  const { user } = useAuth();
   const { data: datasets, isFetching } = useDatasetList();
-  const { onUpload, isUploading, progresses } = useUploadFile();
+  const { mutate: createDataset } = useCreateDataset();
+  const { onUpload, uploadedFiles, isUploading, progresses, resetUploadedFiles } = useUploadFile();
   const prevIsUploading = useRef(isUploading);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     if (prevIsUploading.current === true && isUploading === false) {
       setDialogOpen(false);
+
+      resetUploadedFiles()
+
+      uploadedFiles.map((item) => {
+        const newDataset = {
+          name: item.name,
+          account_id: user.account_id,
+          file_name: item.name,
+          status: 'uploaded' as const,
+          storage_uri: item.storage_uri,
+        }
+
+        createDataset(newDataset)
+      })
     }
     prevIsUploading.current = isUploading;
   }, [isUploading]);
@@ -73,10 +95,10 @@ function PageContent() {
 
         <Loading isLoading={isFetching}>
           {datasets && datasets.length > 0 ? (
-            <div>Datasets here...</div>
-          ) : (
-            <div>Empty</div>
-          )}
+            <div className="flex flex-col gap-2 py-4">
+              {datasets.map((d) => (<div key={d.name} className="">{d.name}</div>))}
+            </div>
+          ) : <BasicEmptyState />}
         </Loading>
       </div>
     </Layout>

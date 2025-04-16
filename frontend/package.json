@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "generate-client": "openapi-ts --input http://localhost:8000/openapi.json --output ./src/client --client axios"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.4",
@@ -30,6 +31,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.483.0",
     "next-themes": "^0.4.6",
+    "openapi-fetch": "^0.13.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
@@ -53,6 +55,8 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "jsdom": "^26.1.0",
+    "openapi-react-query": "^0.3.1",
+    "openapi-typescript": "^7.6.1",
     "prettier": "3.5.3",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.29.1",

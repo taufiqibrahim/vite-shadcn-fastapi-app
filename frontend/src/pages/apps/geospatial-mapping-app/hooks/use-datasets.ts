@@ -1,24 +1,38 @@
-import { useQuery } from "@tanstack/react-query";
+import { request } from "@/lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface Dataset {
-  id: string;
+  id?: string;
+  uid: string;
+  account_id: number;
   name: string;
-  status: "active" | "draft" | "archived"; // expand as needed
+  description: string;
+  file_name: string;
+  storage_uri: string;
+  status: "uploaded" | "processing" | "ready" | "failed";
+  created_at?: string;
 }
 
 export const useDatasetList = () => {
   return useQuery<Dataset[]>({
-    queryKey: ["geospatial-mapping-apps/datasets"],
-    queryFn: async () => {
-      // TODO: Replace with `request("/apps", "GET")` later
-      return [
-        { id: "1", name: "Map Editor", status: "active" },
-        { id: "2", name: "GeoAnalytics", status: "draft" },
-      ];
-    },
-    //   API
-    // queryFn: () => request("/apps", "GET"),
+    queryKey: ["geospatial-mapping/datasets"],
+    queryFn: () => request("/geospatial-mapping/datasets", "GET"),
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false,
+  });
+};
+
+export const useCreateDataset = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (newDataset: Partial<Dataset>) =>
+      request("geospatial-mapping/datasets", "POST", newDataset),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["geospatial-mapping/datasets"],
+      });
+    },
+    retry: false,
   });
 };

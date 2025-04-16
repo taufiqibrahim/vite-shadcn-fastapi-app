@@ -9,8 +9,8 @@ export type SimpleLoginResponse = {
 export interface UserMe {
   id: number;
   uid: string;
-  account_id: number
-  full_name: string
+  account_id: number;
+  full_name: string;
 }
 
 export type LoginResponse = SimpleLoginResponse;
