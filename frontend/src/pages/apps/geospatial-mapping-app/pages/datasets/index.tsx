@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { STORAGE_BACKEND } from "@/constants";
 import { useUploadFile } from "@/hooks/use-upload-file";
-import { UploadedFile } from "@/lib/uploader";
 import { backendApiUploader } from "@/lib/uploader/backend-uploader";
 import { UploadProvider } from "@/lib/uploader/context";
 import { GeospatialMappingAppSidebar } from "@/pages/apps/geospatial-mapping-app/components/app-sidebar";
