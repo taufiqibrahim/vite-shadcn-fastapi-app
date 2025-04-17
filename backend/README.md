@@ -55,3 +55,12 @@ We will show how we initiate the first migration as example.
     # Example for creating user table
     alembic upgrade head
     ```
+
+## Load Demo Data
+This repository provides demo data which can be invoked using following command:
+```bash
+# make sure in backend directory
+cd backend
+
+poetry run python src/scripts/load_demo_data.py
+```

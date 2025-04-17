@@ -14,6 +14,7 @@ def test_create_dataset_process_and_read(authorized_headers, authorized_account_
         description="a test dataset",
         status=DatasetStatus.uploaded,
         file_name="test-dataset.txt",
+        storage_backend="minio",
         storage_uri="s3://test-bucket/test-dataset.txt",
     )
     response = client.post("/api/v1/geospatial-mapping/datasets", headers=authorized_headers, json=dataset.model_dump())
@@ -23,10 +24,12 @@ def test_create_dataset_process_and_read(authorized_headers, authorized_account_
 
     # create same name dataset expect to be added (number). For example dataset (1)
     dataset = DatasetCreate(
+        account_id=authorized_account_id,
         name="test-dataset",
         description="a test dataset",
         status=DatasetStatus.uploaded,
         file_name="test-dataset.txt",
+        storage_backend="minio",
         storage_uri="s3://test-bucket/test-dataset.txt",
     )
     response = client.post("/api/v1/geospatial-mapping/datasets", headers=authorized_headers, json=dataset.model_dump())

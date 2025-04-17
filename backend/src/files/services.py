@@ -57,6 +57,7 @@ async def handle_upload_s3(file: UploadFile, account_uid: str):
         return {
             "name": file.filename,
             "url": f"https://{BUCKET_NAME}.s3.amazonaws.com/{s3_key}",
+            "storage_backend": "s3",
             "storage_uri": f"s3://{BUCKET_NAME}.s3.amazonaws.com/{s3_key}",
         }
 
@@ -108,6 +109,7 @@ async def handle_upload_minio(file: UploadFile, account_uid: str):
         return {
             "name": file.filename,
             "url": file_url,
+            "storage_backend": "minio",
             "storage_uri": f"s3://{MINIO_BUCKET_NAME}/{object_name}",
         }
 
