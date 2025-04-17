@@ -8,6 +8,7 @@ export interface Dataset {
   name: string;
   description: string;
   file_name: string;
+  storage_backend: string;
   storage_uri: string;
   status: "uploaded" | "processing" | "ready" | "failed";
   created_at?: string;

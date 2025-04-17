@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { STORAGE_BACKEND } from "@/constants";
 import { useUploadFile } from "@/hooks/use-upload-file";
 import { UploadedFile } from "@/lib/uploader";
 import { backendApiUploader } from "@/lib/uploader/backend-uploader";
@@ -50,6 +51,7 @@ function PageContent() {
           account_id: user.account_id,
           file_name: item.name,
           status: 'uploaded' as const,
+          storage_backend: STORAGE_BACKEND,
           storage_uri: item.storage_uri,
         }
 
