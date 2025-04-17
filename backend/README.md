@@ -30,22 +30,24 @@ alembic upgrade head
 ```
 
 ### Creating New Table
-1. We define the table using `sqlmodel` inside `models` directory. To create a new model, create a new file. We can use existing `models/users.py` as example.
+We will show how we initiate the first migration as example.
 
-2. Since User is a SQLModel, just make sure it’s imported in your Alembic env.py so it gets picked up for autogeneration.
+1. We define the table using `sqlmodel` inside `models` directory. To create a new model, create a new file. We can use existing `backend/src/auth/models.py` as example.
+
+2. Register the model files in the Alembic's `env.py` so it gets picked up for autogeneration.
     ```py
     # backend/alembic/env.py
     # ...
 
     # add your model's MetaData object here
-    from models.users import User
-    from models.yourmodel import YourModel # add this for the new model
+    from src.auth.models import Account, APIKey, UserProfile  # noqa
+    # from models.yourmodel import YourModel # add this for the new model
     ```
 
 3. Prepare the migration
     ```bash
-    # Example for creating user table
-    alembic revision --autogenerate -m "add user table" --rev-id 002
+    # Example for creating auth tables
+    alembic revision --autogenerate -m "add initial tables" --rev-id 001
     ```
 
 4. Run the migration

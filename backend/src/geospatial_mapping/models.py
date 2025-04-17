@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from typing import Optional
 import uuid
-from sqlmodel import SQLModel, Field
+from sqlmodel import TIMESTAMP, Column, SQLModel, Field
 from enum import Enum
 
 
@@ -10,6 +10,14 @@ class DatasetStatus(str, Enum):
     processing = "processing"
     ready = "ready"
     failed = "failed"
+
+
+class StorageBackend(str, Enum):
+    minio = "minio"
+    s3 = "s3"
+    https = "https"
+    sql = "sql"
+    bigquery = "bigquery"
 
 
 class Dataset(SQLModel, table=True):
@@ -23,8 +31,14 @@ class Dataset(SQLModel, table=True):
     description: Optional[str]
 
     file_name: str
+
+    storage_backend: StorageBackend
     storage_uri: str
 
     status: DatasetStatus = Field(default=DatasetStatus.uploaded)
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(TIMESTAMP, onupdate=datetime.now(timezone.utc)),
+    )

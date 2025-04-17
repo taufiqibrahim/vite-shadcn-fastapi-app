@@ -1,3 +1,6 @@
+import asyncio
+import uuid
+from fastapi import UploadFile
 from sqlmodel import Session, select
 from src.apps.models import App
 from src.apps.schemas import AppCreate
@@ -6,9 +9,13 @@ from src.auth.models import UserProfile
 from src.core.config import secret_settings
 from src.database.session import engine
 from src.core.logging import get_logger, setup_logging
+from src.geospatial_mapping.services import create_dataset
 
 setup_logging()
 logger = get_logger(__name__)
+from src.files.services import handle_upload_minio
+from src.geospatial_mapping.models import Dataset, StorageBackend
+from src.geospatial_mapping.schemas import DatasetCreate
 from src.users.schemas import AccountCreate, UserProfileCreate
 from src.users.services import create_user_account, create_user_profile, get_account_by_email
 
@@ -56,9 +63,46 @@ def load_data(session: Session) -> None:
             logger.info(f"App created: {db_app}")
 
 
+async def load_geospatial_mapping_data(session: Session) -> None:
+    demo_account = get_account_by_email(db=session, email=secret_settings.DEMO_USER_EMAIL)
+    datasets = [
+        DatasetCreate(
+            uid=uuid.uuid4(),
+            account_id=demo_account.id,
+            name="open_energy_sample",
+            description="open_energy_sample",
+            file_name="open_energy_sample.json",
+            storage_backend="minio",
+            storage_uri="",
+            status="uploaded",
+        ),
+    ]
+
+    for d in datasets:
+        logger.info(f"Creating dataset {d.name} using demo data data/{d.file_name}")
+
+        # upload to minio
+        file_path = f"src/scripts/data/{d.file_name}"
+        with open(file_path, "rb") as f:
+            upload_file = UploadFile(filename=d.file_name, file=f)
+            upload_response = await handle_upload_minio(file=upload_file, account_uid=demo_account.uid)
+            print(upload_response)
+
+        db_dataset = session.exec(
+            select(Dataset).where(Dataset.account_id == demo_account.id, Dataset.name == d.name)
+        ).first()
+        if db_dataset:
+            logger.info("Dataset already registered")
+        else:
+            d.storage_uri = upload_response["storage_uri"]
+            created_dataset = create_dataset(db=session, dataset=d)
+            logger.info(f"Dataset created: {created_dataset.name}")
+
+
 def init() -> None:
     with Session(engine) as session:
         load_data(session)
+        asyncio.run(load_geospatial_mapping_data(session))
 
 
 if __name__ == "__main__":

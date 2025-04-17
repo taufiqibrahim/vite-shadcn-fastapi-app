@@ -10,6 +10,7 @@ class DatasetBase(SQLModel):
     name: str
     description: Optional[str] = None
     file_name: str
+    storage_backend: str
     storage_uri: str
     status: str
 
