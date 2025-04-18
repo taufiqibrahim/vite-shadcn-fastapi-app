@@ -1,4 +1,5 @@
 import asyncio
+import os
 from base import WorkerApp
 from geospatial_mapping_app.dataset_post_upload_workflows import (
     DatasetPostUploadWorkflow,
@@ -20,5 +21,7 @@ if __name__ == "__main__":
             fetch_dataset_from_cloud_activity,
             ogr2ogr_to_postgis_activity,
         ],
+        task_queue="default-queue",
+        server=os.getenv("TEMPORAL_ADDRESS")
     )
     asyncio.run(worker_app.start())

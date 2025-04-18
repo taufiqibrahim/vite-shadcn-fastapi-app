@@ -65,6 +65,7 @@ def ogr2ogr_to_postgis(data: DatasetLoadOgr) -> DatasetLoadOgr:
         logging.info("Data loaded successfully into PostGIS.")
         return data
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error: {str(e)}")
+        logging.error(f"ogr2ogr failed (code {e.returncode})")
+        raise Exception
     finally:
         shutil.rmtree(data.tmp_dir)

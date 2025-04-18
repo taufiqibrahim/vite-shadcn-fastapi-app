@@ -74,7 +74,7 @@ class WorkerApp:
         # Set up the Temporal client
         print("📝 Connecting to Temporal server...")
         self.client = await Client.connect(
-            os.getenv("TEMPORAL_SERVER", self.server),
+            os.getenv("TEMPORAL_ADDRESS", self.server),
             namespace="default",
             data_converter=pydantic_data_converter,
         )

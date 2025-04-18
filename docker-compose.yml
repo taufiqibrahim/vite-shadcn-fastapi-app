@@ -42,9 +42,9 @@ services:
         max-size: "10m"
         max-file: "5"
 
-  # ----------------------------------------------------------------------------------------------
-  # Applications
-  # ----------------------------------------------------------------------------------------------
+  # # ----------------------------------------------------------------------------------------------
+  # # Applications
+  # # ----------------------------------------------------------------------------------------------
   # backend:
   #   container_name: backend
   #   build:
@@ -53,6 +53,7 @@ services:
   #   depends_on:
   #     - backend-db
   #     - minio
+  #     - temporal-worker-1
   #   ports:
   #     - 8000:8000
   #   environment:
@@ -161,8 +162,25 @@ services:
   # ----------------------------------------------------------------------------------------------
   # TEMPORAL WORKERS
   # ----------------------------------------------------------------------------------------------
-
-
+  temporal-worker-1:
+    container_name: temporal-worker-1
+    build:
+      context: ./temporal
+      dockerfile: Dockerfile
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=changeme123
+      - MINIO_BUCKET_NAME=mybucket
+      - MINIO_SECURE=False
+      - POSTGIS_HOST=backend-db
+      - POSTGIS_DB=app
+      - POSTGIS_USER=app
+      - POSTGIS_PASSWORD=changeme123
+      - POSTGIS_PORT=5432
 
 volumes:
   minio_data:
