@@ -1,4 +1,4 @@
-FROM python:3.13 AS builder
+FROM python:3.13-slim AS builder
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
@@ -9,12 +9,23 @@ RUN poetry config virtualenvs.in-project true
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-root
 
-FROM python:3.13-slim
+FROM python:3.13-slim AS final
 
 WORKDIR /app
-ENV PYTHONPATH=/app/backend
+ENV PYTHONPATH=/app
 COPY --from=builder /app/.venv .venv/
-COPY backend /app/backend
+
+# Copy migration code
+COPY alembic.ini /app/
+COPY alembic /app/alembic
+
+# Copy source code
+COPY src /app/src
+
+# Ensure the startup script is executable
+RUN chmod +x /app/src/scripts/startup.sh
+
+# Set the entrypoint to the startup script
+ENTRYPOINT ["/app/src/scripts/startup.sh"]
+
 EXPOSE 8000
-# CMD ["/app/.venv/bin/fastapi", "run"]
-CMD ["/app/.venv/bin/uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

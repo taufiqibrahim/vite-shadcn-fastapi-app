@@ -1,0 +1,29 @@
+# Dependency directories
+node_modules
+.pnpm
+
+# Build output
+dist
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Git & editors
+.git
+.gitignore
+.vscode
+.idea
+
+# Logs & environment
+*.log
+.env
+.env.*
+
+# Docker files
+Dockerfile
+docker-compose.*
+
+# Test & coverage
+test
+coverage

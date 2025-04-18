@@ -21,14 +21,14 @@ class SecretSettings(BaseSettings):
     SECRET_KEY: str = secrets.token_urlsafe(32)
     SQLALCHEMY_DATABASE_URI: str = "sqlite:///db.sqlite3"
 
-    FIRST_SUPERUSER_EMAIL: EmailStr
-    FIRST_SUPERUSER_PASSWORD: str
+    FIRST_SUPERUSER_EMAIL: EmailStr = "admin@example.com"
+    FIRST_SUPERUSER_PASSWORD: str = "changeme"
 
-    DEMO_USER_EMAIL: EmailStr
-    DEMO_USER_PASSWORD: str
+    DEMO_USER_EMAIL: EmailStr = "demo@example.com"
+    DEMO_USER_PASSWORD: str = "changeme"
 
     # UploadThing
-    UPLOAD_BACKEND_UPLOADTHING_SECRET: str = None
+    UPLOAD_BACKEND_UPLOADTHING_SECRET: str = "sk_live_****"
 
 
 class Settings(BaseSettings):
@@ -53,7 +53,7 @@ class Settings(BaseSettings):
     JWT_ENCODE_ALGORITHM: str = "HS256"
 
     UPLOAD_BACKEND: Literal["minio", "s3", "uploadthing"] = "minio"
-    UPLOAD_BACKEND_S3_BUCKET_NAME: str = None
+    UPLOAD_BACKEND_S3_BUCKET_NAME: str = "your-s3-bucket-name"
 
     WORKFLOW_BACKEND: Literal["temporal"] = "temporal"
     TEMPORAL_SERVER: str = "localhost:7233"

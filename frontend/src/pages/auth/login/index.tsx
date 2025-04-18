@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DEMO_PASSWORD, DEMO_USERNAME } from "@/constants";
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -54,7 +55,7 @@ export default function Page() {
             <CardDescription>
               Enter your email below to login to your account.
               <br />
-              Password: <strong>demo@123</strong>
+              Password: <strong>{DEMO_PASSWORD}</strong>
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -67,8 +68,8 @@ export default function Page() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    placeholder="demo@example.com"
-                    defaultValue={"demo@example.com"}
+                    placeholder={DEMO_USERNAME}
+                    defaultValue={DEMO_USERNAME}
                     required
                   />
                 </div>
@@ -81,6 +82,7 @@ export default function Page() {
                     name="password"
                     type="password"
                     autoComplete="current-password"
+                    defaultValue={DEMO_PASSWORD}
                     required
                   />
                 </div>
