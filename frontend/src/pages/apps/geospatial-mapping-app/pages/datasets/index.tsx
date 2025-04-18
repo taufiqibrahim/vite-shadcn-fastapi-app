@@ -46,6 +46,7 @@ function PageContent() {
 
       uploadedFiles.map((item) => {
         const newDataset = {
+          uid: item.uid,
           name: item.name,
           account_id: user.account_id,
           file_name: item.name,
