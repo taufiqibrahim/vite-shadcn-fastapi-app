@@ -68,7 +68,6 @@ class MinioSettings(BaseSettings):
     MINIO_ENDPOINT: str = "localhost:9000"
     MINIO_ACCESS_KEY: str = "minio"
     MINIO_SECRET_KEY: str = "changeme123"
-    MINIO_BUCKET_NAME: str = "mybucket"
     MINIO_SECURE: bool = False
 
 
