@@ -6,6 +6,7 @@ from sqlmodel import SQLModel
 
 class DatasetBase(SQLModel):
     account_id: int
+    uid: uuid.UUID
     name: str
     description: Optional[str] = None
     file_name: str
@@ -16,7 +17,6 @@ class DatasetBase(SQLModel):
 
 class DatasetRead(DatasetBase):
     id: int
-    uid: uuid.UUID
     created_at: datetime
 
 

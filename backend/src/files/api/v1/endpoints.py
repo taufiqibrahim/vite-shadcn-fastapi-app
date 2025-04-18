@@ -17,7 +17,7 @@ async def upload_file(
 ):
     try:
         if settings.UPLOAD_BACKEND == "minio":
-            result = await handle_upload_minio(file=files, account_uid=account.uid)
+            result = await handle_upload_minio(file=files)
             return result
         elif settings.UPLOAD_BACKEND == "uploadthing":
             result = await uploadthing_handlers["POST"](
@@ -27,7 +27,7 @@ async def upload_file(
             )
             return result
         elif settings.UPLOAD_BACKEND == "s3":
-            result = await handle_upload_s3(file=files, account_uid=account.uid)
+            result = await handle_upload_s3(file=files)
             return result
         else:
             raise NotImplementedError

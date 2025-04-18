@@ -26,20 +26,24 @@ async def create_dataset(
     account: Account = Depends(get_current_active_account_or_400),
     temporal_client: TemporalClient = Depends(get_temporal_client),
 ):
+    # check if record exists by file_name
     db_dataset_count = db.exec(select(func.count(Dataset.id)).where(Dataset.file_name == dataset.file_name)).one()
     dataset.account_id = account.id
 
-    if db_dataset_count > 0:
-        dataset.name = f"{dataset.name} ({db_dataset_count + 1})"
+    # increment default name + 1 if same filename uploaded more than once
+    if db_dataset_count == 1:
+        dataset.name = f"{dataset.name} (1)"
+    elif db_dataset_count > 1:
+        dataset.name = f"{dataset.name} ({db_dataset_count})"
 
     db_dataset = services.create_dataset(db=db, dataset=dataset)
 
-    # services.start_workflow_post_create_dataset(temporal_client=temporal_client, dataset=db_dataset)
+    # trigger temporal job async
     await temporal_client.start_workflow(
-        "DatasetPostUploadWF",
-        25,
+        "DatasetPostUploadWorkflow",
+        db_dataset.model_dump(mode="json"),
         id=f"post-create-dataset-{uuid.uuid4()}",
-        task_queue="geospatial-mapping-app-queue",
+        task_queue="default-queue",
     )
 
     return db_dataset

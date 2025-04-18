@@ -12,11 +12,15 @@ def test_upload_file(authorized_headers, client: TestClient):
     """
     Test the POST /api/v1/files/upload endpoint.
     """
-    logger.info("test_upload_file 10MB")
-    files = {
-        "files": ("test.txt", os.urandom(int(0.1 * 1024 * 1024)), "text/plain"),
-    }
-    params = {"slug": "default", "actionType": "upload"}
-    response = client.post("/api/v1/files/upload", headers=authorized_headers, files=files, params=params)
+    current_path = os.path.abspath(__file__)
+    file_path = os.path.abspath(os.path.join(os.path.dirname(current_path), '../..', 'src', 'scripts', 'data', 'open_energy_sample.json'))
+    file_name = os.path.basename(file_path)
+    print(file_path)
+    with open(file_path, "rb") as f:
+        files = {
+            "files": (file_name, f, "text/plain"),
+        }
+        params = {"slug": "default", "actionType": "upload"}
+        response = client.post("/api/v1/files/upload", headers=authorized_headers, files=files, params=params)
     logger.info(f"response status_code={response.status_code} json={response.json()}")
     assert response.status_code == status.HTTP_200_OK

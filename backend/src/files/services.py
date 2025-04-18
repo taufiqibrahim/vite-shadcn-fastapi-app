@@ -1,3 +1,4 @@
+import uuid
 from minio import Minio, S3Error
 from uploadthing_py import create_route_handler, create_uploadthing
 import os
@@ -71,7 +72,7 @@ async def handle_upload_s3(file: UploadFile, account_uid: str):
 MINIO_ENDPOINT = minio_settings.MINIO_ENDPOINT
 MINIO_ACCESS_KEY = minio_settings.MINIO_ACCESS_KEY
 MINIO_SECRET_KEY = minio_settings.MINIO_SECRET_KEY
-MINIO_BUCKET_NAME = minio_settings.MINIO_BUCKET_NAME
+MINIO_UPLOAD_BUCKET_NAME = "uploads"
 MINIO_SECURE = minio_settings.MINIO_SECURE
 
 # MinIO client
@@ -83,34 +84,34 @@ minio_client = Minio(
 )
 
 
-async def handle_upload_minio(file: UploadFile, account_uid: str):
+async def handle_upload_minio(file: UploadFile):
     logger.debug("Using MinIO upload handler")
 
     try:
         # Make sure the bucket exists
-        found = minio_client.bucket_exists(MINIO_BUCKET_NAME)
+        found = minio_client.bucket_exists(MINIO_UPLOAD_BUCKET_NAME)
         if not found:
-            minio_client.make_bucket(MINIO_BUCKET_NAME)
+            minio_client.make_bucket(MINIO_UPLOAD_BUCKET_NAME)
 
-        object_name = f"uploads/{account_uid}/{file.filename}"
+        _, extension = os.path.splitext(file.filename)
+        uid = uuid.uuid4()
+        object_name = f"{uid}{extension}"
 
         # Upload the file
         await file.seek(0)
         minio_client.put_object(
-            bucket_name=MINIO_BUCKET_NAME,
+            bucket_name=MINIO_UPLOAD_BUCKET_NAME,
             object_name=object_name,
             data=file.file,
             length=-1,  # unknown length (streaming)
             part_size=10 * 1024 * 1024,  # 10 MB chunks
         )
 
-        file_url = f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
-
         return {
             "name": file.filename,
-            "url": file_url,
+            "uid": uid,
             "storage_backend": "minio",
-            "storage_uri": f"s3://{MINIO_BUCKET_NAME}/{object_name}",
+            "storage_uri": f"s3://{MINIO_UPLOAD_BUCKET_NAME}/{object_name}",
         }
 
     except S3Error as e:
