@@ -86,7 +86,7 @@ async def load_geospatial_mapping_data(session: Session) -> None:
         with open(file_path, "rb") as f:
             upload_file = UploadFile(filename=d.file_name, file=f)
             upload_response = await handle_upload_minio(file=upload_file, account_uid=demo_account.uid)
-            print(upload_response)
+            logger.info(upload_response)
 
         db_dataset = session.exec(
             select(Dataset).where(Dataset.account_id == demo_account.id, Dataset.name == d.name)
