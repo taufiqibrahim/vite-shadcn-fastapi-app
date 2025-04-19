@@ -11,7 +11,11 @@ from src.users.schemas import AccountCreate, UserAccount
 
 @pytest.fixture
 def create_user() -> AccountCreate:
-    return AccountCreate(email="newuser@example.com", password="password", full_name="New User")
+    return AccountCreate(
+        email="newuser@example.com",
+        password="password",
+        full_name="New User",
+    )
 
 
 def test_regular_user_create_login_get_profile(client: TestClient, create_user: AccountCreate):
@@ -19,14 +23,14 @@ def test_regular_user_create_login_get_profile(client: TestClient, create_user: 
     Test the POST /api/v1/users/ endpoint.
     """
     print("new_user:", create_user)
-    response = client.post("/api/v1/users/", json=create_user.model_dump())
+    response = client.post("/api/v1/users/", json=create_user.model_dump(mode="json"))
     print("response", response.json())
     assert response.status_code == status.HTTP_201_CREATED
     created_user = UserAccount.model_validate(response.json())
     assert created_user.account_type == "user"
 
     # Test with an existing email
-    response = client.post("/api/v1/users/", json=create_user.model_dump())
+    response = client.post("/api/v1/users/", json=create_user.model_dump(mode="json"))
     assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     # Log in to get a token
