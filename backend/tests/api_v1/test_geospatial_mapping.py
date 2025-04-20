@@ -1,7 +1,6 @@
 from fastapi import status
 from fastapi.testclient import TestClient
-from src.geospatial_mapping.models import DatasetStatus
-from src.geospatial_mapping.schemas import DatasetCreate
+from src.geospatial_mapping.models import DatasetCreate, DatasetStatus
 
 
 def test_create_dataset_process_and_read(
@@ -53,5 +52,8 @@ def test_create_dataset_process_and_read(
 
 def test_get_dataset_content(test_account_authorized_headers, test_account_authorized_account_id, client: TestClient):
     demo_dataset_uid = "19bea7c2-d17c-47b7-b88a-1fe5133cc1b6"
-    response = client.get("/api/v1/geospatial-mapping/datasets", headers=test_account_authorized_headers)
-    print(response.status_code)
+    response = client.get(
+        f"/api/v1/geospatial-mapping/datasets/{demo_dataset_uid}/content", headers=test_account_authorized_headers
+    )
+
+    assert response.status_code == 200

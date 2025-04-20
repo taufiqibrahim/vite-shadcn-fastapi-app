@@ -84,7 +84,7 @@ minio_client = Minio(
 )
 
 
-async def handle_upload_minio(file: UploadFile):
+async def handle_upload_minio(file: UploadFile, uid: uuid.UUID = None):
     logger.debug("Using MinIO upload handler")
 
     try:
@@ -94,7 +94,10 @@ async def handle_upload_minio(file: UploadFile):
             minio_client.make_bucket(MINIO_UPLOAD_BUCKET_NAME)
 
         _, extension = os.path.splitext(file.filename)
-        uid = uuid.uuid4()
+
+        if not uid:
+            uid = uuid.uuid4()
+
         object_name = f"{uid}{extension}"
 
         # Upload the file

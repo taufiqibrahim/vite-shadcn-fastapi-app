@@ -5,6 +5,7 @@ import uuid
 
 
 class AccountBase(SQLModel):
+    uid: Optional[uuid.UUID] = None
     email: EmailStr
     disabled: Optional[bool] = False
 

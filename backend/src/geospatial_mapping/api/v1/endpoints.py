@@ -1,16 +1,18 @@
-import asyncio
-from typing import List
+from typing import List, Optional
 import uuid
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, func, select
 from temporalio.client import Client as TemporalClient
 from src.auth.models import Account
 from src.auth.services import get_current_active_account, get_current_active_account_or_400
+from src.core.logging import setup_logging, get_logger
 from src.database.session import get_db
 from src.dependencies import get_temporal_client
-from src.geospatial_mapping.models import Dataset
-from src.geospatial_mapping.schemas import DatasetCreate, DatasetRead
+from src.geospatial_mapping.models import Dataset, DatasetCreate, DatasetRead
 from src.geospatial_mapping import services
+
+setup_logging()
+logger = get_logger(__name__)
 
 router = APIRouter(
     prefix="/api/v1/geospatial-mapping",
@@ -61,13 +63,52 @@ async def list_datasets(
     return datasets
 
 
-@router.get("/datasets/{account_id}", response_model=DatasetRead)
-async def read_user(
-    account_id: int,
+@router.get("/datasets/{dataset_uid}", response_model=DatasetRead)
+async def get_dataset_by_uid(
+    dataset_uid: str,
     db: Session = Depends(get_db),
     account: Account = Depends(get_current_active_account),
 ):
-    db_account = services.get_account(db, account_id=account_id)
-    if db_account is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_account
+    dataset = services.get_dataset_by_uid(db, dataset_uid=dataset_uid, account_id=account.id)
+    return dataset
+
+
+@router.get("/datasets/{dataset_uid}/table")
+async def get_dataset_as_table_by_uid(
+    dataset_uid: str,
+    db: Session = Depends(get_db),
+    account: Account = Depends(get_current_active_account),
+    limit: int = Query(10, gt=0, le=10000),
+    offset: int = Query(0, ge=0),
+):
+    res = services.get_dataset_as_table_by_uid(
+        db=db, dataset_uid=dataset_uid, account_id=account.id, limit=limit, offset=offset
+    )
+    return res
+
+@router.get("/datasets/{dataset_uid}/features")
+async def get_dataset_as_geojson_by_uid(
+    dataset_uid: str,
+    db: Session = Depends(get_db),
+    account: Account = Depends(get_current_active_account),
+    bbox: Optional[str] = Query(None, description="Bounding box: xmin,ymin,xmax,ymax"),
+):
+    res = services.get_dataset_as_geojson_by_uid(
+        db=db, dataset_uid=dataset_uid, account_id=account.id, bbox=bbox
+    )
+    return res
+
+@router.get("/datasets/{dataset_uid}/tiles/{z}/{x}/{y}.pbf")
+async def get_dataset_as_mvt_by_uid(
+    z: int,
+    x: int,
+    y: int,
+    dataset_uid: uuid.UUID,
+    db: Session = Depends(get_db),
+    account: Account = Depends(get_current_active_account),
+):
+    try:
+        return services.get_dataset_as_mvt_by_uid(db=db, dataset_uid=str(dataset_uid), z=z, x=x, y=y)
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(status_code=500, detail=f"Tile generation failed: {str(e)}")

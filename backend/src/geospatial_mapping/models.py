@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from typing import Optional
 import uuid
+from pydantic import BaseModel
+from sqlalchemy import JSON
 from sqlmodel import TIMESTAMP, Column, SQLModel, Field
 from enum import Enum
 
@@ -20,6 +22,46 @@ class StorageBackend(str, Enum):
     bigquery = "bigquery"
 
 
+class BoundingBox(BaseModel):
+    xmin: float
+    ymin: float
+    xmax: float
+    ymax: float
+
+
+class DatasetBase(SQLModel):
+    name: str
+    description: Optional[str] = None
+    file_name: str
+    storage_backend: StorageBackend
+    storage_uri: str
+    status: DatasetStatus = Field(default=DatasetStatus.uploaded)
+    bbox: Optional[BoundingBox] = None
+
+
+class DatasetCreate(DatasetBase):
+    account_id: int
+    uid: Optional[uuid.UUID] = None
+
+
+class DatasetRead(DatasetBase):
+    id: int
+    uid: uuid.UUID
+    account_id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class DatasetUpdate(SQLModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    file_name: Optional[str] = None
+    storage_backend: Optional[StorageBackend] = None
+    storage_uri: Optional[str] = None
+    status: Optional[DatasetStatus] = None
+    bbox: Optional[BoundingBox] = None
+
+
 class Dataset(SQLModel, table=True):
     __tablename__ = "dataset"
 
@@ -29,13 +71,11 @@ class Dataset(SQLModel, table=True):
 
     name: str = Field(unique=True)
     description: Optional[str]
-
     file_name: str
-
     storage_backend: StorageBackend
     storage_uri: str
-
     status: DatasetStatus = Field(default=DatasetStatus.uploaded)
+    bbox: Optional[BoundingBox] = Field(default=None, sa_column=Column(JSON))
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(
