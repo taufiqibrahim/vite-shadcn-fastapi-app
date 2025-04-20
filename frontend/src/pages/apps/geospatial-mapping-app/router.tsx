@@ -6,11 +6,26 @@ export const GeospatialMappingAppRoutes: RouteObject = {
     { index: true, element: <Navigate to="datasets" replace /> },
     {
       path: "datasets",
-      lazy: async () => ({
-        Component: (
-          await import("@/pages/apps/geospatial-mapping-app/pages/datasets")
-        ).default,
-      }),
+      children: [
+        {
+          index: true,
+          lazy: async () => ({
+            Component: (
+              await import("@/pages/apps/geospatial-mapping-app/pages/datasets")
+            ).default,
+          }),
+        },
+        {
+          path: ":uid",
+          lazy: async () => ({
+            Component: (
+              await import(
+                "@/pages/apps/geospatial-mapping-app/pages/datasets/details"
+              )
+            ).default,
+          }),
+        },
+      ],
     },
     {
       path: "maps",

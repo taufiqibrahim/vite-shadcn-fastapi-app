@@ -1,7 +1,7 @@
 import Layout from "@/app/layout";
 import { useAuth } from "@/auth/use-auth";
 import { Loading } from "@/components/app-loading";
-import { BasicEmptyState } from "@/components/empty-state";
+import { DataTable } from "@/components/data-table";
 import { FileUploader } from "@/components/file-uploader";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,7 @@ import {
   useDatasetList,
 } from "@/pages/apps/geospatial-mapping-app/hooks/use-datasets";
 import { useEffect, useRef, useState } from "react";
+import { columns } from "./columns";
 
 export default function Page() {
   return (
@@ -34,7 +35,13 @@ function PageContent() {
   const { user } = useAuth();
   const { data: datasets, isFetching } = useDatasetList();
   const { mutate: createDataset } = useCreateDataset();
-  const { onUpload, uploadedFiles, isUploading, progresses, resetUploadedFiles } = useUploadFile();
+  const {
+    onUpload,
+    uploadedFiles,
+    isUploading,
+    progresses,
+    resetUploadedFiles,
+  } = useUploadFile();
   const prevIsUploading = useRef(isUploading);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -42,7 +49,7 @@ function PageContent() {
     if (prevIsUploading.current === true && isUploading === false) {
       setDialogOpen(false);
 
-      resetUploadedFiles()
+      resetUploadedFiles();
 
       uploadedFiles.map((item) => {
         const newDataset = {
@@ -50,13 +57,13 @@ function PageContent() {
           name: item.name,
           account_id: user.account_id,
           file_name: item.name,
-          status: 'uploaded' as const,
+          status: "uploaded" as const,
           storage_backend: STORAGE_BACKEND,
           storage_uri: item.storage_uri,
-        }
+        };
 
-        createDataset(newDataset)
-      })
+        createDataset(newDataset);
+      });
     }
     prevIsUploading.current = isUploading;
   }, [isUploading]);
@@ -96,11 +103,7 @@ function PageContent() {
         </div>
 
         <Loading isLoading={isFetching}>
-          {datasets && datasets.length > 0 ? (
-            <div className="flex flex-col gap-2 py-4">
-              {datasets.map((d) => (<div key={d.name} className="">{d.name}</div>))}
-            </div>
-          ) : <BasicEmptyState />}
+          <DataTable data={datasets ?? []} columns={columns} />
         </Loading>
       </div>
     </Layout>

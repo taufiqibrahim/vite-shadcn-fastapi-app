@@ -14,3 +14,24 @@ export const transformRequest: maplibregl.RequestTransformFunction = (
     };
   }
 };
+
+export function debounce<F extends (...args: any[]) => void>(
+  func: F,
+  wait: number,
+) {
+  let timeoutId: ReturnType<typeof setTimeout> | null;
+
+  const debounced = (...args: Parameters<F>) => {
+    if (timeoutId) clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), wait);
+  };
+
+  debounced.cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+  };
+
+  return debounced as F & { cancel: () => void };
+}

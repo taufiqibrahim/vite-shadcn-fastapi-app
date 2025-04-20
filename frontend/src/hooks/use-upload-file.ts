@@ -49,5 +49,11 @@ export function useUploadFile({
 
   const resetUploadedFiles = () => setUploadedFiles([]);
 
-  return { onUpload, uploadedFiles, progresses, isUploading, resetUploadedFiles };
+  return {
+    onUpload,
+    uploadedFiles,
+    progresses,
+    isUploading,
+    resetUploadedFiles,
+  };
 }
