@@ -1,0 +1,180 @@
+services:
+
+  minio:
+    container_name: minio
+    image: quay.io/minio/minio
+    ports:
+      - "9000:9000"  # MinIO API (S3-compatible)
+      - "9001:9001"  # MinIO Web UI
+    environment:
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=changeme123
+    volumes:
+      - minio_data:/data
+    user: "${UID}:${GID}"
+    command: server /data --console-address ":9001"
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  backend-db:
+    container_name: backend-db
+    image: postgis/postgis:17-3.5
+    ports:
+      - 25432:5432
+    environment:
+      POSTGRES_PASSWORD: changeme123
+      POSTGRES_USER: app
+      POSTGRES_DB: app
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C"
+      POSTGRES_INITDB_WALDIR: /var/lib/postgresql/wal
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - backend_db_data:/var/lib/postgresql/data
+      - backend_db_wal:/var/lib/postgresql/wal
+      - ./backend/src/scripts/initdb:/docker-entrypoint-initdb.d
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------------------------------------
+  # TEMPORAL
+  # ----------------------------------------------------------------------------------------------
+  opensearch:
+    container_name: temporal-opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=512mb
+      - cluster.routing.allocation.disk.watermark.high=256mb
+      - cluster.routing.allocation.disk.watermark.flood_stage=128mb
+      - plugins.security.disabled=true
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=C#angeme123
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-2.13.0}
+    ulimits:
+      memlock:
+       soft: -1 # Set memlock to unlimited (no soft or hard limit)
+       hard: -1
+      nofile:
+        soft: 65536 # Maximum number of open files for the opensearch user - set to at least 65536
+        hard: 65536
+    expose:
+      - 9200
+    volumes:
+      - /usr/share/opensearch/data
+    restart: always
+
+  postgresql:
+    container_name: temporal-postgresql
+    environment:
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_USER: temporal
+    image: postgres:${POSTGRESQL_VERSION:-17}
+    expose:
+      - 5432
+    volumes:
+      - /var/lib/postgresql/data
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  temporal:
+    container_name: temporal
+    depends_on:
+      - postgresql
+      - opensearch
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+      - ENABLE_ES=true
+      - ES_SEEDS=opensearch
+      - ES_VERSION=v7
+    image: temporalio/auto-setup:${TEMPORAL_VERSION:-latest}
+    ports:
+      - 7233:7233
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # temporal-admin-tools:
+  #   container_name: temporal-admin-tools
+  #   depends_on:
+  #     - temporal
+  #   environment:
+  #     - TEMPORAL_ADDRESS=temporal:7233
+  #     - TEMPORAL_CLI_ADDRESS=temporal:7233
+  #   image: temporalio/admin-tools:${TEMPORAL_ADMINTOOLS_VERSION:-latest}
+  #   stdin_open: true
+  #   tty: true
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "5"
+
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    image: temporalio/ui:${TEMPORAL_UI_VERSION:-latest}
+    ports:
+      - 8080:8080
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------------------------------------
+  # TEMPORAL WORKERS
+  # ----------------------------------------------------------------------------------------------
+  temporal-worker:
+    container_name: temporal-worker
+    build:
+      context: ./temporal
+      dockerfile: Dockerfile
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=changeme123
+      - MINIO_BUCKET_NAME=mybucket
+      - MINIO_SECURE=False
+      - POSTGIS_HOST=backend-db
+      - POSTGIS_DB=app
+      - POSTGIS_USER=app
+      - POSTGIS_PASSWORD=changeme123
+      - POSTGIS_PORT=5432
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  minio_data:
+  backend_db_data:
+  backend_db_wal:
