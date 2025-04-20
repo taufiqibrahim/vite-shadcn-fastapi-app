@@ -1,10 +1,15 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
 
+# Middlewares
+from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+
+# Core
 from src.core.config import settings
 from src.core.logging import get_logger, setup_logging
 
+# Endpoints
 from src.auth.api.v1 import endpoints as auth_endpoints_v1
 from src.users.api.v1 import endpoints as users_endpoints_v1
 from src.apps.api.v1 import endpoints as apps_endpoints_v1
@@ -18,6 +23,9 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     # lifespan=lifespan,
 )
+
+# GZIP middleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include the authentication and users routers
 app.include_router(auth_endpoints_v1.router)
