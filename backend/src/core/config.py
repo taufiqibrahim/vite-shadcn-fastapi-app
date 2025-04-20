@@ -71,6 +71,20 @@ class MinioSettings(BaseSettings):
     MINIO_SECURE: bool = False
 
 
+class PostgisSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_ignore_empty=True,
+        extra="ignore",
+    )
+    POSTGIS_HOST: str = "127.0.0.1"
+    POSTGIS_DB: str = "app"
+    POSTGIS_USER: str = "app"
+    POSTGIS_PASSWORD: str = "changeme123"
+    POSTGIS_PORT: str = "25432"
+
+
 settings = Settings()
 secret_settings = SecretSettings()
 minio_settings = MinioSettings()
+postgis_settings = PostgisSettings()
