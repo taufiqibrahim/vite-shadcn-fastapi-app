@@ -11,6 +11,28 @@ docker compose build
 docker compose up -d
 ```
 
+
+For development
+```bash
+docker compose -f docker-compose.dev.yml up -d
+
+# start backend development server
+cd backend
+poetry install --no-root
+poetry run alembic upgrade head
+poetry run python src/scripts/load_demo_data.py
+poetry run fastapi dev src/main.py
+
+# Backend available at http://localhost:8000
+
+# start frontend development server
+cd frontend
+pnpm install
+pnpm run dev
+
+# Frontend available at http://localhost:5173/
+```
+
 ## 🚀 Features
 
 ### 🔐 Authentication
