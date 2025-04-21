@@ -18,8 +18,9 @@ export interface Dataset {
   storage_backend: string;
   storage_uri: string;
   status: "uploaded" | "processing" | "ready" | "failed";
-  bbox?: BBox;
+  bbox: BBox;
   created_at?: string;
+  updated_at?: string;
 }
 
 export const useDatasetList = () => {

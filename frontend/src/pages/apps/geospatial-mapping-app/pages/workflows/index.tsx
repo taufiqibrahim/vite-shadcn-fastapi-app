@@ -12,7 +12,7 @@ export default function Page() {
       </h1>
 
       {datasets && datasets.length > 0 ? (
-        <div>Datasetss</div>
+        <div>TODO: Workflows</div>
       ) : (
         <div>Empty</div>
       )}

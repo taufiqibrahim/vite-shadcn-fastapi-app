@@ -17,14 +17,6 @@ export default defineConfig({
     coverage: {
       provider: "istanbul",
       reporter: ["text", "html"],
-      // exclude: [
-      //   'src/main.tsx',
-      //   'src/constants.ts',
-      //   'src/components/ui/**',
-      //   '**/*.d.ts',
-      //   'src/app/layout.tsx',
-      // ],
-      // include: ['src/**']
     },
   },
 });

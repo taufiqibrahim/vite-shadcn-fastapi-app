@@ -16,4 +16,12 @@ export const columns: ColumnDef<Dataset>[] = [
       );
     },
   },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "updated_at",
+    header: "Last updated",
+  },
 ];

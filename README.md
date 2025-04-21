@@ -38,7 +38,7 @@ pnpm run dev
 ### 🔐 Authentication
 
 - ✅ **Basic Auth**: Standard email & password authentication with hashed credentials and JWT-based session management.
-- 🛠️ **Magic Link Login** *(in progress)*: Email-based login without the need for passwords.
+- 🛠️ **Magic Link Login** *(planned)*: Email-based login without the need for passwords.
 - 🔒 **2FA Support** *(planned)*: Time-based One-Time Passwords (TOTP) with QR code setup.
 - ❌ **OAuth2** *(planned)*
 
@@ -56,29 +56,5 @@ pnpm run dev
 - 🔐 Auth system with JWT, dependency overrides, and secure password hashing
 - 📄 RESTful APIs and OpenAPI docs auto-generated
 - 🧰 Database modeling with SQLModel (SQLite/PostgreSQL)
-- 📬 Email sending capabilities via SendGrid (mocked in dev)
-- 🔄 Background tasks using Celery (with Redis broker)
-- 🧪 Pytest test suite with coverage reports
-
----
-
-### 🧰 Dev Setup
-
-This app is built with a **Docker-first** mindset, but runs perfectly natively too. Preconfigured for:
-
-- `docker-compose` for local dev (frontend + backend + db)
-- `.env` and `.env.example` for quick environment configuration
-- Pre-commit hooks for linting and formatting
-
----
-
-Let me know if you want badges, deployment info (like Vercel + Railway), or a demo login setup.
-### Frontend
-
-- [prettier](https://prettier.io/) for code formatter.
-
-### Backend
-
-### File Upload
-This repository includes file uploader as React Context.
-
+- 🔄 Background tasks (IN PROGRESS)
+- 🧪 Pytest test suite with coverage reports (IN PROGRESS)

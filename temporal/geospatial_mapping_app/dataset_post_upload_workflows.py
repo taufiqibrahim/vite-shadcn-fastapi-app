@@ -6,6 +6,7 @@ with workflow.unsafe.imports_passed_through():
     from geospatial_mapping_app.dataset_post_upload_activities import (
         fetch_dataset_from_cloud_activity,
         ogr2ogr_to_postgis_activity,
+        update_dataset_metadata_activity,
         validate_input_activity,
     )
 
@@ -24,16 +25,26 @@ class DatasetPostUploadWorkflow:
         )
 
         # Fetch dataset from cloud
-        data = await workflow.execute_activity(
+        fetched = await workflow.execute_activity(
             fetch_dataset_from_cloud_activity,
             validated,
             schedule_to_close_timeout=timedelta(minutes=10),
-            retry_policy=RetryPolicy(maximum_attempts=1),
+            retry_policy=RetryPolicy(maximum_attempts=3),
         )
 
         # Load dataset to PostGIS
-        data = await workflow.execute_activity(
+        loaded = await workflow.execute_activity(
             ogr2ogr_to_postgis_activity,
-            data,
+            fetched,
             schedule_to_close_timeout=timedelta(minutes=30),
+            retry_policy=RetryPolicy(maximum_attempts=3)
         )
+
+        # Update Dataset metadata
+        data = await workflow.execute_activity(
+            update_dataset_metadata_activity,
+            loaded,
+            schedule_to_close_timeout=timedelta(minutes=30),
+            retry_policy=RetryPolicy(maximum_attempts=3)
+        )
+

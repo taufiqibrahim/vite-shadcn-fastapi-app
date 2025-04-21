@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import os
 import signal
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -7,6 +8,11 @@ from temporalio.contrib.pydantic import pydantic_data_converter
 from temporalio.worker import Worker
 
 
+logging.basicConfig(
+    level=logging.INFO,  # or logging.DEBUG for more verbosity
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -14,7 +20,10 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    LOG_LEVEL: str = "warning"
+    LOG_LEVEL: str = "info"
+    TEMPORAL_ADDRESS: str = "localhost:7233"
+    BACKEND_API_BASE_URL: str = "http://localhost:8000"
+    BACKEND_API_KEY: str = "changeme"
 
 
 class MinioSettings(BaseSettings):
@@ -43,6 +52,7 @@ class PostgisSettings(BaseSettings):
     POSTGIS_PORT: str = "5432"
 
 
+settings = Settings()
 minio_settings = MinioSettings()
 postgis_settings = PostgisSettings()
 
@@ -60,9 +70,9 @@ class WorkerApp:
 
     async def shutdown(self):
         """Gracefully shuts down the worker."""
-        print("🚨 Shutdown signal received. Gracefully stopping worker...")
+        logging.info("🚨 Shutdown signal received. Gracefully stopping worker...")
         await self.worker.shutdown()  # Graceful shutdown of worker
-        print("✅ Worker stopped gracefully.")
+        logging.info("✅ Worker stopped gracefully.")
 
     def handle_shutdown_signal(self):
         """Wrapper function to ensure shutdown is awaited."""
@@ -72,7 +82,7 @@ class WorkerApp:
     async def start(self):
         """Start the Temporal worker and handle signals."""
         # Set up the Temporal client
-        print("📝 Connecting to Temporal server...")
+        logging.info(f"📝 Connecting to Temporal server at {self.server}...")
         self.client = await Client.connect(
             os.getenv("TEMPORAL_ADDRESS", self.server),
             namespace="default",
@@ -86,7 +96,7 @@ class WorkerApp:
             workflows=self.workflows,
             activities=self.activities,
         )
-        print(f"🚀 Worker running for task_queue: {self.task_queue}...")
+        logging.info(f"🚀 Worker running for task_queue: {self.task_queue}...")
 
         # Register signal handlers for graceful shutdown
         loop = asyncio.get_event_loop()

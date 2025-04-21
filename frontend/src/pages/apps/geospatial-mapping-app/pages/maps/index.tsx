@@ -10,7 +10,7 @@ export default function Page() {
       <h1 className="scroll-m-20 text-2xl font-bold tracking-tight">Maps</h1>
 
       {datasets && datasets.length > 0 ? (
-        <div>Datasetss</div>
+        <div>TODO: Maps</div>
       ) : (
         <div>Empty</div>
       )}

@@ -12,10 +12,25 @@ import { DatasetMapsProps } from "@/pages/apps/geospatial-mapping-app/types";
 import { API_BASE_URL } from "@/constants";
 import { debounce, transformRequest } from "@/lib/maps";
 
-export default function DatasetMaps({ datasetUID }: DatasetMapsProps) {
+export default function DatasetMaps({ datasetUid, bbox }: DatasetMapsProps) {
   const mapRef = useRef<MapRef>(null);
   const [hoverInfo, setHoverInfo] = useState<any>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+  /**
+   * Fit the maps to the bounding box from parent component
+   */
+  if (mapRef && mapRef?.current) {
+    if (bbox && bbox[0] && bbox[1] && bbox[2] && bbox[3]) {
+      mapRef.current.fitBounds(
+        [
+          [bbox[0], bbox[1]],
+          [bbox[2], bbox[3]],
+        ],
+        { padding: 20, duration: 1000 },
+      );
+    }
+  }
 
   // const handleOnMoveEnd = () => {
   //   const bounds = mapRef.current?.getBounds();
@@ -30,6 +45,9 @@ export default function DatasetMaps({ datasetUID }: DatasetMapsProps) {
   //   }
   // };
 
+  /**
+   * Use debouncing to avoid "laggy" during fast movement on hover
+   */
   const debouncedSetHoveredFeature = useMemo(() => {
     return debounce((feature: any, lngLat: any) => {
       setHoveredId(feature.id as number);
@@ -70,13 +88,17 @@ export default function DatasetMaps({ datasetUID }: DatasetMapsProps) {
     [debouncedSetHoveredFeature],
   );
 
+  /**
+   * Handle onclick on features
+   * TODO: render component
+   */
   const handleOnClick = useCallback((e: MapLayerMouseEvent) => {
     if (e.features && e.features[0]) {
       console.log("Clicked feature properties:", e.features[0].properties);
     }
   }, []);
 
-  const tileURL = `${API_BASE_URL}geospatial-mapping/datasets/${datasetUID}/tiles/{z}/{x}/{y}.pbf`;
+  const tileURL = `${API_BASE_URL}geospatial-mapping/datasets/${datasetUid}/tiles/{z}/{x}/{y}.pbf`;
   return (
     <Map
       ref={mapRef}
@@ -91,10 +113,23 @@ export default function DatasetMaps({ datasetUID }: DatasetMapsProps) {
       onMouseMove={handleOnHover}
       onMouseDown={handleOnClick}
       transformRequest={transformRequest}
-      interactiveLayerIds={["dataset-points", "dataset-lines"]}
+      interactiveLayerIds={[
+        "dataset-points",
+        "dataset-lines",
+        "dataset-polygon",
+      ]}
     >
-      {datasetUID && (
+      {datasetUid && (
         <Source id="dataset" type="vector" tiles={[tileURL]}>
+          <Layer
+            id="dataset-polygon"
+            source-layer="dataset"
+            type="fill"
+            paint={{
+              "fill-color": "#007cbf",
+            }}
+            filter={["==", "$type", "Polygon"]}
+          />
           <Layer
             id="dataset-points"
             source-layer="dataset"
@@ -114,6 +149,23 @@ export default function DatasetMaps({ datasetUID }: DatasetMapsProps) {
               "line-color": "#007cbf",
             }}
             filter={["==", "$type", "LineString"]}
+          />
+          <Layer
+            id="dataset-polygon-hover"
+            source-layer="dataset"
+            type="fill"
+            paint={{
+              "fill-color": "red",
+            }}
+            filter={
+              hoveredId !== null
+                ? [
+                    "all",
+                    ["==", "$type", "Polygon"],
+                    ["==", "ogc_fid", hoveredId],
+                  ]
+                : ["==", "ogc_fid", -1]
+            }
           />
           <Layer
             id="dataset-hover-points"

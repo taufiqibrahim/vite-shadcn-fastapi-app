@@ -16,27 +16,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export default function Page() {
   const { uid } = useParams<{ uid: string }>();
   const { data: dataset } = useDatasetDetail(uid);
-  // const [bbox, setBBox] = useState<[number, number, number, number] | null>();
+  const [bbox, setBBox] = useState<[number, number, number, number]>();
 
-  // useEffect(() => {
-  //   if (
-  //     dataset?.bbox?.xmin != null &&
-  //     dataset?.bbox?.ymin != null &&
-  //     dataset?.bbox?.xmax != null &&
-  //     dataset?.bbox?.ymax != null
-  //   ) {
-  //     setBBox([
-  //       dataset.bbox.xmin,
-  //       dataset.bbox.ymin,
-  //       dataset.bbox.xmax,
-  //       dataset.bbox.ymax,
-  //     ]);
-  //   }
-  // }, [dataset]);
+  useEffect(() => {
+    if (
+      dataset?.bbox?.xmin != null &&
+      dataset?.bbox?.ymin != null &&
+      dataset?.bbox?.xmax != null &&
+      dataset?.bbox?.ymax != null
+    ) {
+      setBBox([
+        dataset.bbox.xmin,
+        dataset.bbox.ymin,
+        dataset.bbox.xmax,
+        dataset.bbox.ymax,
+      ]);
+    }
+  }, [dataset]);
 
   // const columns = useColumns(dataset);
   // const { data: datasetTable } = useDatasetTable(uid);
@@ -75,7 +76,9 @@ export default function Page() {
       <div className="flex flex-col gap-2 h-[calc(100vh-4rem)] overflow-hidden">
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel defaultSize={60}>
-            <DatasetMaps datasetUID={dataset?.uid} />
+            {dataset && dataset.uid && dataset.bbox && (
+              <DatasetMaps datasetUid={dataset?.uid} bbox={bbox} />
+            )}
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={40}>
