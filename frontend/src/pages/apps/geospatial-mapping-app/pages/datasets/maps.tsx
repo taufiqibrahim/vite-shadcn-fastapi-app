@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Layer,
   Map,
@@ -12,25 +12,51 @@ import { DatasetMapsProps } from "@/pages/apps/geospatial-mapping-app/types";
 import { API_BASE_URL } from "@/constants";
 import { debounce, transformRequest } from "@/lib/maps";
 
-export default function DatasetMaps({ datasetUid, bbox }: DatasetMapsProps) {
+export default function DatasetMaps({
+  datasetUid,
+  bbox,
+  primaryKeyColumn,
+}: DatasetMapsProps) {
   const mapRef = useRef<MapRef>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [hoverInfo, setHoverInfo] = useState<any>(null);
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   /**
    * Fit the maps to the bounding box from parent component
    */
-  if (mapRef && mapRef?.current) {
-    if (bbox && bbox[0] && bbox[1] && bbox[2] && bbox[3]) {
+  // if (mapRef && mapRef?.current) {
+  //   if (bbox && bbox[0] && bbox[1] && bbox[2] && bbox[3]) {
+  //     mapRef.current.fitBounds(
+  //       [
+  //         [bbox[0], bbox[1]],
+  //         [bbox[2], bbox[3]],
+  //       ],
+  //       { padding: 20, duration: 1000 },
+  //     );
+  //   }
+  // }
+
+  useEffect(() => {
+    if (
+      mapLoaded &&
+      mapRef.current &&
+      bbox &&
+      bbox.length === 4 &&
+      bbox.every((coord) => typeof coord === "number")
+    ) {
       mapRef.current.fitBounds(
         [
           [bbox[0], bbox[1]],
           [bbox[2], bbox[3]],
         ],
-        { padding: 20, duration: 1000 },
+        {
+          padding: 20,
+          duration: 2000,
+        },
       );
     }
-  }
+  }, [bbox, mapLoaded]);
 
   // const handleOnMoveEnd = () => {
   //   const bounds = mapRef.current?.getBounds();
@@ -58,22 +84,9 @@ export default function DatasetMaps({ datasetUid, bbox }: DatasetMapsProps) {
     }, 5);
   }, []);
 
-  /* Original without debouncing */
-  // const handleOnHover = useCallback((e: MapLayerMouseEvent) => {
-  //   if (e.features && e.features[0]) {
-  //     const feature = e.features[0];
-  //     setHoveredId(feature.id as number);
-  //     setHoverInfo({
-  //       lngLat: e.lngLat,
-  //       properties: feature.properties,
-  //     });
-  //   } else {
-  //     setHoveredId(null);
-  //     setHoverInfo(null);
-  //   }
-  // }, []);
-
-  /** With debounce */
+  /**
+   * Handle when mouse hover over features
+   */
   const handleOnHover = useCallback(
     (e: MapLayerMouseEvent) => {
       if (e.features && e.features[0]) {
@@ -98,17 +111,15 @@ export default function DatasetMaps({ datasetUid, bbox }: DatasetMapsProps) {
     }
   }, []);
 
-  const tileURL = `${API_BASE_URL}geospatial-mapping/datasets/${datasetUid}/tiles/{z}/{x}/{y}.pbf`;
+  const tileURL = `${API_BASE_URL}geospatial-mapping/datasets/${datasetUid}/tiles/{z}/{x}/{y}.pbf?primary_key_column=${primaryKeyColumn}`;
+
   return (
     <Map
       ref={mapRef}
-      initialViewState={{
-        longitude: -122.631425,
-        latitude: 38.96543,
-        zoom: 14,
-      }}
+      // initialViewState={{}}
       style={{ width: "100%", height: "100%" }}
       mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+      onLoad={() => setMapLoaded(true)}
       // onMoveEnd={handleOnMoveEnd}
       onMouseMove={handleOnHover}
       onMouseDown={handleOnClick}
@@ -214,6 +225,7 @@ export default function DatasetMaps({ datasetUid, bbox }: DatasetMapsProps) {
             latitude={hoverInfo.lngLat.lat}
             closeButton={false}
             closeOnClick={false}
+            offset={10}
           >
             <div style={{ fontSize: "12px" }}>
               {Object.entries(hoverInfo.properties)

@@ -5,7 +5,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import DatasetMaps from "./maps";
-import { useParams } from "react-router";
+import { data, useParams } from "react-router";
 import { ArrowLeft, MoreVertical } from "lucide-react";
 import { useDatasetDetail } from "../../hooks/use-datasets";
 import {
@@ -76,9 +76,16 @@ export default function Page() {
       <div className="flex flex-col gap-2 h-[calc(100vh-4rem)] overflow-hidden">
         <ResizablePanelGroup direction="vertical">
           <ResizablePanel defaultSize={60}>
-            {dataset && dataset.uid && dataset.bbox && (
-              <DatasetMaps datasetUid={dataset?.uid} bbox={bbox} />
-            )}
+            {dataset &&
+              dataset.uid &&
+              dataset.bbox &&
+              dataset.primary_key_column && (
+                <DatasetMaps
+                  datasetUid={dataset?.uid}
+                  bbox={bbox}
+                  primaryKeyColumn={dataset.primary_key_column}
+                />
+              )}
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel defaultSize={40}>

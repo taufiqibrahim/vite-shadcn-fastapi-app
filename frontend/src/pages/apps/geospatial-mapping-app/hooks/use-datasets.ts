@@ -19,6 +19,7 @@ export interface Dataset {
   storage_uri: string;
   status: "uploaded" | "processing" | "ready" | "failed";
   bbox: BBox;
+  primary_key_column: string;
   created_at?: string;
   updated_at?: string;
 }
