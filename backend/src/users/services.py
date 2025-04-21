@@ -27,7 +27,7 @@ def create_user_account(db: Session, account: schemas.AccountCreate):
         email=account.email,
         hashed_password=hashed_password,
         disabled=account.disabled,
-        account_type=models.AccountType.USER,
+        account_type=account.account_type,
         uid=account.uid if account.uid else uuid.uuid4(),
     )
     db.add(db_account)

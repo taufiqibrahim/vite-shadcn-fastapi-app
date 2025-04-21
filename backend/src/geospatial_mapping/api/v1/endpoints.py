@@ -8,7 +8,7 @@ from src.auth.services import get_current_active_account, get_current_active_acc
 from src.core.logging import setup_logging, get_logger
 from src.database.session import get_db
 from src.dependencies import get_temporal_client
-from src.geospatial_mapping.models import Dataset, DatasetCreate, DatasetRead
+from src.geospatial_mapping.models import Dataset, DatasetCreate, DatasetRead, DatasetUpdate
 from src.geospatial_mapping import services
 
 setup_logging()
@@ -55,12 +55,22 @@ async def create_dataset(
 async def list_datasets(
     skip: int = 0,
     limit: int = 100,
-    name: str = None,
     db: Session = Depends(get_db),
     account: Account = Depends(get_current_active_account),
 ):
     datasets = services.list_datasets(db, account_id=account.id, skip=skip, limit=limit)
     return datasets
+
+
+@router.put("/datasets/{dataset_uid}")
+async def update_dataset(
+    dataset_uid: str,
+    dataset: DatasetUpdate,
+    db: Session = Depends(get_db),
+    account: Account = Depends(get_current_active_account),
+):
+    dataset = services.update_dataset(db, dataset_uid=dataset_uid, account_id=account.id, dataset=dataset)
+    return dataset
 
 
 @router.get("/datasets/{dataset_uid}", response_model=DatasetRead)
@@ -86,6 +96,7 @@ async def get_dataset_as_table_by_uid(
     )
     return res
 
+
 @router.get("/datasets/{dataset_uid}/features")
 async def get_dataset_as_geojson_by_uid(
     dataset_uid: str,
@@ -93,10 +104,9 @@ async def get_dataset_as_geojson_by_uid(
     account: Account = Depends(get_current_active_account),
     bbox: Optional[str] = Query(None, description="Bounding box: xmin,ymin,xmax,ymax"),
 ):
-    res = services.get_dataset_as_geojson_by_uid(
-        db=db, dataset_uid=dataset_uid, account_id=account.id, bbox=bbox
-    )
+    res = services.get_dataset_as_geojson_by_uid(db=db, dataset_uid=dataset_uid, account_id=account.id, bbox=bbox)
     return res
+
 
 @router.get("/datasets/{dataset_uid}/tiles/{z}/{x}/{y}.pbf")
 async def get_dataset_as_mvt_by_uid(
@@ -104,11 +114,14 @@ async def get_dataset_as_mvt_by_uid(
     x: int,
     y: int,
     dataset_uid: uuid.UUID,
+    primary_key_column: str = Query("ogc_fid"),
     db: Session = Depends(get_db),
     account: Account = Depends(get_current_active_account),
 ):
     try:
-        return services.get_dataset_as_mvt_by_uid(db=db, dataset_uid=str(dataset_uid), z=z, x=x, y=y)
+        return services.get_dataset_as_mvt_by_uid(
+            db=db, dataset_uid=str(dataset_uid), primary_key_column=primary_key_column, z=z, x=x, y=y
+        )
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=500, detail=f"Tile generation failed: {str(e)}")

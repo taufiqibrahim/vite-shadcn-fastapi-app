@@ -1,9 +1,10 @@
 \c app
 CREATE EXTENSION postgis;
 
-DROP FUNCTION IF EXISTS public.get_dataset_tile(text,integer,integer,integer);
+DROP FUNCTION IF EXISTS public.get_dataset_tile(text,text,integer,integer,integer);
 CREATE OR REPLACE FUNCTION public.get_dataset_tile(
     relation text,
+    primary_key_column text,
     z integer,
     x integer,
     y integer
@@ -23,7 +24,7 @@ BEGIN
                        0,
                        true
                    ) AS geom
-			,ogc_fid AS id
+			,%s AS id
 			,*
             FROM %s
             WHERE ST_Intersects(
@@ -34,7 +35,8 @@ BEGIN
         SELECT ST_AsMVT(mvtgeom, 'dataset', 4096, 'geom', 'id') FROM mvtgeom
         $f$,
         z, x, y,
-        quote_ident(relation),
+		primary_key_column,
+        quote_ident(relation),  -- Properly quote table name
         z, x, y
     ) INTO tile;
 

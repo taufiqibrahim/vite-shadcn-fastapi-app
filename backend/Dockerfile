@@ -3,17 +3,17 @@ FROM python:3.13-slim AS builder
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 WORKDIR /app
+ENV PYTHONPATH=/app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gdal-bin \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry
 RUN poetry config virtualenvs.in-project true
 COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-root
-
-FROM python:3.13-slim AS final
-
-WORKDIR /app
-ENV PYTHONPATH=/app
-COPY --from=builder /app/.venv .venv/
 
 # Copy migration code
 COPY alembic.ini /app/

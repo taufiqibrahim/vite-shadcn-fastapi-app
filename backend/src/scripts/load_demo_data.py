@@ -1,3 +1,5 @@
+from sqlalchemy import inspect
+from src.auth.services import create_api_key
 from src.users.services import create_user_account, create_user_profile, get_account_by_email
 from src.users.schemas import AccountCreate, UserProfileCreate
 from src.geospatial_mapping.models import BoundingBox, Dataset, DatasetCreate, DatasetUpdate
@@ -10,8 +12,8 @@ from sqlmodel import Session, select, text
 from src.apps.models import App
 from src.apps.schemas import AppCreate
 from src.apps.services import create_app
-from src.auth.models import UserProfile
-from src.core.config import secret_settings, postgis_settings
+from src.auth.models import AccountType, UserProfile
+from src.core.config import secret_settings, postgis_settings, demo_settings
 from src.database.session import engine
 from src.core.logging import get_logger, setup_logging
 from src.geospatial_mapping.services import create_dataset, get_dataset_bbox, update_dataset
@@ -25,15 +27,21 @@ def load_data(session: Session) -> None:
     users = [
         AccountCreate(
             uid="35662eb0-0e97-4bf5-9c7f-882e0e378295",
-            email=secret_settings.FIRST_SUPERUSER_EMAIL,
-            password=secret_settings.FIRST_SUPERUSER_PASSWORD,
-            full_name=secret_settings.FIRST_SUPERUSER_EMAIL,
+            email=demo_settings.FIRST_SUPERUSER_EMAIL,
+            password=demo_settings.FIRST_SUPERUSER_PASSWORD,
+            full_name=demo_settings.FIRST_SUPERUSER_EMAIL,
         ),
         AccountCreate(
             uid="6e98eb6a-5b96-4db0-9354-cd05dbf27d48",
-            email=secret_settings.DEMO_USER_EMAIL,
-            password=secret_settings.DEMO_USER_PASSWORD,
-            full_name=secret_settings.DEMO_USER_EMAIL,
+            email=demo_settings.DEMO_USER_EMAIL,
+            password=demo_settings.DEMO_USER_PASSWORD,
+            full_name=demo_settings.DEMO_USER_EMAIL,
+        ),
+        AccountCreate(
+            uid="f45f3aa0-b7cd-4191-a8cc-87b69a844018",
+            email=demo_settings.DEMO_SERVICE_ACCOUNT_EMAIL,
+            full_name=demo_settings.DEMO_SERVICE_ACCOUNT_EMAIL,
+            account_type=AccountType.SERVICE_ACCOUNT,
         ),
     ]
 
@@ -48,6 +56,11 @@ def load_data(session: Session) -> None:
             create_user_profile(db=session, account_id=created_account.id, profile=profile_create)
             user_profile = session.exec(select(UserProfile).where(UserProfile.id == created_account.id)).first()
             logger.info(f"User created: {user_profile}")
+
+            if created_account.account_type == AccountType.SERVICE_ACCOUNT:
+                create_api_key(
+                    db=session, account_id=created_account.id, api_key=demo_settings.DEMO_SERVICE_ACCOUNT_APIKEY
+                )
 
     apps = [
         AppCreate(
@@ -64,17 +77,21 @@ def load_data(session: Session) -> None:
             db_app = create_app(db=session, app=a)
             logger.info(f"App created: {db_app}")
 
+
 def get_table_name(uid):
     pg_table = "u_" + str(uid).replace("-", "_")
     return pg_table
+
 
 class DatasetLoadOgr(BaseModel):
     uid: str
     tmp_dir: str
     tmp_file_path: str
 
+
 def ensure_id_column(session: Session, table_name: str):
-    query = text(f"""
+    query = text(
+        f"""
     DO $$
     BEGIN
         IF NOT EXISTS (
@@ -85,7 +102,8 @@ def ensure_id_column(session: Session, table_name: str):
         END IF;
     END;
     $$;
-    """)
+    """
+    )
     session.exec(query.params(table_name=table_name))
 
 
@@ -103,7 +121,8 @@ def ogr2ogr_to_postgis(data: DatasetLoadOgr) -> DatasetLoadOgr:
         "-a_srs",
         "EPSG:4326",
         "-overwrite",
-        "-lco", "GEOMETRY_NAME=geom",
+        "-lco",
+        "GEOMETRY_NAME=geom",
     ]
 
     # Run the command
@@ -117,7 +136,7 @@ def ogr2ogr_to_postgis(data: DatasetLoadOgr) -> DatasetLoadOgr:
 
 
 async def load_geospatial_mapping_data(session: Session) -> None:
-    demo_account = get_account_by_email(db=session, email=secret_settings.DEMO_USER_EMAIL)
+    demo_account = get_account_by_email(db=session, email=demo_settings.DEMO_USER_EMAIL)
     datasets = [
         DatasetCreate(
             uid="19bea7c2-d17c-47b7-b88a-1fe5133cc1b6",
@@ -161,21 +180,28 @@ async def load_geospatial_mapping_data(session: Session) -> None:
         )
 
         # make sure id column is available on new table
-        # ensure_id_column(session, pg_table)
+        logger.info("Getting primary key column...")
+        inspector = inspect(engine)
+        schema = "public"
+        pk_info = inspector.get_pk_constraint(pg_table, schema)
+        pk_columns = pk_info.get("constrained_columns", [])
+        primary_key_column = pk_columns[0]
 
         bbox = get_dataset_bbox(db=session, dataset_uid=d.uid)
 
         # update Dataset record status,bbox
         updated_dataset = update_dataset(
-            db=session, dataset_uid=d.uid, account_id=d.account_id,
-            dataset=DatasetUpdate(status='ready', bbox=BoundingBox(**bbox))
+            db=session,
+            dataset_uid=d.uid,
+            account_id=d.account_id,
+            dataset=DatasetUpdate(status="ready", primary_key_column=primary_key_column, bbox=BoundingBox(**bbox)),
         )
         logger.info(f"updated_dataset {updated_dataset}")
 
 
 def init() -> None:
     with Session(engine) as session:
-        # load_data(session)
+        load_data(session)
         asyncio.run(load_geospatial_mapping_data(session))
 
 

@@ -27,8 +27,7 @@ def list_datasets(db: Session, account_id: int, skip: int = 0, limit: int = 100)
 def update_dataset(db: Session, dataset_uid: str, account_id: int, dataset: DatasetUpdate):
     logger.debug(f"update_dataset {dataset}")
 
-    db_dataset = db.exec(select(Dataset).where(
-        Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
+    db_dataset = db.exec(select(Dataset).where(Dataset.uid == dataset_uid)).first()
     if not db_dataset:
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -47,12 +46,12 @@ def update_dataset(db: Session, dataset_uid: str, account_id: int, dataset: Data
 
 
 def get_dataset_bbox(db: Session, dataset_uid: str) -> dict:
-    dataset = db.exec(select(Dataset).where(
-        Dataset.uid == dataset_uid)).first()
+    dataset = db.exec(select(Dataset).where(Dataset.uid == dataset_uid)).first()
     if not dataset:
         raise HTTPException(status_code=404, detail="Not found")
     table_name = f"u_{str(dataset_uid).replace('-', '_')}"
-    query = text(f"""SELECT
+    query = text(
+        f"""SELECT
         JSON_BUILD_OBJECT(
             'xmin', ST_XMin(extent),
             'ymin', ST_YMin(extent),
@@ -69,47 +68,30 @@ def get_dataset_bbox(db: Session, dataset_uid: str) -> dict:
 
 
 def get_dataset_by_uid(db: Session, dataset_uid: str, account_id: int):
-    db_dataset = db.exec(select(Dataset).where(
-        Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
+    db_dataset = db.exec(select(Dataset).where(Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
     if not db_dataset:
         raise HTTPException(status_code=404, detail="Not found")
     return db_dataset
 
 
 def get_dataset_as_table_by_uid(db: Session, dataset_uid: str, account_id: int, limit: int, offset: int):
-    dataset = db.exec(select(Dataset).where(
-        Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
+    dataset = db.exec(select(Dataset).where(Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
     if not dataset:
         raise HTTPException(status_code=404, detail="Not found")
 
     table_name = f"u_{dataset_uid.replace('-', '_')}"
     query = text(f"SELECT * FROM {table_name} LIMIT :limit OFFSET :offset")
-    records = db.exec(query.params(
-        limit=limit, offset=offset)).mappings().all()
+    records = db.exec(query.params(limit=limit, offset=offset)).mappings().all()
 
     return StreamingResponse(stream_json(records), media_type="application/json")
 
-# def get_dataset_as_geojson_by_uid(db: Session, dataset_uid: str, account_id: int, bbox: str):
-#     dataset = db.exec(select(Dataset).where(
-#         Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
-#     if not dataset:
-#         raise HTTPException(status_code=404, detail="Not found")
 
-#     table_name = f"u_{dataset_uid.replace('-', '_')}"
-#     query = text(f"""SELECT * FROM {table_name} LIMIT :limit OFFSET :offset""")
-#     records = db.exec(query.params(
-#         limit=limit, offset=offset)).mappings().all()
-
-#     return StreamingResponse(stream_json(records), media_type="application/json")
-
-
-def get_dataset_as_mvt_by_uid(db: Session, dataset_uid: str, z: int, x: int, y: int):
+def get_dataset_as_mvt_by_uid(db: Session, dataset_uid: str, primary_key_column: str, z: int, x: int, y: int):
     relation_name = "u_" + dataset_uid.replace("-", "_")
-    stmt = text("SELECT public.get_dataset_tile(:relation, :z, :x, :y)")
-    result = db.exec(stmt.params(
-        relation=relation_name, z=z, x=x, y=y)).scalar()
+    stmt = text("SELECT public.get_dataset_tile(:relation, :primary_key_column, :z, :x, :y)")
+    result = db.exec(stmt.params(relation=relation_name, primary_key_column=primary_key_column, z=z, x=x, y=y)).scalar()
 
-    if (not result or result is None):
+    if not result or result is None:
         raise HTTPException(status_code=204, detail="No tile content")
 
     return Response(content=bytes(result), media_type="application/x-protobuf")

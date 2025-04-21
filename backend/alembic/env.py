@@ -41,9 +41,16 @@ target_metadata = SQLModel.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+
 def include_object(object, name, type_, reflected, compare_to):
     # Exclude specific tables by their names or other criteria
-    if type_ == "table" and (name in ['spatial_ref_sys',] or name.startswith('u_')):
+    if type_ == "table" and (
+        name
+        in [
+            "spatial_ref_sys",
+        ]
+        or name.startswith("u_")
+    ):
         return False
     return True
 

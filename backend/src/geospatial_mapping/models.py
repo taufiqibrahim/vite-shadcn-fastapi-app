@@ -3,8 +3,10 @@ from typing import Optional
 import uuid
 from pydantic import BaseModel
 from sqlalchemy import JSON
-from sqlmodel import TIMESTAMP, Column, SQLModel, Field
+from sqlmodel import TIMESTAMP, Column, Relationship, SQLModel, Field
 from enum import Enum
+
+from src.auth.models import Account
 
 
 class DatasetStatus(str, Enum):
@@ -37,6 +39,7 @@ class DatasetBase(SQLModel):
     storage_uri: str
     status: DatasetStatus = Field(default=DatasetStatus.uploaded)
     bbox: Optional[BoundingBox] = None
+    primary_key_column: Optional[str] = None
 
 
 class DatasetCreate(DatasetBase):
@@ -45,7 +48,6 @@ class DatasetCreate(DatasetBase):
 
 
 class DatasetRead(DatasetBase):
-    id: int
     uid: uuid.UUID
     account_id: int
     created_at: datetime
@@ -60,6 +62,7 @@ class DatasetUpdate(SQLModel):
     storage_uri: Optional[str] = None
     status: Optional[DatasetStatus] = None
     bbox: Optional[BoundingBox] = None
+    primary_key_column: Optional[str] = None
 
 
 class Dataset(SQLModel, table=True):
@@ -68,7 +71,6 @@ class Dataset(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, index=True)
     uid: uuid.UUID = Field(default_factory=uuid.uuid4, unique=True, index=True)
     account_id: int = Field(foreign_key="account.id")
-
     name: str = Field(unique=True)
     description: Optional[str]
     file_name: str
@@ -76,6 +78,7 @@ class Dataset(SQLModel, table=True):
     storage_uri: str
     status: DatasetStatus = Field(default=DatasetStatus.uploaded)
     bbox: Optional[BoundingBox] = Field(default=None, sa_column=Column(JSON))
+    primary_key_column: Optional[str]
 
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(

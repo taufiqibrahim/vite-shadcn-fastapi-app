@@ -11,7 +11,7 @@ class TemporalClientProvider:
     async def get(self) -> TemporalClient:
         async with self._lock:
             if not self._client:
-                self._client = await TemporalClient.connect(settings.TEMPORAL_SERVER)
+                self._client = await TemporalClient.connect(settings.TEMPORAL_ADDRESS)
             return self._client
 
 

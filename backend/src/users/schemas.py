@@ -3,6 +3,8 @@ from pydantic import EmailStr
 from sqlmodel import SQLModel, Field
 import uuid
 
+from src.auth.models import AccountType
+
 
 class AccountBase(SQLModel):
     uid: Optional[uuid.UUID] = None
@@ -11,8 +13,9 @@ class AccountBase(SQLModel):
 
 
 class AccountCreate(AccountBase):
-    password: str
+    password: Optional[str] = None
     full_name: Optional[str] = None
+    account_type: Optional[AccountType] = AccountType.USER
 
 
 class UserProfileBase(SQLModel):
