@@ -101,6 +101,7 @@ async def test_create_api_key_with_custom_key(db):
     assert db_api_key is not None
     assert db_api_key.account_id == account.id
 
+
 @pytest.mark.asyncio
 async def test_get_account_from_valid_token(session_db, test_account_db):
     """
@@ -118,6 +119,7 @@ async def test_get_account_from_valid_token(session_db, test_account_db):
     account = await get_current_account_with_token(token, session_db)
     assert account is not None
     assert account.email == data["sub"]
+
 
 @pytest.mark.asyncio
 async def test_get_account_from_invalid_token(session_db):
@@ -143,6 +145,7 @@ async def test_get_account_from_valid_api_key(session_db, test_account_db):
 
     assert account is not None
     assert account.email == test_account_db.email
+
 
 @pytest.mark.asyncio
 async def test_get_account_from_invalid_api_key(session_db):

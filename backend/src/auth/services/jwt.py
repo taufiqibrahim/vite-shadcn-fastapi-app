@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+from fastapi import HTTPException, status
 from jose import ExpiredSignatureError, JWTError, jwt
 from jwt import InvalidSignatureError
 from src.core.config import settings, secret_settings
@@ -52,7 +53,12 @@ def decode_and_validate_token(token: str) -> Optional[schemas.TokenPayload]:
 
         # Validate expiration manually (if your schema doesn't use auto-validation)
         if token_data.exp and datetime.fromtimestamp(token_data.exp, tz=timezone.utc) < datetime.now(timezone.utc):
-            return None
+            logger.error("Token has expired")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has expired",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
 
         # Add more claim checks here if needed (e.g. aud, iss)
 

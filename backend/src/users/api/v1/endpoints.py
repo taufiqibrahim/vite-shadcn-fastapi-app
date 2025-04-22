@@ -10,6 +10,7 @@ from src.auth.services import (
     get_current_active_account_or_400,
 )
 from src.core.logging import get_logger
+from src.users.models import UserProfile
 
 logger = get_logger(__name__)
 
@@ -27,7 +28,7 @@ async def read_users_me(
             detail="This endpoint is for human users only.",
         )
 
-    profile = db.exec(select(models.UserProfile).where(models.UserProfile.account_id == current_account.id)).first()
+    profile = db.exec(select(UserProfile).where(UserProfile.account_id == current_account.id)).first()
     if not profile:
         raise HTTPException(status_code=404, detail="User profile not found")
     return profile

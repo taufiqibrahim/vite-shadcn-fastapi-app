@@ -1,22 +1,26 @@
-from sqlalchemy import inspect
-from src.auth.services import create_api_key
-from src.users.services import create_user_account, create_user_profile, get_account_by_email
-from src.users.schemas import AccountCreate, UserProfileCreate
-from src.geospatial_mapping.models import BoundingBox, Dataset, DatasetCreate, DatasetUpdate
-from src.files.services import handle_upload_minio
 import asyncio
 import subprocess
+import uuid
 from fastapi import UploadFile
 from pydantic import BaseModel
 from sqlmodel import Session, select, text
+from sqlalchemy import inspect
+
+
+from src.auth.services.account import create_api_key
 from src.apps.models import App
 from src.apps.schemas import AppCreate
 from src.apps.services import create_app
-from src.auth.models import AccountType, UserProfile
+from src.auth.models import AccountType
 from src.core.config import secret_settings, postgis_settings, demo_settings
 from src.database.session import engine
 from src.core.logging import get_logger, setup_logging
+from src.files.services import handle_upload_minio
+from src.geospatial_mapping.models import BoundingBox, Dataset, DatasetCreate, DatasetUpdate
 from src.geospatial_mapping.services import create_dataset, get_dataset_bbox, update_dataset
+from src.users.models import UserProfile
+from src.users.services import create_user_account, create_user_profile, get_account_by_email
+from src.users.schemas import AccountCreate, UserProfileCreate
 
 setup_logging()
 logger = get_logger(__name__)
@@ -57,10 +61,8 @@ def load_data(session: Session) -> None:
             user_profile = session.exec(select(UserProfile).where(UserProfile.id == created_account.id)).first()
             logger.info(f"User created: {user_profile}")
 
-            if created_account.account_type == AccountType.SERVICE_ACCOUNT:
-                create_api_key(
-                    db=session, account_id=created_account.id, api_key=demo_settings.DEMO_SERVICE_ACCOUNT_APIKEY
-                )
+            custom_api_key = f"ak_{uuid.uuid4()}"
+            create_api_key(db=session, account_id=created_account.id, api_key=custom_api_key)
 
     apps = [
         AppCreate(

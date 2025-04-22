@@ -2,6 +2,7 @@
 
 from src.auth.services.jwt import create_access_token, decode_and_validate_token
 from src.core.logging import setup_logging, get_logger
+from src.database.session import get_db
 
 setup_logging()
 logger = get_logger(__name__)
@@ -123,13 +124,14 @@ async def get_current_account_with_api_key(x_api_key: str, db: Session):
 async def get_current_account(
     token: Optional[str] = Depends(get_optional_token),
     x_api_key: Optional[str] = Header(default=None, alias=settings.API_KEY_HEADER),
+    db: Session = Depends(get_db),
 ) -> Account:
     logger.debug("get_current_account")
 
     if token:
-        return await get_current_account_with_token(token)
+        return await get_current_account_with_token(token, db)
     elif x_api_key:
-        return get_current_account_with_api_key(x_api_key)
+        return get_current_account_with_api_key(x_api_key, db)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
