@@ -17,7 +17,7 @@ async def test_get_account_success(db):
     unique_email = f"test_{uuid.uuid4()}@example.com"
     account_data = AccountCreate(email=unique_email, password="password123", full_name="Test User", account_type="user")
     account = create_user_account(db, account_data)
-    
+
     # Test getting the account
     retrieved_account = get_account(db, account.id)
     assert retrieved_account is not None
@@ -39,7 +39,7 @@ async def test_get_account_by_email_success(db):
     unique_email = f"test_{uuid.uuid4()}@example.com"
     account_data = AccountCreate(email=unique_email, password="password123", full_name="Test User", account_type="user")
     account = create_user_account(db, account_data)
-    
+
     # Test getting the account
     retrieved_account = get_account_by_email(db, unique_email)
     assert retrieved_account is not None
@@ -67,14 +67,14 @@ async def test_get_accounts_success(db):
         )
         for i in range(3)
     ]
-    
+
     for account_data in accounts:
         create_user_account(db, account_data)
-    
+
     # Test getting accounts with pagination
     retrieved_accounts = get_accounts(db, skip=0, limit=10)
     assert len(retrieved_accounts) >= 3  # Could be more if test_account exists
-    
+
     # Test pagination
     paginated_accounts = get_accounts(db, skip=1, limit=2)
     assert len(paginated_accounts) <= 2
@@ -84,15 +84,12 @@ async def test_get_accounts_success(db):
 async def test_create_user_account_success(db):
     """Test creating a new user account"""
     account_data = AccountCreate(
-        email=f"newuser_{uuid.uuid4()}@example.com", 
-        password="password123", 
-        full_name="New User", 
-        account_type="user"
+        email=f"newuser_{uuid.uuid4()}@example.com", password="password123", full_name="New User", account_type="user"
     )
-    
+
     account = create_user_account(db, account_data)
     assert account is not None
     assert account.email == account_data.email
     assert account.hashed_password is not None
     assert account.account_type == AccountType.USER
-    assert account.uid is not None 
+    assert account.uid is not None

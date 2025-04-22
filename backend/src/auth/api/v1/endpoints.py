@@ -41,18 +41,18 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
     return schemas.Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/api-key", response_model=schemas.Token)
-async def get_api_key(
-    current_account: models.Account = Depends(services.get_current_active_account),
-    db: Session = Depends(get_db),
-):
-    """
-    Endpoint to generate an API key for the logged-in account.
-    """
-    if current_account.account_type != models.AccountType.SERVICE_ACCOUNT:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="API keys can only be generated for service accounts.",
-        )
-    key = services.create_api_key(db, current_account.id)
-    return {"access_token": key, "token_type": "api-key"}
+# @router.get("/api-key", response_model=schemas.Token)
+# async def get_api_key(
+#     current_account: models.Account = Depends(services.get_current_active_account),
+#     db: Session = Depends(get_db),
+# ):
+#     """
+#     Endpoint to generate an API key for the logged-in account.
+#     """
+#     if current_account.account_type != models.AccountType.SERVICE_ACCOUNT:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail="API keys can only be generated for service accounts.",
+#         )
+#     key = services.create_api_key(db, current_account.id)
+#     return {"access_token": key, "token_type": "api-key"}

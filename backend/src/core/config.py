@@ -56,8 +56,9 @@ class Settings(BaseSettings):
     def all_cors_origins(self) -> list[str]:
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
 
-    JWT_ENCODE_ALGORITHM: str = "HS256"
+    ALGORITHM: str = "HS256"
     ENABLE_SERVICE_ACCOUNT_AUTH: bool = True
+    API_KEY_HEADER: str = "x-api-key"
 
     UPLOAD_BACKEND: Literal["minio", "s3", "uploadthing"] = "minio"
     UPLOAD_BACKEND_S3_BUCKET_NAME: str = "your-s3-bucket-name"

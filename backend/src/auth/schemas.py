@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, EmailStr
 
 
@@ -6,6 +7,7 @@ class Token(BaseModel):
     token_type: str
 
 
-class TokenData(BaseModel):
-    email: EmailStr
-    account_id: int
+class TokenPayload(BaseModel):
+    sub: EmailStr
+    id: int
+    exp: Optional[int] = None

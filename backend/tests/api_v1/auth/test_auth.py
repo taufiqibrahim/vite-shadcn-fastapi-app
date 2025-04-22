@@ -1,6 +1,6 @@
 import pytest
 from fastapi import status
-from src.auth.models import AccountType
+from src.auth.models import Account, AccountType
 from src.auth.services import get_password_hash
 from src.users.schemas import AccountCreate
 
@@ -62,7 +62,7 @@ async def test_get_current_user_success(client, test_account_authorized_headers)
     response = client.get("/api/v1/auth/me", headers=test_account_authorized_headers)
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data["email"] == test_account.email
+    assert data["email"] == test_account_authorized_headers.email
 
 
 @pytest.mark.asyncio
