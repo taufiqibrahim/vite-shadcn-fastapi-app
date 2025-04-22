@@ -5,7 +5,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import DatasetMaps from "./maps";
-import { data, useParams } from "react-router";
+import { useParams } from "react-router";
 import { ArrowLeft, MoreVertical } from "lucide-react";
 import { useDatasetDetail } from "../../hooks/use-datasets";
 import {
