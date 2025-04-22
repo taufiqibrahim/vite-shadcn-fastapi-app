@@ -6,6 +6,7 @@ logger = get_logger(__name__)
 from src.auth import models
 from src.auth.services import get_password_hash
 from src.users import schemas
+from src.users.models import UserProfile
 
 
 def get_account(db: Session, account_id: int):
@@ -37,9 +38,7 @@ def create_user_account(db: Session, account: schemas.AccountCreate):
 
 
 def create_user_profile(db: Session, account_id: int, profile: schemas.UserProfileCreate):
-    db_profile = models.UserProfile(
-        account_id=account_id, full_name=profile.full_name, uid=uuid.uuid4()
-    )  # Generate uid
+    db_profile = UserProfile(account_id=account_id, full_name=profile.full_name, uid=uuid.uuid4())  # Generate uid
     db.add(db_profile)
     db.commit()
     db.refresh(db_profile)

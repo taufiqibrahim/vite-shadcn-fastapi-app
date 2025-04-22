@@ -85,7 +85,9 @@ def get_dataset_as_table_by_uid(db: Session, dataset_uid: str, account_id: int, 
 
     return StreamingResponse(stream_json(records), media_type="application/json")
 
-EMPTY_TILE = b'\x1a\x00'
+
+EMPTY_TILE = b"\x1a\x00"
+
 
 def get_dataset_as_mvt_by_uid(db: Session, dataset_uid: str, primary_key_column: str, z: int, x: int, y: int):
     relation_name = "u_" + dataset_uid.replace("-", "_")
