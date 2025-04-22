@@ -2,6 +2,8 @@
 
 A modern, fullstack web application built to showcase real-world architecture, clean code practices, and a seamless developer experience. Powered by **Vite** and **shadcn/ui** on the frontend, and a **FastAPI** backend, this app is designed for rapid development, performance, and scalability.
 
+![Architecture](./docs/architecture.png)
+
 ---
 
 ## Quickstart (Docker Compose)
