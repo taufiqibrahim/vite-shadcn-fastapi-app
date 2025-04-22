@@ -85,6 +85,7 @@ def get_dataset_as_table_by_uid(db: Session, dataset_uid: str, account_id: int, 
 
     return StreamingResponse(stream_json(records), media_type="application/json")
 
+EMPTY_TILE = b'\x1a\x00'
 
 def get_dataset_as_mvt_by_uid(db: Session, dataset_uid: str, primary_key_column: str, z: int, x: int, y: int):
     relation_name = "u_" + dataset_uid.replace("-", "_")
@@ -92,6 +93,6 @@ def get_dataset_as_mvt_by_uid(db: Session, dataset_uid: str, primary_key_column:
     result = db.exec(stmt.params(relation=relation_name, primary_key_column=primary_key_column, z=z, x=x, y=y)).scalar()
 
     if not result or result is None:
-        raise HTTPException(status_code=204, detail="No tile content")
+        return Response(content=EMPTY_TILE, media_type="application/x-protobuf")
 
     return Response(content=bytes(result), media_type="application/x-protobuf")
