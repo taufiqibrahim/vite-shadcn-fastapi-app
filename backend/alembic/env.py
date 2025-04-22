@@ -1,5 +1,6 @@
+import logging
 from logging.config import fileConfig
-from core.config import settings
+from src.core.config import secret_settings
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -12,8 +13,11 @@ from sqlmodel import SQLModel
 # access to the values within the .ini file in use.
 config = context.config
 
-# Database URI
-config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URI)
+# Database URI)
+# Check current sqlalchemy.url, we set it upfront for pytest
+current_sqlalchemy_url = config.get_main_option("sqlalchemy.url")
+if not current_sqlalchemy_url:
+    config.set_main_option("sqlalchemy.url", secret_settings.SQLALCHEMY_DATABASE_URI)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -22,8 +26,12 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from apps.users.models import User
-from apps.apps.models import App
+from src.auth.models import Account, APIKey, UserProfile  # noqa
+from src.apps.models import App  # noqa
+
+# geospatial-mapping-app
+from src.geospatial_mapping.models import Dataset  # noqa
+
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = SQLModel.metadata
@@ -32,6 +40,19 @@ target_metadata = SQLModel.metadata
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+def include_object(object, name, type_, reflected, compare_to):
+    # Exclude specific tables by their names or other criteria
+    if type_ == "table" and (
+        name
+        in [
+            "spatial_ref_sys",
+        ]
+        or name.startswith("u_")
+    ):
+        return False
+    return True
 
 
 def run_migrations_offline() -> None:
@@ -52,6 +73,7 @@ def run_migrations_offline() -> None:
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
+        include_object=include_object,
     )
 
     with context.begin_transaction():
@@ -72,9 +94,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata, include_object=include_object)
 
         with context.begin_transaction():
             context.run_migrations()

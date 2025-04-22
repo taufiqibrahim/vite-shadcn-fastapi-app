@@ -14,11 +14,6 @@ import { Blocks, Boxes, FolderTree, Settings } from "lucide-react";
 
 export function AppSidebar() {
   const items = [
-    // {
-    //   title: "Dashboard",
-    //   url: "/dashboard",
-    //   icon: Home,
-    // },
     {
       title: "Apps",
       url: "/apps",

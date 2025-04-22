@@ -1,3 +1,10 @@
+import Layout from "@/app/layout";
+import { GeospatialMappingAppSidebar } from "./components/app-sidebar";
+
 export default function Page() {
-  return <div>geospatial</div>;
+  return (
+    <Layout SidebarComponent={GeospatialMappingAppSidebar}>
+      <div>geospatial</div>
+    </Layout>
+  );
 }

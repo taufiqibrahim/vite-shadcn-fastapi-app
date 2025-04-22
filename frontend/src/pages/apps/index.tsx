@@ -18,7 +18,7 @@ export default function Page() {
   return (
     <Layout>
       <div className="*:data-[slot=card]:shadow-sm grid sm:grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 @5xl/main:grid-cols-4 gap-4 p-4">
-        {data?.data?.map((app: any, idx: number) => (
+        {data?.map((app: any, idx: number) => (
           <Card
             key={idx}
             className="@container/card max-w-100 h-96 max-h-96 overflow-hidden py-4 gap-4"
@@ -32,8 +32,15 @@ export default function Page() {
               </CardDescription>
             </CardHeader>
             <CardFooter className="flex justify-start gap-4 mt-auto">
-              <Button className="w-full rounded-lg" size="sm" onClick={() => navigate(`/apps/${app.name}`)}>
-                <span className="flex gap-2 items-center"><Rocket />Launch Demo</span>
+              <Button
+                className="w-full rounded-lg"
+                size="sm"
+                onClick={() => navigate(`/apps/${app.name}`)}
+              >
+                <span className="flex gap-2 items-center">
+                  <Rocket />
+                  Launch Demo
+                </span>
               </Button>
             </CardFooter>
           </Card>
