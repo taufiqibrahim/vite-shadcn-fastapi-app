@@ -2,7 +2,6 @@ import pytest
 import uuid
 from src.users.services import create_user_account, create_user_profile
 from src.users.schemas import AccountCreate, UserProfileCreate
-from src.auth.models import AccountType
 
 
 @pytest.mark.asyncio

@@ -46,7 +46,7 @@ def decode_and_validate_token(token: str) -> Optional[schemas.TokenPayload]:
     try:
         # Decode and verify signature
         payload = jwt.decode(token, secret_settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
-        
+
         # Parse payload into schema
         token_data = schemas.TokenPayload(**payload)
 
