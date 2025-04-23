@@ -60,3 +60,4 @@ pnpm run dev
 - 🧰 Database modeling with SQLModel (SQLite/PostgreSQL)
 - 🔄 Background tasks (IN PROGRESS)
 - 🧪 Pytest test suite with coverage reports (IN PROGRESS)
+- 🧪 Code linting (flake8), formatting (black)
