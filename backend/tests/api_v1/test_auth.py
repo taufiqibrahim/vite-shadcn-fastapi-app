@@ -104,11 +104,10 @@ async def test_refresh_token_succesful(client, test_random_account_refresh_token
     response = client.post(
         "/api/v1/auth/refresh_token", headers={"authorization": "Bearer " + test_random_account_refresh_token}
     )
-    print("XXXX", response.status_code, response.json())
-    # data = response.json()
-    # assert response.status_code == 200
-    # assert "access_token" in data
-    # assert data["token_type"] == "bearer"
+    data = response.json()
+    assert response.status_code == 200
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
 
 
 # ********* TODO: OAUTH TESTS *********

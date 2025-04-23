@@ -30,6 +30,9 @@ poetry run pytest tests/api_v1/test_auth.py
 
 # Print log and verbose
 poetry run pytest tests/api_v1/test_auth.py -sv
+
+# Run with coverage report
+poetry run pytest --cov=src --cov-report=term-missing
 ```
 
 Linting using flake8
