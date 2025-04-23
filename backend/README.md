@@ -19,6 +19,29 @@ poetry install
 ## Environment Variables
 Create `backend/.env` based on `backend/.env.example` and update accordingly.
 
+## Testing, Linting & Formatting
+Testing
+```bash
+# Run all test
+poetry run pytest tests/
+
+# Run specific test
+poetry run pytest tests/api_v1/test_auth.py
+
+# Print log and verbose
+poetry run pytest tests/api_v1/test_auth.py -sv
+```
+
+Linting using flake8
+```bash
+poetry run flake8 src/
+```
+
+Code formatting using black
+```bash
+poetry run black .
+```
+
 ## Database
 
 ### Database Migration
