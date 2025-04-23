@@ -1,7 +1,8 @@
+import uuid
 from datetime import datetime, timezone
 from typing import Optional
-from sqlmodel import Field, SQLModel, Relationship, Column
-import uuid
+
+from sqlmodel import Field, Relationship, SQLModel
 
 
 class UserProfile(SQLModel, table=True):

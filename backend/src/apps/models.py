@@ -1,7 +1,8 @@
+import uuid
 from datetime import datetime, timezone
 from typing import Optional
-import uuid
-from sqlmodel import SQLModel, Field
+
+from sqlmodel import Field, SQLModel
 
 
 class App(SQLModel, table=True):

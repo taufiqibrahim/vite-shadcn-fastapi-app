@@ -1,5 +1,6 @@
 import secrets
 from typing import Annotated, Any, Literal
+
 from pydantic import AnyUrl, BeforeValidator, EmailStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

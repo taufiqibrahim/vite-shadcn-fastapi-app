@@ -1,8 +1,9 @@
-from jose import JWTError
-import pytest
 import uuid
-from fastapi import HTTPException
 from datetime import timedelta
+
+import pytest
+from fastapi import HTTPException
+from jose import JWTError
 from sqlmodel import select
 
 from src.auth.models import Account, AccountType, APIKey

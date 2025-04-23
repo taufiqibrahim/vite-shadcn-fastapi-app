@@ -1,13 +1,15 @@
-import pytest
 import uuid
+
+import pytest
+
+from src.auth.models import AccountType
+from src.users.schemas import AccountCreate
 from src.users.services import (
+    create_user_account,
     get_account,
     get_account_by_email,
     get_accounts,
-    create_user_account,
 )
-from src.users.schemas import AccountCreate
-from src.auth.models import AccountType
 
 
 @pytest.mark.asyncio

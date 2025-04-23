@@ -1,12 +1,14 @@
-import uuid
-from minio import Minio, S3Error
-from uploadthing_py import create_route_handler, create_uploadthing
 import os
+import uuid
+
 import boto3
 from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import NoCredentialsError
 from fastapi import UploadFile
-from src.core.config import settings, secret_settings, minio_settings
+from minio import Minio, S3Error
+from uploadthing_py import create_route_handler, create_uploadthing
+
+from src.core.config import minio_settings, secret_settings, settings
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)

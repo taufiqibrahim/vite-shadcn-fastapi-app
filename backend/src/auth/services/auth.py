@@ -1,23 +1,22 @@
 """Core authentication logic"""
 
-from src.auth.schemas import Token, TokenPayload
-from src.core.logging import setup_logging, get_logger
-from src.database.session import get_db
 from typing import Optional
 
-from fastapi import Depends, HTTPException, Header, Request, status
+from fastapi import Depends, Header, HTTPException, Request, status
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Session
 
-from src.auth.services.account import get_account_by_api_key, get_account_by_email
-from src.core.config import settings
-from src.auth.models import Account
-from src.auth.services.security import verify_password
 from src.auth.exceptions import AccountDisabledException
+from src.auth.models import Account
+from src.auth.schemas import Token, TokenPayload
+from src.auth.services.account import get_account_by_api_key, get_account_by_email
 from src.auth.services.jwt import create_access_token, verify_access_token
-
+from src.auth.services.security import verify_password
+from src.core.config import settings
+from src.core.logging import get_logger, setup_logging
+from src.database.session import get_db
 
 setup_logging()
 logger = get_logger(__name__)
@@ -141,7 +140,7 @@ async def get_current_account(
 
 
 async def get_current_active_account(current_account: Account = Depends(get_current_account)) -> Account:
-    logger.debug(f"get_current_active_account")
+    logger.debug("get_current_active_account")
     if current_account.disabled:
         raise HTTPException(status_code=400, detail="Inactive account")
     return current_account
@@ -151,7 +150,7 @@ async def get_current_active_account_or_400(
     current_account: Optional[Account] = Depends(get_current_active_account),
     # account_by_api_key: Optional[models.Account] = Depends(get_account_by_api_key),
 ) -> Account:
-    logger.debug(f"get_current_active_account_or_400")
+    logger.debug("get_current_active_account_or_400")
     # account = current_account or account_by_api_key
     account = current_account
     if not account:

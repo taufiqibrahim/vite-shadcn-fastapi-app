@@ -1,6 +1,6 @@
-from logging.config import dictConfig
-import sys
 import logging
+from logging.config import dictConfig
+
 from src.core.config import settings
 
 log_level_str = settings.LOG_LEVEL.upper()

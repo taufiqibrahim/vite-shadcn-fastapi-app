@@ -1,15 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from src.users import schemas
-from src.users import services
-from src.database.session import get_db
+
 from src.auth import models
 from src.auth.services import (
     get_current_active_account,
     get_current_active_account_or_400,
 )
 from src.core.logging import get_logger
+from src.database.session import get_db
+from src.users import schemas, services
 from src.users.models import UserProfile
 
 logger = get_logger(__name__)
@@ -90,7 +91,7 @@ async def get_my_api_key(
     api_key = db.exec(
         select(models.APIKey).where(
             models.APIKey.account_id == current_account.id,
-            models.APIKey.is_active == True,
+            models.APIKey.is_active,
         )
     ).first()
     if api_key is None:

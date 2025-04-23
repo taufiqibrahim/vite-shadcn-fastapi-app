@@ -1,12 +1,11 @@
-from datetime import datetime, timezone
-from typing import Optional
 import uuid
+from datetime import datetime, timezone
+from enum import Enum
+from typing import Optional
+
 from pydantic import BaseModel
 from sqlalchemy import JSON
-from sqlmodel import TIMESTAMP, Column, Relationship, SQLModel, Field
-from enum import Enum
-
-from src.auth.models import Account
+from sqlmodel import TIMESTAMP, Column, Field, SQLModel
 
 
 class DatasetStatus(str, Enum):

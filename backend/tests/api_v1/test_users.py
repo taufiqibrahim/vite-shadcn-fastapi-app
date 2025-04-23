@@ -1,5 +1,6 @@
 import pytest
 from fastapi import status
+
 from src.users.schemas import AccountCreate, UserProfileCreate
 
 

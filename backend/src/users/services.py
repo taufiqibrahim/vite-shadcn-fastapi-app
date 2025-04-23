@@ -1,13 +1,14 @@
-from sqlmodel import Session, select
 import uuid
-from src.core.logging import setup_logging, get_logger
+
+from sqlmodel import Session, select
+
+from src.core.logging import get_logger, setup_logging
+from src.auth import models
+from src.users import schemas
+from src.users.models import UserProfile
 
 setup_logging()
 logger = get_logger(__name__)
-from src.auth import models
-from src.auth.services import get_password_hash
-from src.users import schemas
-from src.users.models import UserProfile
 
 
 def get_account(db: Session, account_id: int):

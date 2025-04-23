@@ -1,15 +1,17 @@
 """JWT service for token handling."""
 
+import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-import uuid
-from fastapi import HTTPException, Header, status
+
+from fastapi import Header
 from jose import ExpiredSignatureError, JWTError, jwt
 from jwt import InvalidSignatureError
-from src.auth.exceptions import InvalidAccessTokenException
-from src.core.config import settings, secret_settings
+
 from src.auth import schemas
-from src.core.logging import setup_logging, get_logger
+from src.auth.exceptions import InvalidAccessTokenException
+from src.core.config import secret_settings, settings
+from src.core.logging import get_logger, setup_logging
 
 setup_logging()
 logger = get_logger(__name__)

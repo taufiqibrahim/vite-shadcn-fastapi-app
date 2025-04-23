@@ -1,22 +1,22 @@
+import os
+import sys
 import uuid
+from datetime import datetime, timedelta, timezone
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlmodel import Session, create_engine, select, text
+from sqlmodel.pool import StaticPool
+
+from alembic.command import upgrade
+from alembic.config import Config
 from src.auth.models import Account, AccountType
 from src.auth.schemas import AccountCreate
 from src.auth.services.jwt import create_access_token, create_refresh_token
 from src.auth.services.security import get_password_hash
-from src.core.logging import setup_logging, get_logger
+from src.core.logging import get_logger, setup_logging
 from src.database.session import get_db
 from src.main import app
-import sys
-import os
-import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session, create_engine, text, select
-from sqlmodel.pool import StaticPool
-
-from datetime import datetime, timedelta, timezone
-
-from alembic.command import upgrade
-from alembic.config import Config
 
 # Ensure the src directory is in the import path
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../src"))

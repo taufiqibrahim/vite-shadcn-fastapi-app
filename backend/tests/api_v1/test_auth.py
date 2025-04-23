@@ -1,8 +1,9 @@
 import pytest
 from fastapi import status
+
 from src.auth.exceptions import AccountDisabledException, EmailAlreadyExistsException, InvalidLoginCredentialsException
 from src.auth.services.security import get_password_hash
-from src.core.logging import setup_logging, get_logger
+from src.core.logging import get_logger, setup_logging
 
 setup_logging()
 logger = get_logger(__name__)

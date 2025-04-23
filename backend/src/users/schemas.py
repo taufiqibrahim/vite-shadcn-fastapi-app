@@ -1,7 +1,6 @@
-from typing import Optional
-from pydantic import EmailStr
-from sqlmodel import SQLModel, Field
 import uuid
+from typing import Optional
+from sqlmodel import Field, SQLModel
 
 
 class UserProfileBase(SQLModel):

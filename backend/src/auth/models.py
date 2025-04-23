@@ -1,8 +1,9 @@
-from datetime import datetime, timezone
-from typing import Optional, List
-from sqlmodel import Field, SQLModel, Relationship, Enum, Column
 import enum
 import uuid
+from datetime import datetime, timezone
+from typing import List, Optional
+
+from sqlmodel import Column, Enum, Field, Relationship, SQLModel
 
 from src.users.models import UserProfile
 

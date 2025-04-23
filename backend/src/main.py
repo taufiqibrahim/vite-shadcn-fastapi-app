@@ -1,24 +1,27 @@
-from contextlib import asynccontextmanager
+import logging
+
+# from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 
 # Middlewares
 from starlette.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
+
+# Endpoints
+from src.auth.api.v1 import endpoints as auth_endpoints_v1
 
 # Core
 from src.core.config import settings
 
 # from src.core.logging import get_logger, setup_logging
 
-# Endpoints
-from src.auth.api.v1 import endpoints as auth_endpoints_v1
 
 # from src.users.api.v1 import endpoints as users_endpoints_v1
 # from src.apps.api.v1 import endpoints as apps_endpoints_v1
 # from src.files.api.v1 import endpoints as files_endpoints_v1
 # from src.geospatial_mapping.api.v1 import endpoints as geospatial_mapping_endpoints_v1
 
-import logging
 
 logger = logging.getLogger(__name__)
 

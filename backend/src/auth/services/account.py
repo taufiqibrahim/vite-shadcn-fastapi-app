@@ -1,12 +1,13 @@
 """Account management service, database/model & logic"""
 
-from datetime import datetime, timezone
 import secrets
-from typing import List, Optional
 import uuid
+from typing import List, Optional
+
 from sqlmodel import Session, select
+
 from src.auth.exceptions import EmailAlreadyExistsException
-from src.auth.models import APIKey, Account
+from src.auth.models import Account, APIKey
 from src.auth.schemas import AccountCreate
 from src.auth.services.security import get_password_hash
 from src.core.logging import get_logger
@@ -95,7 +96,7 @@ async def get_account_by_api_key(db: Session, api_key: str) -> Optional[Account]
     Returns:
         Optional[Account]: The account if found, None otherwise
     """
-    result = db.exec(select(Account).join(APIKey).where(APIKey.key == api_key, APIKey.is_active == True)).first()
+    result = db.exec(select(Account).join(APIKey).where(APIKey.key == api_key, APIKey.is_active)).first()
     return result
 
 

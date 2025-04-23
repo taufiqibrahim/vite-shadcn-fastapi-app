@@ -1,21 +1,23 @@
+from datetime import timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
-from datetime import timedelta
+
 from src.auth.exceptions import AccountDisabledException, EmailAlreadyExistsException, InvalidLoginCredentialsException
-from src.core.config import settings
-from src.core.logging import get_logger, setup_logging
 from src.auth.models import AccountType
 from src.auth.schemas import AccountCreate, AccountCreated, Token, TokenRefresh
 from src.auth.services.account import create_account, get_account_by_email
 from src.auth.services.jwt import create_access_token, create_refresh_token, get_refresh_token, refresh_access_token
 from src.auth.services.security import verify_password
+from src.core.config import settings
+from src.core.logging import get_logger, setup_logging
 from src.database.session import get_db
 
 setup_logging()
 logger = get_logger(__name__)
 
-router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])  #  Define the tag here
+router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=AccountCreated)
@@ -28,6 +30,7 @@ async def signup(account: AccountCreate, db: Session = Depends(get_db)):
     except EmailAlreadyExistsException:
         raise EmailAlreadyExistsException
     except Exception as e:
+        logger.debug(e)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

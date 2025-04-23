@@ -1,26 +1,26 @@
 import asyncio
 import subprocess
 import uuid
+
 from fastapi import UploadFile
 from pydantic import BaseModel
-from sqlmodel import Session, select, text
 from sqlalchemy import inspect
+from sqlmodel import Session, select, text
 
-
-from src.auth.services.account import create_api_key
 from src.apps.models import App
 from src.apps.schemas import AppCreate
 from src.apps.services import create_app
 from src.auth.models import AccountType
-from src.core.config import secret_settings, postgis_settings, demo_settings
-from src.database.session import engine
+from src.auth.services.account import create_api_key
+from src.core.config import demo_settings, postgis_settings
 from src.core.logging import get_logger, setup_logging
+from src.database.session import engine
 from src.files.services import handle_upload_minio
 from src.geospatial_mapping.models import BoundingBox, Dataset, DatasetCreate, DatasetUpdate
 from src.geospatial_mapping.services import create_dataset, get_dataset_bbox, update_dataset
 from src.users.models import UserProfile
-from src.users.services import create_user_account, create_user_profile, get_account_by_email
 from src.users.schemas import AccountCreate, UserProfileCreate
+from src.users.services import create_user_account, create_user_profile, get_account_by_email
 
 setup_logging()
 logger = get_logger(__name__)
@@ -67,7 +67,8 @@ def load_data(session: Session) -> None:
     apps = [
         AppCreate(
             name="geospatial-mapping-app",
-            description="A modular platform that enables users to upload geospatial datasets, configure and run cloud-hosted spatial algorithms, and interactively visualize the results on a map",
+            description="A modular platform that enables users to upload geospatial datasets, \
+                configure and run cloud-hosted spatial algorithms, and interactively visualize the results on a map",
         ),
     ]
 
@@ -116,7 +117,11 @@ def ogr2ogr_to_postgis(data: DatasetLoadOgr) -> DatasetLoadOgr:
         "ogr2ogr",
         "-f",
         "PostgreSQL",
-        f"PG:host={postgis_settings.POSTGIS_HOST} port={postgis_settings.POSTGIS_PORT} user={postgis_settings.POSTGIS_USER} dbname={postgis_settings.POSTGIS_DB} password={postgis_settings.POSTGIS_PASSWORD}",
+        f"PG:host={postgis_settings.POSTGIS_HOST} \
+            port={postgis_settings.POSTGIS_PORT} \
+            user={postgis_settings.POSTGIS_USER} \
+            dbname={postgis_settings.POSTGIS_DB} \
+            password={postgis_settings.POSTGIS_PASSWORD}",
         data.tmp_file_path,
         "-nln",
         pg_table,

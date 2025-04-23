@@ -1,13 +1,11 @@
 import logging
 from logging.config import fileConfig
-from src.core.config import secret_settings
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 from alembic import context
-
-from sqlmodel import SQLModel
+from src.core.config import secret_settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -24,15 +22,15 @@ if not current_sqlalchemy_url:
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+from src.apps.models import App  # noqa
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 from src.auth.models import Account, APIKey  # noqa
-from src.users.models import UserProfile  # noqa
-from src.apps.models import App  # noqa
 
 # geospatial-mapping-app
 from src.geospatial_mapping.models import Dataset  # noqa
-
+from src.users.models import UserProfile  # noqa
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = SQLModel.metadata

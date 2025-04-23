@@ -1,5 +1,7 @@
 import asyncio
+
 from temporalio.client import Client as TemporalClient
+
 from src.core.config import settings
 
 
