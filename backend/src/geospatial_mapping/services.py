@@ -33,7 +33,6 @@ def update_dataset(db: Session, dataset_uid: str, account_id: int, dataset: Data
 
     # Apply updates from the request payload
     update_data = dataset.model_dump(exclude_unset=True)
-    print(update_data)
     for key, value in update_data.items():
         setattr(db_dataset, key, value)
 

@@ -65,5 +65,4 @@ def decode_and_validate_token(token: str) -> Optional[schemas.TokenPayload]:
         return token_data
 
     except (JWTError, InvalidSignatureError, ExpiredSignatureError, ValueError) as e:
-        print(str(e))
         raise e

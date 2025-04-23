@@ -97,15 +97,3 @@ async def get_my_api_key(
         key = services.create_api_key(db, current_account.id)
         return key
     return api_key.key
-
-
-# @router.get("/by-api-key/", response_model=schemas.Account)
-# async def get_account_by_key(
-#     account: models.Account = Depends(get_current_account_by_api_key),
-# ):
-#     """
-#     Retrieves an account by API key.  This is just an example endpoint.  In a real
-#     application, you would probably use the API key directly in the request
-#     and not expose an endpoint like this.
-#     """
-#     return account

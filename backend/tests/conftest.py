@@ -1,5 +1,6 @@
 from src.auth.models import Account, AccountType
 from src.auth.services import get_password_hash
+from src.auth.services.jwt import create_access_token
 from src.core.logging import setup_logging, get_logger
 from src.database.session import get_db
 from src.main import app
@@ -94,12 +95,12 @@ def test_account() -> AccountCreate:
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_account_db(session_db, test_account) -> Account:
     account = Account(
         email=test_account.email,
         hashed_password=get_password_hash(test_account.password),
-        account_type=AccountType.SERVICE_ACCOUNT,
+        account_type=AccountType.USER,
     )
     session_db.add(account)
     session_db.commit()
@@ -107,16 +108,22 @@ def test_account_db(session_db, test_account) -> Account:
     return account
 
 
-# @pytest.fixture
-# def test_account_auth_token(test_account_db):
-#     data = {
-#         "sub": test_account_db.email,
-#         "id": test_account_db.id,
-#     }
+@pytest.fixture
+def test_account_auth_token(test_account_db):
+    data = {
+        "sub": test_account_db.email,
+        "id": test_account_db.id,
+    }
 
-#     # Create token with custom expiration
-#     token = create_access_token(data, expires_delta=timedelta(minutes=15))
-#     return token
+    # Create token with custom expiration
+    token = create_access_token(data, expires_delta=timedelta(minutes=15))
+    return token
+
+
+@pytest.fixture
+def test_account_authorized_headers(test_account_auth_token):
+    return {"Authorization": f"Bearer {test_account_auth_token}"}
+
 
 # @pytest.fixture()
 # def test_service_account() -> AccountCreate:
@@ -146,11 +153,6 @@ def test_account_db(session_db, test_account) -> Account:
 #     )
 #     assert login_response.status_code == 200
 #     return login_response.json()["access_token"]
-
-
-# @pytest.fixture
-# def test_account_authorized_headers(test_account_auth_token):
-#     return {"Authorization": f"Bearer {test_account_auth_token}"}
 
 
 # @pytest.fixture
