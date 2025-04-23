@@ -8,7 +8,7 @@ from sqlmodel import select
 from src.auth.models import Account, AccountType, APIKey
 from src.auth.services.account import create_api_key
 from src.auth.services.auth import get_current_account_with_api_key, get_current_account_with_token
-from src.auth.services.jwt import create_access_token, decode_and_validate_token
+from src.auth.services.jwt import create_access_token, verify_access_token
 from src.auth.services.security import get_password_hash
 
 
@@ -49,7 +49,7 @@ async def test_create_access_token():
     token = create_access_token(data, expires_delta=timedelta(minutes=15))
 
     # Decode and verify token
-    decoded = decode_and_validate_token(token)
+    decoded = verify_access_token(token)
     assert decoded.sub == data["sub"]
     assert decoded.id == data["id"]
 
@@ -63,7 +63,7 @@ async def test_create_access_token_default_expiration():
     }
 
     token = create_access_token(data)
-    decoded = decode_and_validate_token(token)
+    decoded = verify_access_token(token)
     assert decoded.sub == data["sub"]
     assert decoded.id == data["id"]
 
@@ -75,7 +75,7 @@ async def test_decode_jwt_invalid_token():
     # This token has a valid format but uses a different secret key
     invalid_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWQiOjEsImV4cCI6MTYxNjIzOTAyMn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
     with pytest.raises(JWTError):
-        decode_and_validate_token(invalid_token)
+        verify_access_token(invalid_token)
 
 
 @pytest.mark.asyncio

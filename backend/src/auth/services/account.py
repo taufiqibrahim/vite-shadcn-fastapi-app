@@ -5,15 +5,16 @@ import secrets
 from typing import List, Optional
 import uuid
 from sqlmodel import Session, select
+from src.auth.exceptions import EmailAlreadyExistsException
 from src.auth.models import APIKey, Account
+from src.auth.schemas import AccountCreate
 from src.auth.services.security import get_password_hash
 from src.core.logging import get_logger
-from src.users import schemas
 
 logger = get_logger(__name__)
 
 
-async def create_account(db: Session, account: schemas.AccountCreate) -> Account:
+async def create_account(db: Session, account: AccountCreate) -> Account:
     """
     Create a new user account.
 
@@ -32,12 +33,12 @@ async def create_account(db: Session, account: schemas.AccountCreate) -> Account
     # Check if email already exists
     existing_account = await get_account_by_email(db, account.email)
     if existing_account:
-        raise ValueError("Email already registered")
+        raise EmailAlreadyExistsException
 
     # Create the account
     hashed_password = get_password_hash(account.password) if account.password else None
     db_account = Account(
-        email=account.email,
+        email=account.email.lower(),
         hashed_password=hashed_password,
         disabled=account.disabled,
         account_type=account.account_type,
@@ -45,10 +46,11 @@ async def create_account(db: Session, account: schemas.AccountCreate) -> Account
     )
 
     db.add(db_account)
-    await db.commit()
-    await db.refresh(db_account)
+    db.commit()
+    db.refresh(db_account)
 
-    logger.info(f"Created user account: {db_account.email}")
+    logger.debug(f"Created user account: {db_account.email.lower()}")
+
     return db_account
 
 
@@ -78,7 +80,7 @@ async def get_account_by_email(db: Session, email: str) -> Optional[Account]:
     Returns:
         Optional[Account]: The account if found, None otherwise
     """
-    result = db.exec(select(Account).where(Account.email == email)).first()
+    result = db.exec(select(Account).where(Account.email == email.lower())).first()
     return result
 
 

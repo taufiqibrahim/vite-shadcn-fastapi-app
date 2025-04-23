@@ -11,10 +11,11 @@ from src.core.logging import get_logger, setup_logging
 
 # Endpoints
 from src.auth.api.v1 import endpoints as auth_endpoints_v1
-from src.users.api.v1 import endpoints as users_endpoints_v1
-from src.apps.api.v1 import endpoints as apps_endpoints_v1
-from src.files.api.v1 import endpoints as files_endpoints_v1
-from src.geospatial_mapping.api.v1 import endpoints as geospatial_mapping_endpoints_v1
+
+# from src.users.api.v1 import endpoints as users_endpoints_v1
+# from src.apps.api.v1 import endpoints as apps_endpoints_v1
+# from src.files.api.v1 import endpoints as files_endpoints_v1
+# from src.geospatial_mapping.api.v1 import endpoints as geospatial_mapping_endpoints_v1
 
 setup_logging()
 logger = get_logger(__name__)
@@ -29,12 +30,12 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include the authentication and users routers
 app.include_router(auth_endpoints_v1.router)
-app.include_router(users_endpoints_v1.router)
+# app.include_router(users_endpoints_v1.router)
 
-# Include more routers
-app.include_router(apps_endpoints_v1.router)
-app.include_router(files_endpoints_v1.router)
-app.include_router(geospatial_mapping_endpoints_v1.router)
+# # Include more routers
+# app.include_router(apps_endpoints_v1.router)
+# app.include_router(files_endpoints_v1.router)
+# app.include_router(geospatial_mapping_endpoints_v1.router)
 
 # Set all CORS enabled origins
 if settings.all_cors_origins:

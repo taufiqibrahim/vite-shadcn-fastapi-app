@@ -2,9 +2,10 @@
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Header, status
 from jose import ExpiredSignatureError, JWTError, jwt
 from jwt import InvalidSignatureError
+from src.auth.exceptions import InvalidAccessTokenException
 from src.core.config import settings, secret_settings
 from src.auth import schemas
 from src.core.logging import setup_logging, get_logger
@@ -31,10 +32,20 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire, "sub": data["sub"]})
     encoded_jwt = jwt.encode(to_encode, secret_settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
     return encoded_jwt
 
 
-def decode_and_validate_token(token: str) -> Optional[schemas.TokenPayload]:
+def create_refresh_token(data: dict) -> str:
+    """Create a new refresh token"""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, secret_settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
+
+def verify_access_token(token: str) -> Optional[schemas.TokenPayload]:
     """
     Decode and validate a JWT token.
 
@@ -53,12 +64,7 @@ def decode_and_validate_token(token: str) -> Optional[schemas.TokenPayload]:
 
         # Validate expiration manually (if your schema doesn't use auto-validation)
         if token_data.exp and datetime.fromtimestamp(token_data.exp, tz=timezone.utc) < datetime.now(timezone.utc):
-            logger.error("Token has expired")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token has expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise InvalidAccessTokenException
 
         # Add more claim checks here if needed (e.g. aud, iss)
 
@@ -66,3 +72,21 @@ def decode_and_validate_token(token: str) -> Optional[schemas.TokenPayload]:
 
     except (JWTError, InvalidSignatureError, ExpiredSignatureError, ValueError) as e:
         raise e
+
+
+def get_refresh_token(authorization: str = Header(...)) -> str:
+    """Extract the refresh token from the Authorization header"""
+    if not authorization.startswith("Bearer "):
+        raise InvalidAccessTokenException
+    return authorization[7:]
+
+
+def refresh_access_token(refresh_token: str) -> str:
+    """Refresh access token using the refresh token"""
+    payload = verify_access_token(refresh_token)
+    email = payload.sub
+    if not email:
+        raise Exception("Invalid refresh token")
+
+    access_token = create_access_token(data={"sub": email})
+    return access_token

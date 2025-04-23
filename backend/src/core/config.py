@@ -46,7 +46,6 @@ class Settings(BaseSettings):
 
     LOG_LEVEL: str = "warning"
     PROJECT_NAME: str = "fastapi-backend"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 1
     FRONTEND_HOST: str = "http://localhost:5173"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
@@ -57,6 +56,8 @@ class Settings(BaseSettings):
         return [str(origin).rstrip("/") for origin in self.BACKEND_CORS_ORIGINS] + [self.FRONTEND_HOST]
 
     ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 1  # default 1 hour
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7  # default 7 days
     ENABLE_SERVICE_ACCOUNT_AUTH: bool = True
     API_KEY_HEADER: str = "x-api-key"
 

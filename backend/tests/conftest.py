@@ -1,6 +1,8 @@
+import uuid
 from src.auth.models import Account, AccountType
-from src.auth.services import get_password_hash
-from src.auth.services.jwt import create_access_token
+from src.auth.schemas import AccountCreate
+from src.auth.services.jwt import create_access_token, create_refresh_token
+from src.auth.services.security import get_password_hash
 from src.core.logging import setup_logging, get_logger
 from src.database.session import get_db
 from src.main import app
@@ -10,7 +12,6 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine, text, select
 from sqlmodel.pool import StaticPool
-from src.users.schemas import AccountCreate, UserProfileCreate
 from datetime import datetime, timedelta, timezone
 
 from alembic.command import upgrade
@@ -109,7 +110,7 @@ def test_account_db(session_db, test_account) -> Account:
 
 
 @pytest.fixture
-def test_account_auth_token(test_account_db):
+def test_account_access_token(test_account_db):
     data = {
         "sub": test_account_db.email,
         "id": test_account_db.id,
@@ -121,94 +122,71 @@ def test_account_auth_token(test_account_db):
 
 
 @pytest.fixture
-def test_account_authorized_headers(test_account_auth_token):
-    return {"Authorization": f"Bearer {test_account_auth_token}"}
+def test_account_refresh_token(test_account_db):
+    data = {
+        "sub": test_account_db.email,
+        "id": test_account_db.id,
+    }
+
+    # Create token with custom expiration
+    token = create_refresh_token(data)
+    return token
 
 
-# @pytest.fixture()
-# def test_service_account() -> AccountCreate:
-#     account_create = AccountCreate(
-#         email=TEST_SERVICE_ACCOUNT_EMAIL,
-#         password=TEST_SERVICE_ACCOUNT_PASSWORD,
-#         account_type=AccountType.SERVICE_ACCOUNT,
-#         full_name="Service Account",
-#     )
-#     return account_create
-
-# @pytest.fixture
-# def test_service_account_auth_token(client: TestClient, test_service_account, db):
-#     hashed_password = get_password_hash(test_service_account.password)
-#     service_account = Account(
-#         email=test_service_account.email,
-#         hashed_password=hashed_password,
-#         account_type=AccountType.SERVICE_ACCOUNT,
-#     )
-#     db.add(service_account)
-#     db.commit()
-#     db.refresh(service_account)
-
-#     login_response = client.post(
-#         "/api/v1/auth/login",
-#         data={"username": test_service_account.email, "password": test_service_account.password},
-#     )
-#     assert login_response.status_code == 200
-#     return login_response.json()["access_token"]
+@pytest.fixture
+def test_account_authorized_headers(test_account_access_token):
+    return {"Authorization": f"Bearer {test_account_access_token}"}
 
 
-# @pytest.fixture
-# def test_service_account_authorized_headers(test_service_account_auth_token):
-#     return {"Authorization": f"Bearer {test_service_account_auth_token}"}
+# ********* TEST RANDOM ACCOUNT FIXTURES ********************************************************************
+@pytest.fixture()
+def test_random_account() -> AccountCreate:
+    uid = uuid.uuid4()
+    return AccountCreate(
+        uid=uid,
+        email=f"test_{str(uid).replace('-', '_')}@example.com",
+        password=TEST_ACCOUNT_PASSWORD,
+        full_name=f"test_{str(uid).replace('-', '_')}",
+    )
 
 
-# @pytest.fixture
-# def test_account_authorized_account_id(test_account_auth_token):
-#     decoded = jwt.decode(test_account_auth_token, options={"verify_signature": False})
-#     return decoded["id"]
+@pytest.fixture()
+def test_random_account_db(session_db, test_random_account) -> Account:
+    account = Account(
+        email=test_random_account.email,
+        hashed_password=get_password_hash(test_random_account.password),
+        account_type=AccountType.USER,
+    )
+    session_db.add(account)
+    session_db.commit()
+    session_db.refresh(account)
+    return account
 
 
-# @pytest.fixture
-# def test_service_account_authorized_account_id(test_service_account_auth_token):
-#     decoded = jwt.decode(test_service_account_auth_token, options={"verify_signature": False})
-#     return decoded["id"]
+@pytest.fixture
+def test_random_account_access_token(test_random_account_db):
+    data = {
+        "sub": test_random_account_db.email,
+        "id": test_random_account_db.id,
+    }
+
+    # Create token with custom expiration
+    token = create_access_token(data, expires_delta=timedelta(minutes=15))
+    return token
 
 
-# # ********* API KEY FIXTURES ********************************************************************
-# @pytest.fixture
-# def test_api_key(db, test_account_authorized_account_id):
-#     from src.auth.services import create_api_key
+@pytest.fixture
+def test_random_account_refresh_token(test_random_account_db):
+    data = {
+        "sub": test_random_account_db.email,
+        "id": test_random_account_db.id,
+    }
 
-#     return create_api_key(db, test_account_authorized_account_id, level=1)
-
-
-# @pytest.fixture
-# def test_api_key_headers(test_api_key):
-#     return {"X-API-Key": test_api_key}
-
-
-# # ********* USER PROFILE FIXTURES ********************************************************************
-# @pytest.fixture
-# def test_user_profile() -> UserProfileCreate:
-#     return UserProfileCreate(full_name="Test User Profile")
+    # Create token with custom expiration
+    token = create_refresh_token(data)
+    return token
 
 
-# @pytest.fixture
-# def test_user_profile_with_account(db, test_account, test_user_profile):
-#     from src.users.services import create_user_profile
-
-#     account = Account(
-#         email=test_account.email,
-#         hashed_password=get_password_hash(test_account.password),
-#         account_type=AccountType.USER,
-#     )
-#     db.add(account)
-#     db.commit()
-#     db.refresh(account)
-
-#     profile = create_user_profile(db, account.id, test_user_profile)
-#     return profile, account
-
-
-# @pytest.fixture
-# def test_user_profile_headers(test_user_profile_with_account, test_account_auth_token):
-#     profile, account = test_user_profile_with_account
-#     return {"Authorization": f"Bearer {test_account_auth_token}", "X-Profile-ID": str(profile.id)}
+@pytest.fixture
+def test_random_account_authorized_headers(test_random_account_access_token):
+    return {"Authorization": f"Bearer {test_random_account_access_token}"}

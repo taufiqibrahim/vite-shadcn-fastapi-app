@@ -1,6 +1,6 @@
 """Core authentication logic"""
 
-from src.auth.services.jwt import create_access_token, decode_and_validate_token
+from src.auth.schemas import Token, TokenPayload
 from src.core.logging import setup_logging, get_logger
 from src.database.session import get_db
 
@@ -15,12 +15,12 @@ from jose import JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import Session
 
-from src.auth.services.account import get_account_by_api_key
+from src.auth.services.account import get_account_by_api_key, get_account_by_email
 from src.core.config import settings
-from src.auth import schemas
 from src.auth.models import Account
 from src.auth.services.security import verify_password
-from src.users.services import get_account_by_email
+from src.auth.exceptions import AccountDisabledException
+from src.auth.services.jwt import create_access_token, verify_access_token
 
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,7 +50,7 @@ async def authenticate_user(db: AsyncSession, email: str, password: str) -> Opti
     return user_account
 
 
-async def login_user(db: AsyncSession, email: str, password: str) -> schemas.Token:
+async def login_user(db: AsyncSession, email: str, password: str) -> Token:
     """
     Login a user and return an access token.
 
@@ -73,7 +73,7 @@ async def login_user(db: AsyncSession, email: str, password: str) -> schemas.Tok
             headers={"WWW-Authenticate": "Bearer"},
         )
     if user_account.disabled:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+        raise AccountDisabledException
     return create_access_token(user_account)
 
 
@@ -90,7 +90,7 @@ async def get_current_account_with_token(token: str, db: Session) -> Account:
     logger.debug("get_current_account_with_token")
     try:
         # Decode and validate the token (both signature and expiration)
-        payload: schemas.TokenPayload = decode_and_validate_token(token)
+        payload: TokenPayload = verify_access_token(token)
         if payload is None:
             raise credentials_exception
         email: str = payload.sub

@@ -1,7 +1,8 @@
 from sqlmodel import Session, select
 import uuid
-from src.core.logging import get_logger
+from src.core.logging import setup_logging, get_logger
 
+setup_logging()
 logger = get_logger(__name__)
 from src.auth import models
 from src.auth.services import get_password_hash
@@ -21,20 +22,20 @@ def get_accounts(db: Session, skip: int = 0, limit: int = 100):
     return db.exec(select(models.Account).offset(skip).limit(limit)).all()
 
 
-def create_user_account(db: Session, account: schemas.AccountCreate):
-    logger.debug(f"create_user_account")
-    hashed_password = get_password_hash(account.password) if account.password else None
-    db_account = models.Account(
-        email=account.email,
-        hashed_password=hashed_password,
-        disabled=account.disabled,
-        account_type=account.account_type,
-        uid=account.uid if account.uid else uuid.uuid4(),
-    )
-    db.add(db_account)
-    db.commit()
-    db.refresh(db_account)
-    return db_account
+# def create_user_account(db: Session, account: schemas.AccountCreate):
+#     logger.debug(f"create_user_account")
+#     hashed_password = get_password_hash(account.password) if account.password else None
+#     db_account = models.Account(
+#         email=account.email,
+#         hashed_password=hashed_password,
+#         disabled=account.disabled,
+#         account_type=account.account_type,
+#         uid=account.uid if account.uid else uuid.uuid4(),
+#     )
+#     db.add(db_account)
+#     db.commit()
+#     db.refresh(db_account)
+#     return db_account
 
 
 def create_user_profile(db: Session, account_id: int, profile: schemas.UserProfileCreate):
