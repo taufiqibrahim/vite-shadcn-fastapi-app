@@ -13,6 +13,7 @@ class Token(BaseModel):
 class TokenPayload(BaseModel):
     sub: EmailStr
     id: int
+    jti: str
     exp: Optional[int] = None
 
 

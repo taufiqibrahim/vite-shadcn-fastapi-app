@@ -3,10 +3,6 @@
 from src.auth.schemas import Token, TokenPayload
 from src.core.logging import setup_logging, get_logger
 from src.database.session import get_db
-
-setup_logging()
-logger = get_logger(__name__)
-
 from typing import Optional
 
 from fastapi import Depends, HTTPException, Header, Request, status
@@ -21,6 +17,10 @@ from src.auth.models import Account
 from src.auth.services.security import verify_password
 from src.auth.exceptions import AccountDisabledException
 from src.auth.services.jwt import create_access_token, verify_access_token
+
+
+setup_logging()
+logger = get_logger(__name__)
 
 credentials_exception = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,

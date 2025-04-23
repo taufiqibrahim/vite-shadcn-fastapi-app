@@ -4,15 +4,16 @@ from sqlmodel import Session
 from datetime import timedelta
 from src.auth.exceptions import AccountDisabledException, EmailAlreadyExistsException, InvalidLoginCredentialsException
 from src.core.config import settings
-from src.core.logging import get_logger
+from src.core.logging import get_logger, setup_logging
 from src.auth.models import AccountType
 from src.auth.schemas import AccountCreate, AccountCreated, Token, TokenRefresh
 from src.auth.services.account import create_account, get_account_by_email
 from src.auth.services.jwt import create_access_token, create_refresh_token, get_refresh_token, refresh_access_token
 from src.auth.services.security import verify_password
-
-logger = get_logger(__name__)
 from src.database.session import get_db
+
+setup_logging()
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])  #  Define the tag here
 
@@ -32,34 +33,42 @@ async def signup(account: AccountCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    account = await get_account_by_email(db=db, email=form_data.username.lower())
 
+    # Lookup user by email in database
+    account = await get_account_by_email(db=db, email=form_data.username.lower())
     if not account or account.account_type != AccountType.USER:
         logger.debug("not account or account.account_type")
         raise InvalidLoginCredentialsException
 
+    # Verify password using hashing
     if not verify_password(form_data.password, account.hashed_password):
         logger.debug("not verify_password")
         raise InvalidLoginCredentialsException
 
+    # Check if user is active / not disabled
     if account.disabled:
         logger.debug("account.disabled")
         raise AccountDisabledException
 
-    data = {"sub": account.email.lower(), "id": account.id}
+    # Create a session entry in the DB
 
+    # Issue JWT access + refresh tokens
+    data = {"sub": account.email.lower(), "id": account.id}
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data=data, expires_delta=access_token_expires)
     refresh_token = create_refresh_token(data=data)
-
+    print("access_token", access_token)
     return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
 
 @router.post("/refresh_token", response_model=TokenRefresh)
 async def refresh_token(refresh_token: str = Depends(get_refresh_token)):
     """Endpoint to refresh the JWT access token using the refresh token"""
-    try:
-        new_access_token = refresh_access_token(refresh_token)
-        return TokenRefresh(access_token=new_access_token, token_type="bearer")
-    except Exception as e:
-        raise HTTPException(status_code=302, detail=str(e))
+    new_access_token = refresh_access_token(refresh_token)
+    return TokenRefresh(access_token=new_access_token, token_type="bearer")
+    # try:
+    #     new_access_token = refresh_access_token(refresh_token)
+    #     return TokenRefresh(access_token=new_access_token, token_type="bearer")
+    # except Exception as e:
+    #     logger.error(str(e))
+    #     raise HTTPException(status_code=500, detail=str(e))

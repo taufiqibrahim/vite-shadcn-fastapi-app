@@ -7,7 +7,8 @@ from fastapi.middleware.gzip import GZipMiddleware
 
 # Core
 from src.core.config import settings
-from src.core.logging import get_logger, setup_logging
+
+# from src.core.logging import get_logger, setup_logging
 
 # Endpoints
 from src.auth.api.v1 import endpoints as auth_endpoints_v1
@@ -17,8 +18,9 @@ from src.auth.api.v1 import endpoints as auth_endpoints_v1
 # from src.files.api.v1 import endpoints as files_endpoints_v1
 # from src.geospatial_mapping.api.v1 import endpoints as geospatial_mapping_endpoints_v1
 
-setup_logging()
-logger = get_logger(__name__)
+import logging
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -46,10 +48,11 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-logger.warning(f"BACKEND_CORS_ORIGINS={settings.BACKEND_CORS_ORIGINS}")
-logger.warning(f"FRONTEND_HOST={settings.FRONTEND_HOST}")
+logger.info(f"BACKEND_CORS_ORIGINS={settings.BACKEND_CORS_ORIGINS}")
+logger.info(f"FRONTEND_HOST={settings.FRONTEND_HOST}")
 
 
 @app.get("/health", tags=["Default"])
 def health_check():
+    logger.info("000000000000000000    00000000000000000000")
     return {"project_name": settings.PROJECT_NAME, "status": "ok"}

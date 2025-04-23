@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
+import uuid
 from fastapi import HTTPException, Header, status
 from jose import ExpiredSignatureError, JWTError, jwt
 from jwt import InvalidSignatureError
@@ -30,7 +31,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire, "sub": data["sub"]})
+    to_encode.update(
+        {
+            "exp": expire,
+            "sub": data["sub"],
+            "jti": str(uuid.uuid4()),
+        }
+    )
     encoded_jwt = jwt.encode(to_encode, secret_settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
     return encoded_jwt
@@ -40,7 +47,13 @@ def create_refresh_token(data: dict) -> str:
     """Create a new refresh token"""
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
-    to_encode.update({"exp": expire})
+    to_encode.update(
+        {
+            "exp": expire,
+            "sub": data["sub"],
+            "jti": str(uuid.uuid4()),
+        }
+    )
     encoded_jwt = jwt.encode(to_encode, secret_settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
@@ -71,6 +84,7 @@ def verify_access_token(token: str) -> Optional[schemas.TokenPayload]:
         return token_data
 
     except (JWTError, InvalidSignatureError, ExpiredSignatureError, ValueError) as e:
+        logger.debug(e)
         raise e
 
 

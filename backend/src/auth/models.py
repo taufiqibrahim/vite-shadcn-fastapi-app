@@ -4,6 +4,8 @@ from sqlmodel import Field, SQLModel, Relationship, Enum, Column
 import enum
 import uuid
 
+from src.users.models import UserProfile
+
 
 class AccountType(enum.Enum):
     USER = "user"
@@ -20,7 +22,7 @@ class Account(SQLModel, table=True):
     disabled: bool = False
     account_type: AccountType = Field(sa_column=Column(Enum(AccountType)), default=AccountType.USER)
     api_keys: List["APIKey"] = Relationship(back_populates="account")
-    profile: Optional["UserProfile"] = Relationship(back_populates="account")
+    profile: Optional[UserProfile] = Relationship(back_populates="account")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 

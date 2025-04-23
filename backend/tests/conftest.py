@@ -12,6 +12,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine, text, select
 from sqlmodel.pool import StaticPool
+
 from datetime import datetime, timedelta, timezone
 
 from alembic.command import upgrade
@@ -35,9 +36,15 @@ TESTDB_SQLALCHEMY_URI = "postgresql://app:changeme123@localhost:5432/testdb"
 
 
 def run_alembic_migration():
+    from alembic.command import upgrade
+    from alembic.config import Config
+
     alembic_config = Config("alembic.ini")
     alembic_config.set_main_option("sqlalchemy.url", TESTDB_SQLALCHEMY_URI)
     upgrade(alembic_config, "head")
+
+    # Rerun setup_logging due to alembic logging is interfere with the app logging
+    setup_logging()
 
 
 # Create a clean DB schema for tests
