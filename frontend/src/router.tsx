@@ -3,6 +3,7 @@ import { useAuth } from "./auth/use-auth";
 import { GeospatialMappingAppRoutes } from "@/pages/apps/geospatial-mapping-app/router";
 
 const ProtectedRoute = () => {
+  console.log("router.ProtectedRoute");
   const { accessToken } = useAuth();
   return accessToken ? <Outlet /> : <Navigate to="/login" replace />;
 };
