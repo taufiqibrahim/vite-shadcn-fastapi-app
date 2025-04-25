@@ -6,7 +6,7 @@ import { router } from "./router";
 import { AuthProvider } from "./auth/AuthProvider";
 import { UserPasswordAuthAdapter } from "./auth/adapters/UserPasswordAuthAdapter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "./components/theme-provider";
 
 const authAdapter = new UserPasswordAuthAdapter();
 const queryClient = new QueryClient();

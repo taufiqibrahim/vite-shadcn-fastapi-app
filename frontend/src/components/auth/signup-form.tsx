@@ -23,7 +23,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
 import { toast, Toaster } from "sonner";
-import { DEMO_PASSWORD, DEMO_USERNAME } from "@/constants";
+import {
+  DEMO_PASSWORD,
+  DEMO_USERNAME,
+  LOGIN_SUCCESS_REDIRECT_URL,
+} from "@/constants";
 
 const formSchema = z.object({
   name: z
@@ -79,7 +83,7 @@ export function SignupForm({ onLoginClick }: { onLoginClick: () => void }) {
 
     if (token) {
       // If login successful, navigate to dashboard
-      nav("/apps");
+      nav(LOGIN_SUCCESS_REDIRECT_URL);
     } else {
       // If login fails, show error message
       const data = message ? JSON.parse(message) : "";

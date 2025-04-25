@@ -15,7 +15,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DEMO_PASSWORD, DEMO_USERNAME } from "@/constants";
+import {
+  DEMO_PASSWORD,
+  DEMO_USERNAME,
+  LOGIN_SUCCESS_REDIRECT_URL,
+} from "@/constants";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
 import { toast } from "sonner";
@@ -66,13 +70,13 @@ export function LoginForm({
     // Call auth adapter login function with credentials
     const { token, message } = await login({ email, password });
 
-    const data = JSON.parse(message ?? "");
-    console.debug(data);
     if (token) {
       // If login successful, navigate to dashboard
-      nav("/apps");
+      nav(LOGIN_SUCCESS_REDIRECT_URL);
     } else {
       // If login fails, show error message
+      const data = JSON.parse(message ?? "");
+      console.debug(data);
       toast.error("Login Failed", { description: data.message });
     }
 

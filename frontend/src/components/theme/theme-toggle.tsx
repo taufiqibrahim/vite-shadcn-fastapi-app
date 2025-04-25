@@ -43,7 +43,7 @@ export function ThemeToggle() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            document.documentElement.className = "theme-facebook";
+            handleThemeChange("theme-facebook");
             setFont("font-helvetica");
           }}
         >
@@ -51,7 +51,7 @@ export function ThemeToggle() {
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            document.documentElement.className = "theme-instagram";
+            handleThemeChange("theme-instagram");
             setFont("font-sf-pro");
           }}
         >
@@ -59,7 +59,7 @@ export function ThemeToggle() {
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
-            document.documentElement.className = "theme-airbnb";
+            handleThemeChange("theme-airbnb");
             setFont("font-circular");
           }}
         >
