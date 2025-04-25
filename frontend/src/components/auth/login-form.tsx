@@ -23,7 +23,6 @@ import {
 import { useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
 import { toast } from "sonner";
-import { Toaster } from "../ui/sonner";
 
 const formSchema = z.object({
   email: z
@@ -77,7 +76,7 @@ export function LoginForm({
       // If login fails, show error message
       const data = JSON.parse(message ?? "");
       console.debug(data);
-      toast.error("Login Failed", { description: data.message });
+      toast.error("Login Failed", { description: data });
     }
 
     setIsLoading(false);
@@ -264,7 +263,6 @@ export function LoginForm({
           </Button>
         </p>
       </div>
-      <Toaster />
     </div>
   );
 }
