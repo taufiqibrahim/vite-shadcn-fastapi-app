@@ -1,4 +1,4 @@
-import Layout from "@/app/layout";
+import { Layout } from "@/components/layout/Layout";
 import { GeospatialMappingAppSidebar } from "@/pages/apps/geospatial-mapping-app/components/app-sidebar";
 import { useDatasetList } from "@/pages/apps/geospatial-mapping-app/hooks/use-datasets";
 

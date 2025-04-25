@@ -1,4 +1,3 @@
-import Layout from "@/app/layout";
 import { useAuth } from "@/auth/use-auth";
 import { Loading } from "@/components/app-loading";
 import { DataTable } from "@/components/data-table";
@@ -22,6 +21,7 @@ import {
 } from "@/pages/apps/geospatial-mapping-app/hooks/use-datasets";
 import { useEffect, useRef, useState } from "react";
 import { columns } from "./columns";
+import { Layout } from "@/components/layout/Layout";
 
 export default function Page() {
   return (

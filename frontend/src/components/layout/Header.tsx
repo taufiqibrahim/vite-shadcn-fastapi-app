@@ -28,12 +28,12 @@ export default function Header({ user, fixed = false }: HeaderProps) {
   return (
     <header
       className={cn(
-        "flex h-14 shrink-0 justify-between items-center gap-2 bg-background z-5 border-b bg-background/96 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-5 transition-all duration-200",
+        "flex h-12 shrink-0 justify-between items-center gap-2 bg-background z-5 border-b bg-background/96 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-5 transition-all duration-200",
         fixed ? "sticky top-0" : "relative",
         scrolled ? "shadow-xs" : "",
       )}
     >
-      <div className="flex items-center gap-2 px-2">
+      <div className="flex items-center gap-0 px-0">
         <SidebarTrigger />
         <Separator orientation="vertical" />
         <div>[Breadcrumb]</div>

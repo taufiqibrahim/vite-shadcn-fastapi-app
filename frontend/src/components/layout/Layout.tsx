@@ -1,14 +1,7 @@
-import { User } from "@/auth/types";
 import { ComponentType, ReactNode } from "react";
 import Header from "./Header";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
-import { Separator } from "../ui/separator";
-import UserNav from "./UserNav";
 
 export interface LayoutProps {
   children: ReactNode;

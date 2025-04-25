@@ -17,7 +17,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { APP_NAME } from "@/constants";
+import { APP_NAME, LOGIN_SUCCESS_REDIRECT_URL } from "@/constants";
+import { Separator } from "@/components/ui/separator";
 
 export function AppSidebar() {
   const items = [
@@ -45,14 +46,14 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="p-0 pt-2">
+      <SidebarHeader className="p-0 max-h-12">
         <SidebarMenu>
           <SidebarMenuButton size="lg" asChild>
-            <a href="/apps">
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+            <a href={LOGIN_SUCCESS_REDIRECT_URL}>
+              <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <Blocks className="size-4" />
               </div>
-              <div className="flex flex-col gap-0.5 leading-none">
+              <div className="flex flex-col gap-0 leading-none">
                 <span className="font-semibold">{APP_NAME}</span>
                 <span className="text-xs text-zinc-500">v0.0.0</span>
               </div>
@@ -60,6 +61,7 @@ export function AppSidebar() {
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
+      <Separator />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
