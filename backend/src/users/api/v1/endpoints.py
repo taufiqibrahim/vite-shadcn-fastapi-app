@@ -6,7 +6,6 @@ from sqlmodel import Session, select
 from src.auth import models
 from src.auth.services import (
     get_current_active_account,
-    get_current_active_account_or_400,
 )
 from src.core.logging import get_logger
 from src.database.session import get_db
@@ -20,7 +19,7 @@ router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 
 @router.get("/me", response_model=schemas.UserProfile)
 async def read_users_me(
-    current_account: models.Account = Depends(get_current_active_account_or_400), db: Session = Depends(get_db)
+    current_account: models.Account = Depends(get_current_active_account), db: Session = Depends(get_db)
 ):
     logger.debug(f"read_users_me current_account={current_account}")
     if current_account.account_type != models.AccountType.USER:
@@ -74,7 +73,7 @@ async def read_user(
 
 @router.get("/me/api-key", response_model=str)
 async def get_my_api_key(
-    current_account: models.Account = Depends(get_current_active_account_or_400),
+    current_account: models.Account = Depends(get_current_active_account),
     db: Session = Depends(get_db),
 ):
     """

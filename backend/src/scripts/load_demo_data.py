@@ -3,7 +3,7 @@ import subprocess
 import uuid
 
 from fastapi import UploadFile
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 from sqlalchemy import inspect
 from sqlmodel import Session, select, text
 
@@ -32,13 +32,13 @@ def load_data(session: Session) -> None:
         AccountCreate(
             uid="35662eb0-0e97-4bf5-9c7f-882e0e378295",
             email=demo_settings.FIRST_SUPERUSER_EMAIL,
-            password=demo_settings.FIRST_SUPERUSER_PASSWORD,
+            password=SecretStr(demo_settings.FIRST_SUPERUSER_PASSWORD),
             full_name=demo_settings.FIRST_SUPERUSER_EMAIL,
         ),
         AccountCreate(
             uid="6e98eb6a-5b96-4db0-9354-cd05dbf27d48",
             email=demo_settings.DEMO_USER_EMAIL,
-            password=demo_settings.DEMO_USER_PASSWORD,
+            password=SecretStr(demo_settings.DEMO_USER_PASSWORD),
             full_name=demo_settings.DEMO_USER_EMAIL,
         ),
         AccountCreate(

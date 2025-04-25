@@ -1,5 +1,6 @@
 import pytest
 from fastapi import status
+from pydantic import SecretStr
 
 from src.users.schemas import AccountCreate, UserProfileCreate
 
@@ -24,7 +25,7 @@ async def test_create_user_duplicate_email(client, test_account):
     """Test user creation with duplicate email"""
     user_data = AccountCreate(
         email=test_account.email,  # Using existing email
-        password="password123",
+        password=SecretStr("password123"),
         full_name="Duplicate User",
         account_type="user",
     )

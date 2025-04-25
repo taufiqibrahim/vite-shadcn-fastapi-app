@@ -26,6 +26,7 @@ psycopg2-binary = "^2.9.10"
 minio = "^7.2.15"
 temporalio = "^1.10.0"
 pycryptodome = "^3.22.0"
+aiosmtplib = "^4.0.0"
 
 [tool.poetry.group.test.dependencies]  
 pytest-randomly = "^3.16.0"  

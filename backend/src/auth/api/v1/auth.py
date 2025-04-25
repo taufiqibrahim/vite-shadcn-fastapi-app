@@ -1,6 +1,7 @@
 from datetime import timedelta
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Form, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 
@@ -8,6 +9,7 @@ from src.auth.exceptions import AccountDisabledException, EmailAlreadyExistsExce
 from src.auth.models import AccountType
 from src.auth.schemas import AccountCreate, AccountCreated, Token, TokenRefresh
 from src.auth.services.account import create_account, get_account_by_email
+from src.auth.services.email import send_welcome_email
 from src.auth.services.jwt import create_access_token, create_refresh_token, get_refresh_token, refresh_access_token
 from src.auth.services.security import verify_password
 from src.core.config import settings
@@ -20,13 +22,25 @@ logger = get_logger(__name__)
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 
-@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=AccountCreated)
-async def signup(account: AccountCreate, db: Session = Depends(get_db)):
+@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=Token)
+async def signup(
+    account: Annotated[AccountCreate, Form()], background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+):
+
     if not account.email or not account.password:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY)
     try:
         account = await create_account(db=db, account=account)
-        return account
+        if account:
+            background_tasks.add_task(send_welcome_email, account.email)
+
+            # Issue JWT access + refresh tokens
+            data = {"sub": account.email.lower(), "id": account.id}
+            access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token = create_access_token(data=data, expires_delta=access_token_expires)
+            refresh_token = create_refresh_token(data=data)
+
+            return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
     except EmailAlreadyExistsException:
         raise EmailAlreadyExistsException
     except Exception as e:
@@ -53,7 +67,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
         logger.debug("account.disabled")
         raise AccountDisabledException
 
-    # Create a session entry in the DB
+    # TODO: Create a session entry in the DB
 
     # Issue JWT access + refresh tokens
     data = {"sub": account.email.lower(), "id": account.id}
@@ -69,9 +83,3 @@ async def refresh_token(refresh_token: str = Depends(get_refresh_token)):
     """Endpoint to refresh the JWT access token using the refresh token"""
     new_access_token = refresh_access_token(refresh_token)
     return TokenRefresh(access_token=new_access_token, token_type="bearer")
-    # try:
-    #     new_access_token = refresh_access_token(refresh_token)
-    #     return TokenRefresh(access_token=new_access_token, token_type="bearer")
-    # except Exception as e:
-    #     logger.error(str(e))
-    #     raise HTTPException(status_code=500, detail=str(e))

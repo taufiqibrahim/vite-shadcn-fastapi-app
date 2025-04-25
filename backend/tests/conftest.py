@@ -2,9 +2,11 @@ import os
 import sys
 import uuid
 from datetime import datetime, timedelta, timezone
+from unittest.mock import AsyncMock
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import SecretStr
 from sqlmodel import Session, create_engine, select, text
 from sqlmodel.pool import StaticPool
 
@@ -27,7 +29,7 @@ logger = get_logger(__name__)
 
 TEST_ACCOUNT_UID = "e7a0a0fc-4f38-43ec-8e90-c0acb1774603"
 TEST_ACCOUNT_EMAIL = "demo@example.com"
-TEST_ACCOUNT_PASSWORD = "password"
+TEST_ACCOUNT_PASSWORD = "Password123"
 TEST_SERVICE_ACCOUNT_EMAIL = "service@example.com"
 TEST_SERVICE_ACCOUNT_PASSWORD = "service_password"
 
@@ -95,11 +97,19 @@ def client():
         yield c
 
 
+# ********* EMAIL FIXTURES ********************************************************************
+@pytest.fixture
+def mock_send_email(monkeypatch):
+    mock = AsyncMock()
+    monkeypatch.setattr("src.utils.send_email_smtp", mock)
+    return mock
+
+
 # ********* TEST ACCOUNT FIXTURES ********************************************************************
 @pytest.fixture(scope="session")
 def test_account() -> AccountCreate:
     return AccountCreate(
-        uid=TEST_ACCOUNT_UID, email=TEST_ACCOUNT_EMAIL, password=TEST_ACCOUNT_PASSWORD, full_name="Test User"
+        uid=TEST_ACCOUNT_UID, email=TEST_ACCOUNT_EMAIL, password=SecretStr(TEST_ACCOUNT_PASSWORD), full_name="Test User"
     )
 
 
@@ -152,7 +162,7 @@ def test_random_account() -> AccountCreate:
     return AccountCreate(
         uid=uid,
         email=f"test_{str(uid).replace('-', '_')}@example.com",
-        password=TEST_ACCOUNT_PASSWORD,
+        password=SecretStr(TEST_ACCOUNT_PASSWORD),
         full_name=f"test_{str(uid).replace('-', '_')}",
     )
 

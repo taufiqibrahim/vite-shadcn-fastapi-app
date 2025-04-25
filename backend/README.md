@@ -66,7 +66,7 @@ We will show how we initiate the first migration as example.
     # ...
 
     # add your model's MetaData object here
-    from src.auth.models import Account, APIKey, UserProfile  # noqa
+    from src.auth.models import Account, APIKey  # noqa
     # from models.yourmodel import YourModel # add this for the new model
     ```
 

@@ -2,14 +2,16 @@
 
 import secrets
 import uuid
+from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
 from sqlmodel import Session, select
 
 from src.auth.exceptions import EmailAlreadyExistsException
-from src.auth.models import Account, APIKey
+from src.auth.models import Account, APIKey, PasswordResetToken
 from src.auth.schemas import AccountCreate
 from src.auth.services.security import get_password_hash
+from src.core.config import settings
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -66,8 +68,8 @@ async def get_account(db: Session, account_id: int) -> Optional[Account]:
     Returns:
         Optional[Account]: The account if found, None otherwise
     """
-    result = await db.exec(select(Account).where(Account.id == account_id))
-    return result.scalar_one_or_none()
+    result = db.exec(select(Account).where(Account.id == account_id))
+    return result.first()
 
 
 async def get_account_by_email(db: Session, email: str) -> Optional[Account]:
@@ -112,7 +114,7 @@ async def get_accounts(db: Session, skip: int = 0, limit: int = 100) -> List[Acc
     Returns:
         List[Account]: List of accounts
     """
-    result = await db.exec(select(Account).offset(skip).limit(limit))
+    result = db.exec(select(Account).offset(skip).limit(limit))
     return result.scalars().all()
 
 
@@ -129,3 +131,13 @@ def create_api_key(db: Session, account_id: int, level: int = 1, api_key: str = 
     db.commit()
     db.refresh(db_api_key)
     return key
+
+
+def create_password_reset_token(db: Session, account_id: int):
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.RESET_TOKEN_EXPIRY_MINUTES)
+    token_db = PasswordResetToken(db=db, account_id=account_id, token=token, expires_at=expires_at)
+    db.add(token_db)
+    db.commit()
+    db.refresh(token_db)
+    return token

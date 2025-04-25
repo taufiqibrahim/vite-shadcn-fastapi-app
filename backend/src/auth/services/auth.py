@@ -130,7 +130,7 @@ async def get_current_account(
     if token:
         return await get_current_account_with_token(token, db)
     elif x_api_key:
-        return get_current_account_with_api_key(x_api_key, db)
+        return await get_current_account_with_api_key(x_api_key, db)
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -141,21 +141,7 @@ async def get_current_account(
 
 async def get_current_active_account(current_account: Account = Depends(get_current_account)) -> Account:
     logger.debug("get_current_active_account")
-    if current_account.disabled:
-        raise HTTPException(status_code=400, detail="Inactive account")
-    return current_account
-
-
-async def get_current_active_account_or_400(
-    current_account: Optional[Account] = Depends(get_current_active_account),
-    # account_by_api_key: Optional[models.Account] = Depends(get_account_by_api_key),
-) -> Account:
-    logger.debug("get_current_active_account_or_400")
-    # account = current_account or account_by_api_key
-    account = current_account
-    if not account:
-        raise HTTPException(status_code=400, detail="Authentication credentials were not provided")
-    if account.disabled:
-        raise HTTPException(status_code=400, detail="Inactive account")
-
-    return account
+    current_active_account = await current_account
+    if current_active_account.disabled:
+        raise AccountDisabledException
+    return current_active_account

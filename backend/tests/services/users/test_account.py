@@ -1,6 +1,7 @@
 import uuid
 
 import pytest
+from pydantic import SecretStr
 
 from src.auth.models import AccountType
 from src.users.schemas import AccountCreate
@@ -17,7 +18,9 @@ async def test_get_account_success(db):
     """Test getting account by ID"""
     # Create an account first with unique email
     unique_email = f"test_{uuid.uuid4()}@example.com"
-    account_data = AccountCreate(email=unique_email, password="password123", full_name="Test User", account_type="user")
+    account_data = AccountCreate(
+        email=unique_email, password=SecretStr("password123"), full_name="Test User", account_type="user"
+    )
     account = create_user_account(db, account_data)
 
     # Test getting the account
@@ -39,7 +42,9 @@ async def test_get_account_by_email_success(db):
     """Test getting account by email"""
     # Create an account first with unique email
     unique_email = f"test_{uuid.uuid4()}@example.com"
-    account_data = AccountCreate(email=unique_email, password="password123", full_name="Test User", account_type="user")
+    account_data = AccountCreate(
+        email=unique_email, password=SecretStr("password123"), full_name="Test User", account_type="user"
+    )
     account = create_user_account(db, account_data)
 
     # Test getting the account
@@ -63,7 +68,7 @@ async def test_get_accounts_success(db):
     accounts = [
         AccountCreate(
             email=f"test_{uuid.uuid4()}@example.com",
-            password="password123",
+            password=SecretStr("password123"),
             full_name=f"Test User {i}",
             account_type="user",
         )
@@ -86,7 +91,10 @@ async def test_get_accounts_success(db):
 async def test_create_user_account_success(db):
     """Test creating a new user account"""
     account_data = AccountCreate(
-        email=f"newuser_{uuid.uuid4()}@example.com", password="password123", full_name="New User", account_type="user"
+        email=f"newuser_{uuid.uuid4()}@example.com",
+        password=SecretStr("password123"),
+        full_name="New User",
+        account_type="user",
     )
 
     account = create_user_account(db, account_data)

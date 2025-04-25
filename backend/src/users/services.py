@@ -2,8 +2,8 @@ import uuid
 
 from sqlmodel import Session, select
 
-from src.core.logging import get_logger, setup_logging
 from src.auth import models
+from src.core.logging import get_logger, setup_logging
 from src.users import schemas
 from src.users.models import UserProfile
 

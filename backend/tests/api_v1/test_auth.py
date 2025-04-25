@@ -1,5 +1,8 @@
+from unittest.mock import patch
+
 import pytest
 from fastapi import status
+from pydantic import SecretStr
 
 from src.auth.exceptions import AccountDisabledException, EmailAlreadyExistsException, InvalidLoginCredentialsException
 from src.auth.services.security import get_password_hash
@@ -9,7 +12,7 @@ setup_logging()
 logger = get_logger(__name__)
 
 from src.auth.models import Account, AccountType
-from src.auth.schemas import AccountCreate, AccountCreated
+from src.auth.schemas import AccountCreate
 
 
 # ********* AUTH TESTS *********
@@ -59,7 +62,7 @@ async def test_login_disabled_account(client, db):
     """Test login attempt with disabled account"""
     disabled_account = AccountCreate(
         email="disabled@example.com",
-        password="password123",
+        password=SecretStr("Password123"),
         disabled=True,
         account_type=AccountType.USER,
     )
@@ -184,17 +187,22 @@ async def test_refresh_token_succesful(client, test_random_account_refresh_token
 
 
 # ********* SIGNUP TESTS *********
+@patch("src.auth.api.v1.auth.send_welcome_email")
 @pytest.mark.asyncio
-async def test_signup_user(client, test_random_account):
+async def test_signup_user(mock_send_email, client, test_random_account):
     """Test user registration"""
-    account = AccountCreate(email=test_random_account.email, password=test_random_account.password)
     response = client.post(
         "/api/v1/auth/signup",
-        json=account.model_dump(mode="json"),
+        data={
+            "email": test_random_account.email,
+            "password": test_random_account.password,
+        },
     )
-    account_created = AccountCreated(**response.json())
+    data = response.json()
     assert response.status_code == status.HTTP_201_CREATED
-    assert account_created.email == account.email
+    assert "access_token" in data
+    assert "refresh_token" in data
+    mock_send_email.assert_awaited_once()
 
 
 @pytest.mark.asyncio
@@ -202,7 +210,10 @@ async def test_signup_user_existing_email(client, test_account):
     """Test registration with existing email"""
     response = client.post(
         "/api/v1/auth/signup",
-        json=test_account.model_dump(mode="json"),
+        data={
+            "email": test_account.email,
+            "password": test_account.password,
+        },
     )
     error = response.json()
     assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -239,18 +250,6 @@ async def test_signup_missing_required_fields(client, test_random_account):
 # @pytest.mark.asyncio
 # async def test_logout_user(client):
 #     """Test user logout and token invalidation (if implemented)"""
-#     assert False
-
-
-# @pytest.mark.asyncio
-# async def test_password_reset_request(client):
-#     """Test sending password reset email/token (if implemented)"""
-#     assert False
-
-
-# @pytest.mark.asyncio
-# async def test_password_reset_confirm(client):
-#     """Test confirming new password using reset token"""
 #     assert False
 
 

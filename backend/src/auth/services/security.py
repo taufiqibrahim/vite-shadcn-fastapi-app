@@ -3,6 +3,7 @@
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 
+from src.core.config import settings
 from src.core.logging import get_logger, setup_logging
 
 setup_logging()

@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, 
 from uploadthing_py import UploadThingRequestBody
 
 from src.auth.models import Account
-from src.auth.services import get_current_active_account_or_400
+from src.auth.services import get_current_active_account
 from src.core.config import settings
 from src.files.services import handle_upload_minio, handle_upload_s3, uploadthing_handlers
 
-router = APIRouter(prefix="/api/v1/files", tags=["Files"], dependencies=[Depends(get_current_active_account_or_400)])
+router = APIRouter(prefix="/api/v1/files", tags=["Files"], dependencies=[Depends(get_current_active_account)])
 
 
 @router.post("/upload")
@@ -14,7 +14,7 @@ async def upload_file(
     request: Request,
     response: Response,
     files: UploadFile = File(...),
-    account: Account = Depends(get_current_active_account_or_400),
+    account: Account = Depends(get_current_active_account),
 ):
     try:
         if settings.UPLOAD_BACKEND == "minio":

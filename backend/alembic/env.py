@@ -1,4 +1,3 @@
-import logging
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config, pool
@@ -22,15 +21,12 @@ if not current_sqlalchemy_url:
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from src.apps.models import App  # noqa
-
 # add your model's MetaData object here
 # for 'autogenerate' support
-from src.auth.models import Account, APIKey  # noqa
+from src.auth.models import Account, AccountProfile, APIKey  # noqa
 
-# geospatial-mapping-app
-from src.geospatial_mapping.models import Dataset  # noqa
-from src.users.models import UserProfile  # noqa
+# from src.apps.models import App  # noqa
+# from src.geospatial_mapping.models import Dataset  # noqa
 
 # target_metadata = mymodel.Base.metadata
 target_metadata = SQLModel.metadata

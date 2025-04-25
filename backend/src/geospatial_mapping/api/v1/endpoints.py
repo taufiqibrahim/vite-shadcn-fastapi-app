@@ -6,7 +6,7 @@ from sqlmodel import Session, func, select
 from temporalio.client import Client as TemporalClient
 
 from src.auth.models import Account
-from src.auth.services import get_current_active_account, get_current_active_account_or_400
+from src.auth.services import get_current_active_account
 from src.core.logging import get_logger, setup_logging
 from src.database.session import get_db
 from src.dependencies import get_temporal_client
@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 router = APIRouter(
     prefix="/api/v1/geospatial-mapping",
     tags=["Geospatial Mapping"],
-    dependencies=[Depends(get_current_active_account_or_400)],
+    dependencies=[Depends(get_current_active_account)],
 )
 
 
@@ -27,7 +27,7 @@ router = APIRouter(
 async def create_dataset(
     dataset: DatasetCreate,
     db: Session = Depends(get_db),
-    account: Account = Depends(get_current_active_account_or_400),
+    account: Account = Depends(get_current_active_account),
     temporal_client: TemporalClient = Depends(get_temporal_client),
 ):
     # check if record exists by file_name
