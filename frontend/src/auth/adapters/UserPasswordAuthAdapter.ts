@@ -16,7 +16,13 @@ export class UserPasswordAuthAdapter implements AuthAdapter {
   ): Promise<{ token: string | null; message: string }> {
     try {
       const form = new URLSearchParams();
-      form.append("username", credentials.email);
+
+      if (endpoint === "/auth/signup") {
+        form.append("email", credentials.email);
+      } else {
+        form.append("username", credentials.email);
+      }
+
       form.append("password", credentials.password);
 
       // Only append full_name if exists

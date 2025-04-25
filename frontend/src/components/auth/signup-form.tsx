@@ -20,7 +20,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-// import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router";
+import { useAuth } from "@/auth/use-auth";
+import { toast, Toaster } from "sonner";
+import { DEMO_PASSWORD, DEMO_USERNAME } from "@/constants";
 
 const formSchema = z.object({
   name: z
@@ -47,32 +50,43 @@ const formSchema = z.object({
 });
 
 export function SignupForm({ onLoginClick }: { onLoginClick: () => void }) {
+  // Hook for navigation (React Router)
+  const nav = useNavigate();
+
+  // Auth adapter
+  const { signup } = useAuth();
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  // const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
+      name: DEMO_USERNAME,
+      email: DEMO_USERNAME,
+      password: DEMO_PASSWORD,
       termsAccepted: true as const,
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    const email = values.email;
+    const password = values.password;
+    const full_name = values.name;
+    // Call auth adapter signup function with credentials
+    const { token, message } = await signup({ email, password, full_name });
 
-    // Simulate API call
-    setTimeout(() => {
-      // toast({
-      //   title: "Account created successfully",
-      //   description: "Welcome to our platform!",
-      // });
-      setIsLoading(false);
-      console.log(values);
-    }, 1500);
+    if (token) {
+      // If login successful, navigate to dashboard
+      nav("/apps");
+    } else {
+      // If login fails, show error message
+      const data = message ? JSON.parse(message) : "";
+      toast.error("Login Failed", { description: data.message });
+    }
+
+    setIsLoading(false);
   }
 
   return (
@@ -221,6 +235,7 @@ export function SignupForm({ onLoginClick }: { onLoginClick: () => void }) {
           </Button>
         </p>
       </div>
+      <Toaster />
     </div>
   );
 }

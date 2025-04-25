@@ -107,7 +107,7 @@ export default function DatasetMaps({
    */
   const handleOnClick = useCallback((e: MapLayerMouseEvent) => {
     if (e.features && e.features[0]) {
-      console.log("Clicked feature properties:", e.features[0].properties);
+      console.debug("Clicked feature properties:", e.features[0].properties);
     }
   }, []);
 

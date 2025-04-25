@@ -1,11 +1,11 @@
 import { createContext } from "react";
-import { LoginResponse } from "./adapters/AuthAdapter";
+import { LoginResponse, SignupResponse } from "./adapters/AuthAdapter";
 
 // Defines the shape of the authentication context
 interface AuthContextType {
   accessToken?: string | null;
   user: any; // TODO: Consider typing `user` if available
-  signup?: () => void;
+  signup: (credentials: any) => Promise<SignupResponse>;
   login: (credentials: any) => Promise<LoginResponse>;
   logout: () => void;
   forgotPassword?: () => void;

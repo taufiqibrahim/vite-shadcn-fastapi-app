@@ -1,5 +1,10 @@
 import { ReactNode, useState } from "react";
-import { AuthAdapter, LoginResponse, UserMe } from "./adapters/AuthAdapter";
+import {
+  AuthAdapter,
+  LoginResponse,
+  SignupResponse,
+  UserMe,
+} from "./adapters/AuthAdapter";
 import { AuthContext } from "./AuthContext";
 import { ACCESS_TOKEN_KEY } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +18,16 @@ export const AuthProvider: React.FC<{
   const [accessToken, setAccessToken] = useState<string | null>(() => {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
   });
+
+  // Sign up the user, stores token, and updates state
+  const signup = async (credentials: any): Promise<SignupResponse> => {
+    const { token, message } = await adapter.signup(credentials);
+    if (token) {
+      localStorage.setItem(ACCESS_TOKEN_KEY, token);
+      setAccessToken(token);
+    }
+    return { token, message };
+  };
 
   // Logs in the user, stores token, and updates state
   const login = async (credentials: any): Promise<LoginResponse> => {
@@ -41,7 +56,7 @@ export const AuthProvider: React.FC<{
 
   // Provide authentication state and actions to child components
   return (
-    <AuthContext.Provider value={{ accessToken, user, login, logout }}>
+    <AuthContext.Provider value={{ accessToken, signup, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

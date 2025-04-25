@@ -44,6 +44,7 @@ export function LoginForm({
 
   // Auth adapter
   const { login } = useAuth();
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -52,7 +53,7 @@ export function LoginForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: DEMO_USERNAME,
-      password: DEMO_PASSWORD + "x",
+      password: DEMO_PASSWORD,
       rememberMe: false,
     },
   });

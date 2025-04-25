@@ -47,7 +47,7 @@ export function ForgotPasswordForm({
       //   description: "Welcome back!",
       // });
       setIsLoading(false);
-      console.log(values);
+      console.debug(values);
     }, 1500);
   }
 

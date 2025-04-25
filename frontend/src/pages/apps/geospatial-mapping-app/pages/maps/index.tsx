@@ -4,7 +4,7 @@ import { useDatasetList } from "@/pages/apps/geospatial-mapping-app/hooks/use-da
 
 export default function Page() {
   const { data: datasets } = useDatasetList();
-  console.log(datasets);
+  console.debug(datasets);
   return (
     <Layout SidebarComponent={GeospatialMappingAppSidebar}>
       <h1 className="scroll-m-20 text-2xl font-bold tracking-tight">Maps</h1>
