@@ -55,6 +55,6 @@ export const request = async (
       error.response?.data?.detail || error.message || "Request failed";
 
     // Optionally re-throw with a better message
-    throw new Error(message);
+    throw new Error(JSON.stringify(message));
   }
 };

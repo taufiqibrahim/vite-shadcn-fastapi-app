@@ -1,7 +1,16 @@
-export type UserPasswordLoginCredentials = { email: string; password: string };
-export type LoginCredentials = UserPasswordLoginCredentials;
+export type LoginCredentials = { email: string; password: string };
+export type SignupCredentials = {
+  email: string;
+  password: string;
+  full_name?: string | null | undefined;
+};
 
-export type SimpleLoginResponse = {
+export type LoginResponse = {
+  token: string | null;
+  message: string | null;
+};
+
+export type SignupResponse = {
   token: string | null;
   message: string | null;
 };
@@ -13,11 +22,11 @@ export interface UserMe {
   full_name: string;
 }
 
-export type LoginResponse = SimpleLoginResponse;
-
 export interface AuthAdapter {
+  signup: (credentials: SignupCredentials) => Promise<SignupResponse>;
   login: (credentials: LoginCredentials) => Promise<LoginResponse>;
   logout: () => void;
+  forgotPassword?: () => void;
   getUser: () => Promise<UserMe>;
   refreshToken?: () => Promise<string>;
 }

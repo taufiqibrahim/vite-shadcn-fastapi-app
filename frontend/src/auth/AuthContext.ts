@@ -5,8 +5,10 @@ import { LoginResponse } from "./adapters/AuthAdapter";
 interface AuthContextType {
   accessToken?: string | null;
   user: any; // TODO: Consider typing `user` if available
+  signup?: () => void;
   login: (credentials: any) => Promise<LoginResponse>;
   logout: () => void;
+  forgotPassword?: () => void;
 }
 
 // Create a context with an initial null value
