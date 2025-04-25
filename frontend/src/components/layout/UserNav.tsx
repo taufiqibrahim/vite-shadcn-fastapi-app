@@ -14,7 +14,7 @@ export interface UserNavProps {
   user: User;
 }
 
-export default function UserNav({ user }: UserNavProps) {
+export function UserNav({ user }: UserNavProps) {
   const handleLogout = (event: any) => {
     event.preventDefault();
     localStorage.removeItem(ACCESS_TOKEN_KEY);

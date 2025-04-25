@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <Layout>
       <div className="w-full max-w-6xl space-y-12">
-        <DemoEmptyState title="Dashboard" />
+        <DemoEmptyState title="Billing" />
       </div>
     </Layout>
   );

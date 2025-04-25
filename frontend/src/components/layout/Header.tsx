@@ -1,9 +1,11 @@
 import { User } from "@/auth/types";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import UserNav from "./UserNav";
+
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import { AppBreadcrumbs } from "@/components/layout/Breadcrumbs";
+import { UserNav } from "@/components/layout/UserNav";
 
 export interface HeaderProps {
   user: User;
@@ -11,7 +13,7 @@ export interface HeaderProps {
   onMenuClick?: () => void;
 }
 
-export default function Header({ user, fixed = false }: HeaderProps) {
+export function Header({ user, fixed = false }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,9 @@ export default function Header({ user, fixed = false }: HeaderProps) {
       <div className="flex items-center gap-0 px-0">
         <SidebarTrigger />
         <Separator orientation="vertical" />
-        <div>[Breadcrumb]</div>
+        <div>
+          <AppBreadcrumbs />
+        </div>
       </div>
       <div className="px-4">
         <UserNav user={user} />

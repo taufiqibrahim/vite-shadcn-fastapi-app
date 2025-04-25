@@ -1,4 +1,9 @@
-import { createBrowserRouter, Navigate, Outlet } from "react-router";
+import {
+  createBrowserRouter,
+  Navigate,
+  Outlet,
+  RouteObject,
+} from "react-router";
 import { useAuth } from "./auth/use-auth";
 import { GeospatialMappingAppRoutes } from "@/pages/apps/geospatial-mapping-app/router";
 
@@ -8,12 +13,13 @@ const ProtectedRoute = () => {
   return accessToken ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
-export const router = createBrowserRouter([
+export const routes: RouteObject[] = [
   {
     path: "/",
     children: [
       { index: true, element: <Navigate to="/apps" replace /> },
       {
+        id: "Login",
         path: "login",
         lazy: async () => ({
           Component: (await import("@/pages/auth/login")).default,
@@ -27,7 +33,6 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "apps",
-        // element: <ProtectedRoute />,
         children: [
           {
             path: "",
@@ -38,6 +43,50 @@ export const router = createBrowserRouter([
           GeospatialMappingAppRoutes,
         ],
       },
+      {
+        path: "billing",
+        children: [
+          {
+            path: "",
+            lazy: async () => ({
+              Component: (await import("@/pages/billing")).default,
+            }),
+          },
+        ],
+      },
+      {
+        path: "usage",
+        handle: { breadcrumb: "Usage" },
+        children: [
+          {
+            path: "",
+            lazy: async () => ({
+              Component: (await import("@/pages/usage")).default,
+            }),
+          },
+        ],
+      },
+      {
+        path: "settings",
+        handle: { breadcrumb: "Settings" },
+        children: [
+          {
+            path: "",
+            lazy: async () => ({
+              Component: (await import("@/pages/settings")).default,
+            }),
+          },
+          {
+            path: "api-keys",
+            handle: { breadcrumb: "API Keys" },
+            lazy: async () => ({
+              Component: (await import("@/pages/settings/api-keys")).default,
+            }),
+          },
+        ],
+      },
     ],
   },
-]);
+];
+
+export const router = createBrowserRouter(routes);

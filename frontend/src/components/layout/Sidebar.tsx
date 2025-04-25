@@ -18,7 +18,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { APP_NAME, LOGIN_SUCCESS_REDIRECT_URL } from "@/constants";
-import { Separator } from "@/components/ui/separator";
 
 export function AppSidebar() {
   const items = [
@@ -28,18 +27,18 @@ export function AppSidebar() {
       icon: Boxes,
     },
     {
-      title: "Invoices",
-      url: "#",
+      title: "Billing",
+      url: "/billing",
       icon: CreditCardIcon,
     },
     {
-      title: "Statistics",
-      url: "#",
+      title: "Usage",
+      url: "/usage",
       icon: ChartAreaIcon,
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: Settings,
     },
   ];
@@ -61,7 +60,7 @@ export function AppSidebar() {
           </SidebarMenuButton>
         </SidebarMenu>
       </SidebarHeader>
-      <Separator />
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
