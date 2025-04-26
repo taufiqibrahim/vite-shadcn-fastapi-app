@@ -2,6 +2,7 @@ import { ReactNode, useState } from "react";
 import {
   AuthAdapter,
   LoginResponse,
+  ResetPasswordResponse,
   SignupResponse,
   UserMe,
 } from "./adapters/AuthAdapter";
@@ -9,7 +10,12 @@ import { AuthContext } from "./AuthContext";
 import { ACCESS_TOKEN_KEY } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
 
-// AuthProvider supplies authentication state and logic to the app
+/**
+ *
+ * AuthProvider supplies authentication state and logic to the app
+ * @param param0
+ * @returns
+ */
 export const AuthProvider: React.FC<{
   adapter: AuthAdapter;
   children: ReactNode;
@@ -39,6 +45,18 @@ export const AuthProvider: React.FC<{
     return { token, message };
   };
 
+  const requestResetPassword = async (credentials: any): Promise<any> => {
+    const { data } = await adapter.requestResetPassword(credentials);
+    return { data };
+  };
+
+  const confirmResetPassword = async (
+    credentials: any,
+  ): Promise<ResetPasswordResponse> => {
+    const { token, message } = await adapter.confirmResetPassword(credentials);
+    return { token, message };
+  };
+
   const { data: user } = useQuery<UserMe>({
     queryKey: ["auth", "user"],
     queryFn: () => adapter.getUser(),
@@ -56,7 +74,17 @@ export const AuthProvider: React.FC<{
 
   // Provide authentication state and actions to child components
   return (
-    <AuthContext.Provider value={{ accessToken, signup, user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        signup,
+        user,
+        login,
+        logout,
+        requestResetPassword,
+        confirmResetPassword,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

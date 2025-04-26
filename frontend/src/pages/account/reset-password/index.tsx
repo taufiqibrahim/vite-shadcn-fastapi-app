@@ -1,8 +1,10 @@
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { LoginForm } from "@/components/auth/login-form";
+import { SignupForm } from "@/components/auth/signup-form";
 import { useFont } from "@/hooks/use-fonts";
 import { KeyRoundIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useNavigate } from "react-router";
+import { useState } from "react";
 
 const formContainerVariants = {
   hidden: { opacity: 0, x: -20 },
@@ -19,12 +21,13 @@ const formContainerVariants = {
 };
 
 export default function Page() {
-  const nav = useNavigate();
   const { font } = useFont();
+
   return (
     <div
       className={`flex min-h-screen flex-col justify-center lg:flex-row ${font}`}
     >
+      {/* Right Side - Form */}
       <div className="flex flex-1 flex-col justify-start px-5 py-24 sm:px-6 lg:px-8 xl:px-12">
         <div className="mx-auto w-full max-w-md sm:w-[400px] border rounded shadow p-4">
           <div className="flex flex-col space-y-2 text-center mb-8">
@@ -34,25 +37,22 @@ export default function Page() {
               </div>
             </div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              Welcome back
+              Reset password
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your credentials to access your account
+              Enter your new password
             </p>
           </div>
 
           <AnimatePresence mode="wait">
             <motion.div
-              key="login"
+              key="reset-password"
               variants={formContainerVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              <LoginForm
-                onSignUpClick={() => nav("/auth/signup")}
-                onForgotClick={() => nav("/account/forgot-password")}
-              />
+              <ResetPasswordForm />
             </motion.div>
           </AnimatePresence>
         </div>

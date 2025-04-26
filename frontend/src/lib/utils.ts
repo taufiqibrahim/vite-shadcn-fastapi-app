@@ -24,3 +24,10 @@ export function formatBytes(
       : (sizes[i] ?? "Bytes")
   }`;
 }
+
+export const renderMessage = (data: any): string => {
+  if (typeof data?.message === "string") {
+    return data.message;
+  }
+  return JSON.stringify(data);
+};

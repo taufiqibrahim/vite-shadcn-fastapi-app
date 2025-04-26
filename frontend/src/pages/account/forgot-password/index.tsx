@@ -1,8 +1,8 @@
-import { LoginForm } from "@/components/auth/login-form";
+import { ForgotPasswordForm } from "@/components/account/forgot-password-form";
 import { useFont } from "@/hooks/use-fonts";
 import { KeyRoundIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useNavigate } from "react-router";
+import { useState } from "react";
 
 const formContainerVariants = {
   hidden: { opacity: 0, x: -20 },
@@ -19,8 +19,9 @@ const formContainerVariants = {
 };
 
 export default function Page() {
-  const nav = useNavigate();
   const { font } = useFont();
+  const [requestSubmitted, setRequestSubmitted] = useState<boolean>(false);
+
   return (
     <div
       className={`flex min-h-screen flex-col justify-center lg:flex-row ${font}`}
@@ -34,24 +35,26 @@ export default function Page() {
               </div>
             </div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              Welcome back
+              Forgot password
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your credentials to access your account
+              {requestSubmitted
+                ? "Email has been sent. Please check your inbox for reset password link."
+                : "Enter your email address and we'll send you a link to reset your password."}
             </p>
           </div>
 
           <AnimatePresence mode="wait">
             <motion.div
-              key="login"
+              key="reset-password"
               variants={formContainerVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              <LoginForm
-                onSignUpClick={() => nav("/auth/signup")}
-                onForgotClick={() => nav("/account/forgot-password")}
+              <ForgotPasswordForm
+                requestSubmitted={requestSubmitted}
+                setRequestSubmitted={setRequestSubmitted}
               />
             </motion.div>
           </AnimatePresence>

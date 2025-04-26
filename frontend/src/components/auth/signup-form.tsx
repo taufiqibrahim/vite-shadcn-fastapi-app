@@ -22,12 +22,13 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import {
   DEMO_PASSWORD,
   DEMO_USERNAME,
   LOGIN_SUCCESS_REDIRECT_URL,
 } from "@/constants";
+import { renderMessage } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z
@@ -87,7 +88,7 @@ export function SignupForm({ onLoginClick }: { onLoginClick: () => void }) {
     } else {
       // If login fails, show error message
       const data = message ? JSON.parse(message) : "";
-      toast.error("Login Failed", { description: data.message });
+      toast.error("Signup Failed", { description: renderMessage(data) });
     }
 
     setIsLoading(false);
@@ -239,7 +240,6 @@ export function SignupForm({ onLoginClick }: { onLoginClick: () => void }) {
           </Button>
         </p>
       </div>
-      <Toaster />
     </div>
   );
 }

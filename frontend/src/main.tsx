@@ -4,12 +4,12 @@ import "./index.css";
 import { RouterProvider } from "react-router";
 import { router } from "./router";
 import { AuthProvider } from "./auth/AuthProvider";
-import { UserPasswordAuthAdapter } from "./auth/adapters/UserPasswordAuthAdapter";
+import { UserAuthAdapter } from "./auth/AuthAdapter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "./components/ui/sonner";
 
-const authAdapter = new UserPasswordAuthAdapter();
+const authAdapter = new UserAuthAdapter();
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(

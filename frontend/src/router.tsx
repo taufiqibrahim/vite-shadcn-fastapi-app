@@ -10,19 +10,44 @@ import { GeospatialMappingAppRoutes } from "@/pages/apps/geospatial-mapping-app/
 const ProtectedRoute = () => {
   console.log("router.ProtectedRoute");
   const { accessToken } = useAuth();
-  return accessToken ? <Outlet /> : <Navigate to="/login" replace />;
+  return accessToken ? <Outlet /> : <Navigate to="/auth/login" replace />;
 };
 
 export const routes: RouteObject[] = [
   {
     path: "/",
+    children: [{ index: true, element: <Navigate to="/apps" replace /> }],
+  },
+  {
+    path: "/auth",
     children: [
-      { index: true, element: <Navigate to="/apps" replace /> },
       {
-        id: "Login",
         path: "login",
         lazy: async () => ({
           Component: (await import("@/pages/auth/login")).default,
+        }),
+      },
+      {
+        path: "signup",
+        lazy: async () => ({
+          Component: (await import("@/pages/auth/signup")).default,
+        }),
+      },
+    ],
+  },
+  {
+    path: "/account",
+    children: [
+      {
+        path: "forgot-password",
+        lazy: async () => ({
+          Component: (await import("@/pages/account/forgot-password")).default,
+        }),
+      },
+      {
+        path: "reset-password",
+        lazy: async () => ({
+          Component: (await import("@/pages/account/reset-password")).default,
         }),
       },
     ],
