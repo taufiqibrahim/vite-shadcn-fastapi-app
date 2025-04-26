@@ -48,9 +48,7 @@ export function ForgotPasswordForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("onSubmit");
     setIsLoading(true);
-
     const email = values.email;
 
     // Call auth adapter forgot password function with credentials
@@ -113,7 +111,7 @@ export function ForgotPasswordForm({
               <Button
                 variant="link"
                 className="p-0"
-                onClick={() => nav("/auth/login")}
+                onClick={() => nav("/login")}
                 disabled={isLoading}
               >
                 Log in

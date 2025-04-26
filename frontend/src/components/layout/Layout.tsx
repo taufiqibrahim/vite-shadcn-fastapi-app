@@ -2,6 +2,8 @@ import { ComponentType, ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
+import { useAuth } from "@/auth/use-auth";
+import { getInitials } from "@/lib/utils";
 
 export interface LayoutProps {
   children: ReactNode;
@@ -20,14 +22,7 @@ export function Layout({
   fixedHeader = true,
   // showHelpButton = false,
 }: LayoutProps) {
-  const user = {
-    name: "Demo",
-    email: "demo@example.com",
-    avatar: "https://github.com/shadcn.png",
-    initials: "D",
-  };
-
-  // const RenderedSidebar = SidebarComponent || AppSidebar;
+  const { user: userData } = useAuth();
 
   return (
     <div className="">
@@ -35,7 +30,17 @@ export function Layout({
         <SidebarProvider>
           <SidebarComponent />
           <SidebarInset>
-            {headerEnabled && <Header user={user} fixed={fixedHeader} />}
+            {headerEnabled && (
+              <Header
+                user={{
+                  email: userData?.email,
+                  avatar: userData?.avatar,
+                  fullName: userData?.full_name,
+                  initials: getInitials(userData?.email),
+                }}
+                fixed={fixedHeader}
+              />
+            )}
             <div className="flex flex-1 flex-col gap-4 p-4">{children}</div>
           </SidebarInset>
         </SidebarProvider>

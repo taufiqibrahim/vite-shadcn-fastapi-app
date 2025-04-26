@@ -15,8 +15,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
-import { DEFAULT_ERROR_MESSAGE, DEMO_PASSWORD } from "@/constants";
+import {
+  DEFAULT_ERROR_MESSAGE,
+  DEMO_PASSWORD,
+  LOGIN_SUCCESS_REDIRECT_URL,
+} from "@/constants";
 import { toast } from "sonner";
+import { renderMessage } from "@/lib/utils";
 
 const formSchema = z.object({
   password: z
@@ -31,7 +36,7 @@ const formSchema = z.object({
     .regex(/[0-9]/, { message: "Password must contain at least one number" }),
 });
 
-export function ResetPasswordForm({resetToken}: {resetToken:string}) {
+export function ResetPasswordForm({ resetToken }: { resetToken: string }) {
   const nav = useNavigate();
   const { confirmResetPassword } = useAuth();
 
@@ -47,24 +52,25 @@ export function ResetPasswordForm({resetToken}: {resetToken:string}) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log("resetToken", resetToken)
 
     try {
       const password = values.password;
-      const { token, message } = await confirmResetPassword({ resetToken, password });
-      console.log({token, message})
-  
-      // if (token) {
-      //   // If login successful, navigate to dashboard
-      //   nav(LOGIN_SUCCESS_REDIRECT_URL);
-      // } else {
-      //   // If login fails, show error message
-      //   const data = message ? JSON.parse(message) : "";
-      //   toast.error("Signup Failed", { description: renderMessage(data) });
-      // } 
+      const { token, message } = await confirmResetPassword({
+        resetToken,
+        password,
+      });
+
+      if (token) {
+        nav(LOGIN_SUCCESS_REDIRECT_URL);
+      } else {
+        const data = message ? JSON.parse(message) : "";
+        toast.error("Reset password failed", {
+          description: renderMessage(data),
+        });
+      }
     } catch (error) {
-      console.log(error)
-      toast.error(DEFAULT_ERROR_MESSAGE)
+      console.error(error);
+      toast.error(DEFAULT_ERROR_MESSAGE);
     }
 
     setIsLoading(false);

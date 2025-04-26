@@ -8,6 +8,7 @@ import { UserAuthAdapter } from "./auth/AuthAdapter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "./components/ui/sonner";
+import { DEFAULT_TOASTER_DURATION_MS } from "./constants";
 
 const authAdapter = new UserAuthAdapter();
 const queryClient = new QueryClient();
@@ -21,8 +22,14 @@ createRoot(document.getElementById("root")!).render(
           <Toaster
             position="bottom-center"
             closeButton
-            duration={3000}
-            toastOptions={{}}
+            duration={DEFAULT_TOASTER_DURATION_MS}
+            toastOptions={{
+              classNames: {
+                description: "!text-red-900",
+                closeButton:
+                  "!absolute !top-0 !bg-gray-100 !right-[-12px] !left-auto rounded p-1",
+              },
+            }}
           />
         </AuthProvider>
       </QueryClientProvider>

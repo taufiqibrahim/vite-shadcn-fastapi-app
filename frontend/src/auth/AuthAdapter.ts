@@ -8,7 +8,7 @@ export type SignupCredentials = {
   full_name?: string | null | undefined;
 };
 export type RequestResetPasswordCredentials = { email: string };
-export type ResetPasswordCredentials = { resetToken: string, password: string };
+export type ResetPasswordCredentials = { resetToken: string; password: string };
 
 export type LoginResponse = {
   token: string | null;
@@ -29,7 +29,13 @@ export interface UserMe {
   id: number;
   uid: string;
   account_id: number;
+  account_type: string;
+  avatar?: string;
   full_name: string;
+  created_at: string;
+  disabled: boolean;
+  email: string;
+  updated_at: string;
 }
 
 export interface AuthAdapter {
@@ -54,7 +60,7 @@ export class UserAuthAdapter implements AuthAdapter {
     try {
       const form = new URLSearchParams();
 
-      if (endpoint === "/auth/signup") {
+      if (endpoint === "/accounts/signup") {
         form.append("email", credentials.email);
       } else {
         form.append("username", credentials.email);
@@ -95,11 +101,11 @@ export class UserAuthAdapter implements AuthAdapter {
   }
 
   async signup(credentials: SignupCredentials): Promise<SignupResponse> {
-    return this.handleAuthRequest("/auth/signup", credentials);
+    return this.handleAuthRequest("/accounts/signup", credentials);
   }
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    return this.handleAuthRequest("/auth/login", credentials);
+    return this.handleAuthRequest("/accounts/login", credentials);
   }
 
   logout() {}
@@ -118,7 +124,7 @@ export class UserAuthAdapter implements AuthAdapter {
     try {
       const form = new URLSearchParams();
       form.append("email", credentials.email);
-      const data = await request("/accounts/password-reset", "POST", form, {
+      const data = await request("/accounts/reset-password", "POST", form, {
         "Content-Type": "application/x-www-form-urlencoded",
       });
       return { data };
@@ -128,20 +134,33 @@ export class UserAuthAdapter implements AuthAdapter {
     }
   }
 
-  async confirmResetPassword(credentials: ResetPasswordCredentials): Promise<any> {
+  async confirmResetPassword(
+    credentials: ResetPasswordCredentials,
+  ): Promise<ResetPasswordResponse> {
     try {
       const form = new URLSearchParams();
       form.append("password", credentials.password);
-      const data = await request("/accounts/confirm-password-reset", "POST",
+      const data = await request(
+        "/accounts/confirm-reset-password",
+        "POST",
         form,
         {
-          "Authorization": `Bearer ${credentials.resetToken}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      });
-      return { data };
+          Authorization: `Bearer ${credentials.resetToken}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
+
+      if (data.access_token) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token);
+      }
+
+      return { token: data.access_token, message: data.message ?? "Success" };
     } catch (err) {
       console.error(`Error:`, err);
-      return { err };
+      return {
+        token: null,
+        message: String(err),
+      };
     }
   }
 }

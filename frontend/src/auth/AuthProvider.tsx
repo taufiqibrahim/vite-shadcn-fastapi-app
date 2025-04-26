@@ -5,7 +5,7 @@ import {
   ResetPasswordResponse,
   SignupResponse,
   UserMe,
-} from "./adapters/AuthAdapter";
+} from "./AuthAdapter";
 import { AuthContext } from "./AuthContext";
 import { ACCESS_TOKEN_KEY } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
@@ -65,6 +65,11 @@ export const AuthProvider: React.FC<{
     refetchOnWindowFocus: false,
   });
 
+  const getUser = async (): Promise<UserMe> => {
+    const data = await adapter.getUser();
+    return data;
+  };
+
   // Logs out the user and clears authentication state
   const logout = () => {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
@@ -77,8 +82,9 @@ export const AuthProvider: React.FC<{
     <AuthContext.Provider
       value={{
         accessToken,
-        signup,
         user,
+        getUser,
+        signup,
         login,
         logout,
         requestResetPassword,

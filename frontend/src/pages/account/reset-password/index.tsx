@@ -25,8 +25,8 @@ const formContainerVariants = {
 export default function Page() {
   const nav = useNavigate();
   const { font } = useFont();
-  const [isTokenExpired, setIsTokenExpired] = useState(false)
-  const token = new URLSearchParams(useLocation().search).get("token")
+  const [isTokenExpired, setIsTokenExpired] = useState(false);
+  const token = new URLSearchParams(useLocation().search).get("token");
 
   useEffect(() => {
     if (token) {
@@ -34,7 +34,7 @@ export default function Page() {
       const isExpired = decoded.exp * 1000 < Date.now();
       setIsTokenExpired(isExpired);
     }
-  }, [token])
+  }, [token]);
 
   return (
     <div
@@ -49,10 +49,12 @@ export default function Page() {
               </div>
             </div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              {isTokenExpired ? ("Link expired!") : ("Reset password")}
+              {isTokenExpired ? "Link expired!" : "Reset password"}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {isTokenExpired ? ("The reset password link has been expired. Please request a new one") : ("Enter your new password")}
+              {isTokenExpired
+                ? "The reset password link has been expired. Please request a new one"
+                : "Enter your new password"}
             </p>
           </div>
 
@@ -66,17 +68,19 @@ export default function Page() {
                 Request password reset
               </Button>
             </div>
-          ) : (<AnimatePresence mode="wait">
-            <motion.div
-              key="reset-password"
-              variants={formContainerVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <ResetPasswordForm resetToken={token as string} />
-            </motion.div>
-          </AnimatePresence>)}
+          ) : (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key="reset-password"
+                variants={formContainerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <ResetPasswordForm resetToken={token as string} />
+              </motion.div>
+            </AnimatePresence>
+          )}
         </div>
       </div>
     </div>

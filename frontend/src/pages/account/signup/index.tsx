@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/auth/login-form";
+import { SignupForm } from "@/components/auth/signup-form";
 import { useFont } from "@/hooks/use-fonts";
 import { KeyRoundIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -18,7 +18,7 @@ const formContainerVariants = {
   },
 };
 
-export default function Page() {
+export default function SignupPage() {
   const nav = useNavigate();
   const { font } = useFont();
   return (
@@ -34,25 +34,22 @@ export default function Page() {
               </div>
             </div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              Welcome back
+              Create an account
             </h1>
             <p className="text-sm text-muted-foreground">
-              Enter your credentials to access your account
+              Enter your information to create an account"
             </p>
           </div>
 
           <AnimatePresence mode="wait">
             <motion.div
-              key="login"
+              key="signup"
               variants={formContainerVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
             >
-              <LoginForm
-                onSignUpClick={() => nav("/auth/signup")}
-                onForgotClick={() => nav("/account/forgot-password")}
-              />
+              <SignupForm onLoginClick={() => nav("/login")} />
             </motion.div>
           </AnimatePresence>
         </div>
