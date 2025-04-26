@@ -7,7 +7,7 @@ from sqlmodel import Session
 
 from src.auth.exceptions import AccountDisabledException, EmailAlreadyExistsException, InvalidLoginCredentialsException
 from src.auth.models import AccountType
-from src.auth.schemas import AccountCreate, AccountCreated, Token, TokenRefresh
+from src.auth.schemas import AccountCreate, Token, TokenRefresh
 from src.auth.services.account import create_account, get_account_by_email
 from src.auth.services.email import send_welcome_email
 from src.auth.services.jwt import create_access_token, create_refresh_token, get_refresh_token, refresh_access_token

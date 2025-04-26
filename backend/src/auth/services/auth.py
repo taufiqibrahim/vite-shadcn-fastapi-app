@@ -101,6 +101,7 @@ async def get_current_account_with_token(token: str, db: Session) -> Account:
     # Retrieve account by email
     account = get_account_by_email(db=db, email=email)
     if account is None:
+        logger.debug("get_current_account_with_token: account is None")
         raise credentials_exception
 
     return account

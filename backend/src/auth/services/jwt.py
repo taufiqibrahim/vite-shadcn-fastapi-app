@@ -86,7 +86,8 @@ def verify_access_token(token: str) -> Optional[schemas.TokenPayload]:
         return token_data
 
     except (JWTError, InvalidSignatureError, ExpiredSignatureError, ValueError) as e:
-        logger.debug(e)
+        logger.debug(f"verify_access_token: token={token}")
+        logger.debug(f"verify_access_token: {e}")
         raise e
 
 

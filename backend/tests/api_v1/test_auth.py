@@ -221,10 +221,17 @@ async def test_signup_user_existing_email(client, test_account):
     assert error["detail"]["message"] == EmailAlreadyExistsException.message
 
 
-# TODO: @pytest.mark.asyncio
-# async def test_signup_weak_password(client):
-#     """Test signup fails if password does not meet strength requirements"""
-#     pass
+@pytest.mark.asyncio
+async def test_signup_weak_password(client, test_random_account):
+    """Test signup fails if password does not meet strength requirements"""
+    response = client.post(
+        "/api/v1/auth/signup",
+        data={
+            "email": test_random_account.email,
+            "password": "weakpass",
+        },
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 @pytest.mark.asyncio

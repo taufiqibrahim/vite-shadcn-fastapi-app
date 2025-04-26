@@ -2,6 +2,7 @@ import uuid
 from typing import Optional
 
 from pydantic import BaseModel, EmailStr, SecretStr, field_validator
+from sqlmodel import SQLModel
 
 from src.auth.models import AccountType
 
@@ -54,5 +55,7 @@ class AccountCreated(AccountBase):
     account_type: Optional[AccountType] = AccountType.USER
 
 
-class PasswordResetRequest(BaseModel):
-    email: EmailStr
+class AccountUpdate(SQLModel):
+    id: int
+    email: Optional[str] = None
+    password: Optional[str] = None

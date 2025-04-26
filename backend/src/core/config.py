@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     BRAND_NAME: str = "tibrahim.dev"
     APP_URL: str = "https://www.example.com"
     FRONTEND_HOST: str = "http://localhost:5173"
-    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    ENVIRONMENT: Literal["local", "staging", "production"] = "staging"
     BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)] = []
 
     @computed_field  # type: ignore[prop-decorator]
@@ -64,6 +64,7 @@ class MailSettings(BaseSettings):
         env_ignore_empty=True,
         extra="ignore",
     )
+    MAIL_ENABLED: bool = True
     MAIL_SMTP_HOST: str = "smtp.zoho.com"
     MAIL_SMTP_PORT: int = 587
     MAIL_SMTP_USERNAME: str = "your-email@yourdomain.com"

@@ -21,7 +21,6 @@ class Account(SQLModel, table=True):
     disabled: bool = False
     account_type: AccountType = Field(sa_column=Column(Enum(AccountType)), default=AccountType.USER)
     api_keys: List["APIKey"] = Relationship(back_populates="account")
-    password_reset_tokens: List["PasswordResetToken"] = Relationship(back_populates="account")
     profile: Optional["AccountProfile"] = Relationship(back_populates="account")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(
@@ -56,18 +55,3 @@ class APIKey(SQLModel, table=True):
     is_active: bool = True
     level: int = Field(default=1)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-
-
-class PasswordResetToken(SQLModel, table=True):
-    __tablename__ = "password_reset_token"
-
-    id: Optional[int] = Field(default=None, primary_key=True, index=True)
-    account_id: Optional[int] = Field(default=None, foreign_key="account.id")
-    account: Optional[Account] = Relationship(back_populates="password_reset_tokens")
-    token: str
-    expires_at: datetime
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
-        sa_column=Column(TIMESTAMP, onupdate=datetime.now(timezone.utc)),
-    )

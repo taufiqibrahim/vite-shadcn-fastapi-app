@@ -2,16 +2,15 @@
 
 import secrets
 import uuid
-from datetime import datetime, timedelta, timezone
 from typing import List, Optional
 
+from fastapi import HTTPException
 from sqlmodel import Session, select
 
 from src.auth.exceptions import EmailAlreadyExistsException
-from src.auth.models import Account, APIKey, PasswordResetToken
-from src.auth.schemas import AccountCreate
+from src.auth.models import Account, APIKey
+from src.auth.schemas import AccountCreate, AccountUpdate
 from src.auth.services.security import get_password_hash
-from src.core.config import settings
 from src.core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -53,6 +52,27 @@ async def create_account(db: Session, account: AccountCreate) -> Account:
     db.refresh(db_account)
 
     logger.debug(f"Created user account: {db_account.email.lower()}")
+
+    return db_account
+
+
+async def update_account(db: Session, account: AccountUpdate) -> Account:
+    """
+    Update an existing user account.
+    """
+    db_account = db.exec(select(Account).where(Account.id == account.id)).first()
+    if not db_account:
+        raise HTTPException(status_code=404, detail="Account not found")
+    account_data = account.model_dump(exclude_unset=True)
+    for key, value in account_data.items():
+        if key == "password":
+            db_account.hashed_password = get_password_hash(value)
+        else:
+            setattr(db_account, key, value)
+
+    db.add(db_account)
+    db.commit()
+    db.refresh(db_account)
 
     return db_account
 
@@ -131,13 +151,3 @@ def create_api_key(db: Session, account_id: int, level: int = 1, api_key: str = 
     db.commit()
     db.refresh(db_api_key)
     return key
-
-
-def create_password_reset_token(db: Session, account_id: int):
-    token = secrets.token_urlsafe(32)
-    expires_at = datetime.now(timezone.utc) + timedelta(minutes=settings.RESET_TOKEN_EXPIRY_MINUTES)
-    token_db = PasswordResetToken(db=db, account_id=account_id, token=token, expires_at=expires_at)
-    db.add(token_db)
-    db.commit()
-    db.refresh(token_db)
-    return token
