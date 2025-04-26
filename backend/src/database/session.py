@@ -3,7 +3,10 @@ from sqlmodel import Session, SQLModel, create_engine
 from src.core.config import secret_settings
 
 if secret_settings.SQLALCHEMY_DATABASE_URI.startswith("sqlite"):
-    engine = create_engine(secret_settings.SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
+    engine = create_engine(
+        secret_settings.SQLALCHEMY_DATABASE_URI,
+        connect_args={"check_same_thread": False},
+    )
 else:
     engine = create_engine(secret_settings.SQLALCHEMY_DATABASE_URI)
 

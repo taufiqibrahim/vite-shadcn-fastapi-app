@@ -19,7 +19,10 @@ async def test_get_account_success(db):
     # Create an account first with unique email
     unique_email = f"test_{uuid.uuid4()}@example.com"
     account_data = AccountCreate(
-        email=unique_email, password=SecretStr("password123"), full_name="Test User", account_type="user"
+        email=unique_email,
+        password=SecretStr("password123"),
+        full_name="Test User",
+        account_type="user",
     )
     account = create_user_account(db, account_data)
 
@@ -43,7 +46,10 @@ async def test_get_account_by_email_success(db):
     # Create an account first with unique email
     unique_email = f"test_{uuid.uuid4()}@example.com"
     account_data = AccountCreate(
-        email=unique_email, password=SecretStr("password123"), full_name="Test User", account_type="user"
+        email=unique_email,
+        password=SecretStr("password123"),
+        full_name="Test User",
+        account_type="user",
     )
     account = create_user_account(db, account_data)
 

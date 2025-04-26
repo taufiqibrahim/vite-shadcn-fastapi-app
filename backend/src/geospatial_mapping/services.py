@@ -19,10 +19,17 @@ def create_dataset(db: Session, dataset: DatasetCreate):
 
 
 def list_datasets(db: Session, account_id: int, skip: int = 0, limit: int = 100):
-    return db.exec(select(Dataset).where(Dataset.account_id == account_id).offset(skip).limit(limit)).all()
+    return db.exec(
+        select(Dataset)
+        .where(Dataset.account_id == account_id)
+        .offset(skip)
+        .limit(limit)
+    ).all()
 
 
-def update_dataset(db: Session, dataset_uid: str, account_id: int, dataset: DatasetUpdate):
+def update_dataset(
+    db: Session, dataset_uid: str, account_id: int, dataset: DatasetUpdate
+):
     logger.debug(f"update_dataset {dataset}")
 
     db_dataset = db.exec(select(Dataset).where(Dataset.uid == dataset_uid)).first()
@@ -65,14 +72,24 @@ def get_dataset_bbox(db: Session, dataset_uid: str) -> dict:
 
 
 def get_dataset_by_uid(db: Session, dataset_uid: str, account_id: int):
-    db_dataset = db.exec(select(Dataset).where(Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
+    db_dataset = db.exec(
+        select(Dataset).where(
+            Dataset.account_id == account_id, Dataset.uid == dataset_uid
+        )
+    ).first()
     if not db_dataset:
         raise HTTPException(status_code=404, detail="Not found")
     return db_dataset
 
 
-def get_dataset_as_table_by_uid(db: Session, dataset_uid: str, account_id: int, limit: int, offset: int):
-    dataset = db.exec(select(Dataset).where(Dataset.account_id == account_id, Dataset.uid == dataset_uid)).first()
+def get_dataset_as_table_by_uid(
+    db: Session, dataset_uid: str, account_id: int, limit: int, offset: int
+):
+    dataset = db.exec(
+        select(Dataset).where(
+            Dataset.account_id == account_id, Dataset.uid == dataset_uid
+        )
+    ).first()
     if not dataset:
         raise HTTPException(status_code=404, detail="Not found")
 
@@ -86,10 +103,18 @@ def get_dataset_as_table_by_uid(db: Session, dataset_uid: str, account_id: int, 
 EMPTY_TILE = b"\x1a\x00"
 
 
-def get_dataset_as_mvt_by_uid(db: Session, dataset_uid: str, primary_key_column: str, z: int, x: int, y: int):
+def get_dataset_as_mvt_by_uid(
+    db: Session, dataset_uid: str, primary_key_column: str, z: int, x: int, y: int
+):
     relation_name = "u_" + dataset_uid.replace("-", "_")
-    stmt = text("SELECT public.get_dataset_tile(:relation, :primary_key_column, :z, :x, :y)")
-    result = db.exec(stmt.params(relation=relation_name, primary_key_column=primary_key_column, z=z, x=x, y=y)).scalar()
+    stmt = text(
+        "SELECT public.get_dataset_tile(:relation, :primary_key_column, :z, :x, :y)"
+    )
+    result = db.exec(
+        stmt.params(
+            relation=relation_name, primary_key_column=primary_key_column, z=z, x=x, y=y
+        )
+    ).scalar()
 
     if not result or result is None:
         return Response(content=EMPTY_TILE, media_type="application/x-protobuf")

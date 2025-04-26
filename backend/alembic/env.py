@@ -23,7 +23,8 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from src.auth.models import Account, AccountProfile, APIKey  # noqa
+from src.accounts.models import Account, AccountProfile  # noqa
+from src.api_keys.models import APIKey  # noqa
 
 # from src.apps.models import App  # noqa
 # from src.geospatial_mapping.models import Dataset  # noqa
@@ -89,7 +90,11 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata, include_object=include_object)
+        context.configure(
+            connection=connection,
+            target_metadata=target_metadata,
+            include_object=include_object,
+        )
 
         with context.begin_transaction():
             context.run_migrations()

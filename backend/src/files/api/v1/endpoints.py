@@ -1,12 +1,28 @@
-from fastapi import APIRouter, Depends, File, HTTPException, Request, Response, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Request,
+    Response,
+    UploadFile,
+)
 from uploadthing_py import UploadThingRequestBody
 
 from src.auth.models import Account
 from src.auth.services import get_current_active_account
 from src.core.config import settings
-from src.files.services import handle_upload_minio, handle_upload_s3, uploadthing_handlers
+from src.files.services import (
+    handle_upload_minio,
+    handle_upload_s3,
+    uploadthing_handlers,
+)
 
-router = APIRouter(prefix="/api/v1/files", tags=["Files"], dependencies=[Depends(get_current_active_account)])
+router = APIRouter(
+    prefix="/api/v1/files",
+    tags=["Files"],
+    dependencies=[Depends(get_current_active_account)],
+)
 
 
 @router.post("/upload")

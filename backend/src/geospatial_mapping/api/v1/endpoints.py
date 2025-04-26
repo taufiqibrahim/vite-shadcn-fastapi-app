@@ -11,7 +11,12 @@ from src.core.logging import get_logger, setup_logging
 from src.database.session import get_db
 from src.dependencies import get_temporal_client
 from src.geospatial_mapping import services
-from src.geospatial_mapping.models import Dataset, DatasetCreate, DatasetRead, DatasetUpdate
+from src.geospatial_mapping.models import (
+    Dataset,
+    DatasetCreate,
+    DatasetRead,
+    DatasetUpdate,
+)
 
 setup_logging()
 logger = get_logger(__name__)
@@ -31,7 +36,9 @@ async def create_dataset(
     temporal_client: TemporalClient = Depends(get_temporal_client),
 ):
     # check if record exists by file_name
-    db_dataset_count = db.exec(select(func.count(Dataset.id)).where(Dataset.file_name == dataset.file_name)).one()
+    db_dataset_count = db.exec(
+        select(func.count(Dataset.id)).where(Dataset.file_name == dataset.file_name)
+    ).one()
     dataset.account_id = account.id
 
     # increment default name + 1 if same filename uploaded more than once
@@ -71,7 +78,9 @@ async def update_dataset(
     db: Session = Depends(get_db),
     account: Account = Depends(get_current_active_account),
 ):
-    dataset = services.update_dataset(db, dataset_uid=dataset_uid, account_id=account.id, dataset=dataset)
+    dataset = services.update_dataset(
+        db, dataset_uid=dataset_uid, account_id=account.id, dataset=dataset
+    )
     return dataset
 
 
@@ -81,7 +90,9 @@ async def get_dataset_by_uid(
     db: Session = Depends(get_db),
     account: Account = Depends(get_current_active_account),
 ):
-    dataset = services.get_dataset_by_uid(db, dataset_uid=dataset_uid, account_id=account.id)
+    dataset = services.get_dataset_by_uid(
+        db, dataset_uid=dataset_uid, account_id=account.id
+    )
     return dataset
 
 
@@ -94,7 +105,11 @@ async def get_dataset_as_table_by_uid(
     offset: int = Query(0, ge=0),
 ):
     res = services.get_dataset_as_table_by_uid(
-        db=db, dataset_uid=dataset_uid, account_id=account.id, limit=limit, offset=offset
+        db=db,
+        dataset_uid=dataset_uid,
+        account_id=account.id,
+        limit=limit,
+        offset=offset,
     )
     return res
 
@@ -106,7 +121,9 @@ async def get_dataset_as_geojson_by_uid(
     account: Account = Depends(get_current_active_account),
     bbox: Optional[str] = Query(None, description="Bounding box: xmin,ymin,xmax,ymax"),
 ):
-    res = services.get_dataset_as_geojson_by_uid(db=db, dataset_uid=dataset_uid, account_id=account.id, bbox=bbox)
+    res = services.get_dataset_as_geojson_by_uid(
+        db=db, dataset_uid=dataset_uid, account_id=account.id, bbox=bbox
+    )
     return res
 
 
@@ -122,7 +139,12 @@ async def get_dataset_as_mvt_by_uid(
 ):
     try:
         return services.get_dataset_as_mvt_by_uid(
-            db=db, dataset_uid=str(dataset_uid), primary_key_column=primary_key_column, z=z, x=x, y=y
+            db=db,
+            dataset_uid=str(dataset_uid),
+            primary_key_column=primary_key_column,
+            z=z,
+            x=x,
+            y=y,
         )
     except Exception as e:
         logger.error(str(e))

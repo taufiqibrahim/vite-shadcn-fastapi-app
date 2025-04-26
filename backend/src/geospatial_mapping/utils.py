@@ -8,7 +8,9 @@ def sanitize_dataset_name(filename, max_length=100):
     base_name = os.path.splitext(filename)[0]
 
     # 2. Normalize unicode (e.g., é -> e)
-    base_name = unicodedata.normalize("NFKD", base_name).encode("ascii", "ignore").decode()
+    base_name = (
+        unicodedata.normalize("NFKD", base_name).encode("ascii", "ignore").decode()
+    )
 
     # 3. Replace unsafe characters with space
     base_name = re.sub(r"[^\w\s-]", "", base_name)

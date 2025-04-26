@@ -7,13 +7,13 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
-from sqlmodel import Session, create_engine, select, text
+from sqlmodel import Session, create_engine, text
 from sqlmodel.pool import StaticPool
 
 from alembic.command import upgrade
 from alembic.config import Config
-from src.auth.models import Account, AccountType
-from src.auth.schemas import AccountCreate
+from src.accounts.models import Account, AccountType
+from src.accounts.schemas import AccountCreate
 from src.auth.services.jwt import create_access_token, create_refresh_token
 from src.auth.services.security import get_password_hash
 from src.core.logging import get_logger, setup_logging
@@ -53,12 +53,16 @@ def run_alembic_migration():
 @pytest.fixture(scope="session", autouse=True)
 def prepare_database():
     logger.info("Create testdb")
-    with create_engine(POSTGRES_SQLALCHEMY_URI, isolation_level="AUTOCOMMIT").connect() as conn:
+    with create_engine(
+        POSTGRES_SQLALCHEMY_URI, isolation_level="AUTOCOMMIT"
+    ).connect() as conn:
         conn.execute(text("DROP DATABASE IF EXISTS testdb WITH (FORCE)"))
         conn.execute(text("CREATE DATABASE testdb"))
 
     logger.info("Create postgis extension")
-    with create_engine(TESTDB_SQLALCHEMY_URI, isolation_level="AUTOCOMMIT").connect() as conn:
+    with create_engine(
+        TESTDB_SQLALCHEMY_URI, isolation_level="AUTOCOMMIT"
+    ).connect() as conn:
         conn.execute(text("CREATE EXTENSION postgis"))
 
     logger.info("Run alembic migrations")
@@ -67,7 +71,12 @@ def prepare_database():
 
 @pytest.fixture(scope="session")
 def session_db():
-    engine = create_engine(TESTDB_SQLALCHEMY_URI, isolation_level="AUTOCOMMIT", connect_args={}, poolclass=StaticPool)
+    engine = create_engine(
+        TESTDB_SQLALCHEMY_URI,
+        isolation_level="AUTOCOMMIT",
+        connect_args={},
+        poolclass=StaticPool,
+    )
     with Session(engine) as session:
         yield session
 
@@ -76,7 +85,12 @@ def session_db():
 @pytest.fixture()
 def db():
     # Set up
-    engine = create_engine(TESTDB_SQLALCHEMY_URI, isolation_level="AUTOCOMMIT", connect_args={}, poolclass=StaticPool)
+    engine = create_engine(
+        TESTDB_SQLALCHEMY_URI,
+        isolation_level="AUTOCOMMIT",
+        connect_args={},
+        poolclass=StaticPool,
+    )
     with Session(engine) as session:
         yield session
 
@@ -109,7 +123,10 @@ def mock_send_email(monkeypatch):
 @pytest.fixture(scope="session")
 def test_account() -> AccountCreate:
     return AccountCreate(
-        uid=TEST_ACCOUNT_UID, email=TEST_ACCOUNT_EMAIL, password=SecretStr(TEST_ACCOUNT_PASSWORD), full_name="Test User"
+        uid=TEST_ACCOUNT_UID,
+        email=TEST_ACCOUNT_EMAIL,
+        password=SecretStr(TEST_ACCOUNT_PASSWORD),
+        full_name="Test User",
     )
 
 

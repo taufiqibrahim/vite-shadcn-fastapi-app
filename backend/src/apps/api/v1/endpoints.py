@@ -9,7 +9,11 @@ from src.apps.schemas import AppCreate, AppRead
 from src.auth.services import get_current_active_account
 from src.database.session import get_db
 
-router = APIRouter(prefix="/api/v1/apps", tags=["Applications"], dependencies=[Depends(get_current_active_account)])
+router = APIRouter(
+    prefix="/api/v1/apps",
+    tags=["Applications"],
+    dependencies=[Depends(get_current_active_account)],
+)
 
 
 @router.post("/", response_model=AppRead, status_code=status.HTTP_201_CREATED)

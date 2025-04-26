@@ -16,11 +16,24 @@ from src.core.config import demo_settings, postgis_settings
 from src.core.logging import get_logger, setup_logging
 from src.database.session import engine
 from src.files.services import handle_upload_minio
-from src.geospatial_mapping.models import BoundingBox, Dataset, DatasetCreate, DatasetUpdate
-from src.geospatial_mapping.services import create_dataset, get_dataset_bbox, update_dataset
+from src.geospatial_mapping.models import (
+    BoundingBox,
+    Dataset,
+    DatasetCreate,
+    DatasetUpdate,
+)
+from src.geospatial_mapping.services import (
+    create_dataset,
+    get_dataset_bbox,
+    update_dataset,
+)
 from src.users.models import UserProfile
 from src.users.schemas import AccountCreate, UserProfileCreate
-from src.users.services import create_user_account, create_user_profile, get_account_by_email
+from src.users.services import (
+    create_user_account,
+    create_user_profile,
+    get_account_by_email,
+)
 
 setup_logging()
 logger = get_logger(__name__)
@@ -56,13 +69,21 @@ def load_data(session: Session) -> None:
             logger.info("Email already registered")
         else:
             created_account = create_user_account(db=session, account=u)
-            profile_create = UserProfileCreate(account_id=created_account.id, full_name=u.full_name)
-            create_user_profile(db=session, account_id=created_account.id, profile=profile_create)
-            user_profile = session.exec(select(UserProfile).where(UserProfile.id == created_account.id)).first()
+            profile_create = UserProfileCreate(
+                account_id=created_account.id, full_name=u.full_name
+            )
+            create_user_profile(
+                db=session, account_id=created_account.id, profile=profile_create
+            )
+            user_profile = session.exec(
+                select(UserProfile).where(UserProfile.id == created_account.id)
+            ).first()
             logger.info(f"User created: {user_profile}")
 
             custom_api_key = f"ak_{uuid.uuid4()}"
-            create_api_key(db=session, account_id=created_account.id, api_key=custom_api_key)
+            create_api_key(
+                db=session, account_id=created_account.id, api_key=custom_api_key
+            )
 
     apps = [
         AppCreate(
@@ -168,7 +189,9 @@ async def load_geospatial_mapping_data(session: Session) -> None:
             logger.info(upload_response)
 
         db_dataset = session.exec(
-            select(Dataset).where(Dataset.account_id == demo_account.id, Dataset.name == d.name)
+            select(Dataset).where(
+                Dataset.account_id == demo_account.id, Dataset.name == d.name
+            )
         ).first()
         if db_dataset:
             logger.info(f"Dataset {d.uid} already registered")
@@ -182,7 +205,9 @@ async def load_geospatial_mapping_data(session: Session) -> None:
         # load dataset to postgis via ogr2ogr
         pg_table = ogr2ogr_to_postgis(
             DatasetLoadOgr(
-                uid=str(d.uid), tmp_dir="src/scripts/data", tmp_file_path="src/scripts/data/open_energy_sample.json"
+                uid=str(d.uid),
+                tmp_dir="src/scripts/data",
+                tmp_file_path="src/scripts/data/open_energy_sample.json",
             )
         )
 
@@ -201,7 +226,11 @@ async def load_geospatial_mapping_data(session: Session) -> None:
             db=session,
             dataset_uid=d.uid,
             account_id=d.account_id,
-            dataset=DatasetUpdate(status="ready", primary_key_column=primary_key_column, bbox=BoundingBox(**bbox)),
+            dataset=DatasetUpdate(
+                status="ready",
+                primary_key_column=primary_key_column,
+                bbox=BoundingBox(**bbox),
+            ),
         )
         logger.info(f"updated_dataset {updated_dataset}")
 

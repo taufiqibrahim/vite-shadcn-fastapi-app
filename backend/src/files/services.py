@@ -19,7 +19,9 @@ f = create_uploadthing()
 uploadthing_upload_router = {
     "default": f({})
     # .middleware(lambda req: {"user_id": req.headers["x-user-id"]})
-    .on_upload_complete(lambda file, metadata: print(f"Upload complete for {metadata['user_id']}")),
+    .on_upload_complete(
+        lambda file, metadata: print(f"Upload complete for {metadata['user_id']}")
+    ),
     "videoAndImage": f(
         {
             "image/png": {"max_file_size": "4MB"},
@@ -27,7 +29,9 @@ uploadthing_upload_router = {
         }
     )
     # .middleware(lambda req: {"user_id": req.headers["x-user-id"]})
-    .on_upload_complete(lambda file, metadata: print(f"Upload complete for {metadata['user_id']}")),
+    .on_upload_complete(
+        lambda file, metadata: print(f"Upload complete for {metadata['user_id']}")
+    ),
 }
 
 uploadthing_handlers = create_route_handler(
@@ -55,7 +59,9 @@ async def handle_upload_s3(file: UploadFile, account_uid: str):
 
         s3_key = f"uploads/{account_uid}/{file.filename}"
 
-        s3.upload_fileobj(Fileobj=file.file, Bucket=BUCKET_NAME, Key=s3_key, Config=transfer_config)
+        s3.upload_fileobj(
+            Fileobj=file.file, Bucket=BUCKET_NAME, Key=s3_key, Config=transfer_config
+        )
 
         return {
             "name": file.filename,

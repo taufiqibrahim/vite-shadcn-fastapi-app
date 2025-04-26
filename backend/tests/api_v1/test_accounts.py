@@ -11,7 +11,9 @@ from fastapi.testclient import TestClient
 @pytest.mark.asyncio
 async def test_get_own_profile(client, test_account_authorized_headers):
     """Test get current account info"""
-    response = client.get("/api/v1/accounts/me", headers=test_account_authorized_headers)
+    response = client.get(
+        "/api/v1/accounts/me", headers=test_account_authorized_headers
+    )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert "email" in data
@@ -23,11 +25,13 @@ async def test_get_own_profile(client, test_account_authorized_headers):
 #     assert response.status_code == status.HTTP_200_OK
 
 
-@patch("src.auth.api.v1.accounts.send_password_reset_email")
+@patch("src._api.v1.accounts.send_password_reset_email")
 @pytest.mark.asyncio
 async def test_password_reset_request(mock_send_email, client, test_account_db):
     """Test sending password reset email/token"""
-    response = client.post("/api/v1/accounts/password-reset", data={"email": test_account_db.email})
+    response = client.post(
+        "/api/v1/accounts/reset-password", data={"email": test_account_db.email}
+    )
     assert response.status_code == status.HTTP_201_CREATED
     mock_send_email.assert_awaited_once()
 
@@ -35,7 +39,11 @@ async def test_password_reset_request(mock_send_email, client, test_account_db):
 @pytest.mark.asyncio
 async def test_password_reset_confirm(client, test_account_authorized_headers):
     """Test confirming new password using reset token"""
-    response = client.post("/api/v1/accounts/confirm-password-reset", data={"password": "Changeme123"}, headers=test_account_authorized_headers)
+    response = client.post(
+        "/api/v1/accounts/confirm-reset-password",
+        data={"password": "Changeme123"},
+        headers=test_account_authorized_headers,
+    )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert "access_token" in data

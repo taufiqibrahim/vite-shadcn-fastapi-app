@@ -4,15 +4,19 @@ import pytest
 from fastapi import status
 from pydantic import SecretStr
 
-from src.auth.exceptions import AccountDisabledException, EmailAlreadyExistsException, InvalidLoginCredentialsException
 from src.auth.services.security import get_password_hash
+from src.core.exceptions import (
+    AccountDisabledException,
+    EmailAlreadyExistsException,
+    InvalidLoginCredentialsException,
+)
 from src.core.logging import get_logger, setup_logging
 
 setup_logging()
 logger = get_logger(__name__)
 
-from src.auth.models import Account, AccountType
-from src.auth.schemas import AccountCreate
+from src.accounts.models import Account, AccountType
+from src.accounts.schemas import AccountCreate
 
 
 # ********* AUTH TESTS *********
@@ -20,7 +24,7 @@ from src.auth.schemas import AccountCreate
 async def test_login_success(client, test_account):
     """Test successful login with correct credentials"""
     response = client.post(
-        "/api/v1/auth/login",
+        "/api/v1/accounts/login",
         data={"username": test_account.email, "password": test_account.password},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -34,8 +38,11 @@ async def test_login_success(client, test_account):
 async def test_login_email_case_insensitive(client, test_account):
     """Test login is case-insensitive on email field"""
     response = client.post(
-        "/api/v1/auth/login",
-        data={"username": test_account.email.upper(), "password": test_account.password},
+        "/api/v1/accounts/login",
+        data={
+            "username": test_account.email.upper(),
+            "password": test_account.password,
+        },
     )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -48,7 +55,7 @@ async def test_login_email_case_insensitive(client, test_account):
 async def test_login_invalid_credentials(client):
     """Test login with invalid credentials"""
     response = client.post(
-        "/api/v1/auth/login",
+        "/api/v1/accounts/login",
         data={"username": "wrong@example.com", "password": "wrongpassword"},
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -76,8 +83,11 @@ async def test_login_disabled_account(client, db):
     db.commit()
 
     response = client.post(
-        "/api/v1/auth/login",
-        data={"username": disabled_account.email, "password": disabled_account.password},
+        "/api/v1/accounts/login",
+        data={
+            "username": disabled_account.email,
+            "password": disabled_account.password,
+        },
     )
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     error = response.json()
@@ -89,13 +99,13 @@ async def test_login_disabled_account(client, db):
 async def test_login_missing_credentials(client):
     """Test login fails with missing username or password"""
     response = client.post(
-        "/api/v1/auth/login",
+        "/api/v1/accounts/login",
         data={"password": "wrongpassword"},
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     response = client.post(
-        "/api/v1/auth/login",
+        "/api/v1/accounts/login",
         data={"username": "wrong@example.com"},
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -105,7 +115,8 @@ async def test_login_missing_credentials(client):
 @pytest.mark.asyncio
 async def test_refresh_token_succesful(client, test_random_account_refresh_token):
     response = client.post(
-        "/api/v1/auth/refresh_token", headers={"authorization": "Bearer " + test_random_account_refresh_token}
+        "/api/v1/accounts/refresh-token",
+        headers={"authorization": "Bearer " + test_random_account_refresh_token},
     )
     data = response.json()
     assert response.status_code == 200
@@ -187,12 +198,12 @@ async def test_refresh_token_succesful(client, test_random_account_refresh_token
 
 
 # ********* SIGNUP TESTS *********
-@patch("src.auth.api.v1.auth.send_welcome_email")
+@patch("src._api.v1.accounts.send_welcome_email")
 @pytest.mark.asyncio
 async def test_signup_user(mock_send_email, client, test_random_account):
     """Test user registration"""
     response = client.post(
-        "/api/v1/auth/signup",
+        "/api/v1/accounts/signup",
         data={
             "email": test_random_account.email,
             "password": test_random_account.password,
@@ -209,7 +220,7 @@ async def test_signup_user(mock_send_email, client, test_random_account):
 async def test_signup_user_existing_email(client, test_account):
     """Test registration with existing email"""
     response = client.post(
-        "/api/v1/auth/signup",
+        "/api/v1/accounts/signup",
         data={
             "email": test_account.email,
             "password": test_account.password,
@@ -225,7 +236,7 @@ async def test_signup_user_existing_email(client, test_account):
 async def test_signup_weak_password(client, test_random_account):
     """Test signup fails if password does not meet strength requirements"""
     response = client.post(
-        "/api/v1/auth/signup",
+        "/api/v1/accounts/signup",
         data={
             "email": test_random_account.email,
             "password": "weakpass",
@@ -237,8 +248,11 @@ async def test_signup_weak_password(client, test_random_account):
 @pytest.mark.asyncio
 async def test_signup_invalid_email_format(client, test_random_account):
     """Test signup fails with invalid email format"""
-    account = {"email": test_random_account.email.replace("@", "2"), "password": test_random_account.password}
-    response = client.post("/api/v1/auth/signup", json=account)
+    account = {
+        "email": test_random_account.email.replace("@", "2"),
+        "password": test_random_account.password,
+    }
+    response = client.post("/api/v1/accounts/signup", json=account)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
@@ -246,11 +260,11 @@ async def test_signup_invalid_email_format(client, test_random_account):
 async def test_signup_missing_required_fields(client, test_random_account):
     """Test signup fails when required fields are missing"""
     account = {"email": "missing_password@example.com"}
-    response = client.post("/api/v1/auth/signup", json=account)
+    response = client.post("/api/v1/accounts/signup", json=account)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
     account = {"password": test_random_account.password}
-    response = client.post("/api/v1/auth/signup", json=account)
+    response = client.post("/api/v1/accounts/signup", json=account)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 

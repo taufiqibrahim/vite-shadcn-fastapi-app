@@ -7,8 +7,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
 # Endpoints
-from src.auth.api.v1 import accounts as account_endpoints_v1
-from src.auth.api.v1 import auth as auth_endpoints_v1
+from src._api.v1 import accounts as account_endpoints_v1
 
 # Core
 from src.core.config import settings
@@ -36,7 +35,6 @@ app = FastAPI(
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Include the authentication and users routers
-app.include_router(auth_endpoints_v1.router)
 app.include_router(account_endpoints_v1.router)
 # app.include_router(users_endpoints_v1.router)
 
