@@ -55,7 +55,7 @@ function PageContent() {
         const newDataset = {
           uid: item.uid,
           name: item.name,
-          account_id: user.account_id,
+          account_id: user?.account_id,
           file_name: item.name,
           status: "uploaded" as const,
           storage_backend: STORAGE_BACKEND,

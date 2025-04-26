@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
 import {
   DEFAULT_ERROR_MESSAGE,
