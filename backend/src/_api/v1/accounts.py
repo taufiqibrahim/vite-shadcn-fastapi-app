@@ -33,7 +33,7 @@ from src.core.exceptions import (
     InvalidLoginCredentialsException,
 )
 from src.core.logging import get_logger, setup_logging
-from src.database.session import get_db
+from src.core.database import get_db
 from src.dependencies import get_current_active_account
 
 setup_logging()

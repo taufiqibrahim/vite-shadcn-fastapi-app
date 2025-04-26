@@ -17,7 +17,7 @@ from src.core.exceptions import (
     CredentialsValidationFailureException,
 )
 from src.core.logging import get_logger, setup_logging
-from src.database.session import get_db
+from src.core.database import get_db
 
 setup_logging()
 logger = get_logger(__name__)

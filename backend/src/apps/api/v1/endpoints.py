@@ -7,7 +7,7 @@ from src.apps import services
 from src.apps.models import App
 from src.apps.schemas import AppCreate, AppRead
 from src.auth.services import get_current_active_account
-from src.database.session import get_db
+from src.core.database import get_db
 
 router = APIRouter(
     prefix="/api/v1/apps",
