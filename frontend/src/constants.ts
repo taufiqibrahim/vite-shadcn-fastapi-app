@@ -8,3 +8,4 @@ export const LOGIN_SUCCESS_REDIRECT_URL =
 export const STORAGE_BACKEND = import.meta.env.VITE_STORAGE_BACKEND || "minio";
 export const DEMO_USERNAME = import.meta.env.VITE_DEMO_USERNAME;
 export const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD;
+export const DEFAULT_ERROR_MESSAGE = "Oops, something wrong on our side"

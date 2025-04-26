@@ -13,9 +13,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
-import { DEMO_PASSWORD } from "@/constants";
+import { DEFAULT_ERROR_MESSAGE, DEMO_PASSWORD } from "@/constants";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   password: z
@@ -30,12 +31,9 @@ const formSchema = z.object({
     .regex(/[0-9]/, { message: "Password must contain at least one number" }),
 });
 
-export function ResetPasswordForm() {
-  // Hook for navigation (React Router)
+export function ResetPasswordForm({resetToken}: {resetToken:string}) {
   const nav = useNavigate();
-
-  // Auth adapter
-  const { signup } = useAuth();
+  const { confirmResetPassword } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -49,19 +47,25 @@ export function ResetPasswordForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    const password = values.password;
+    console.log("resetToken", resetToken)
 
-    // // Call auth adapter signup function with credentials
-    // const { token, message } = await signup({ email, password, full_name });
-
-    // if (token) {
-    //   // If login successful, navigate to dashboard
-    //   nav(LOGIN_SUCCESS_REDIRECT_URL);
-    // } else {
-    //   // If login fails, show error message
-    //   const data = message ? JSON.parse(message) : "";
-    //   toast.error("Signup Failed", { description: renderMessage(data) });
-    // }
+    try {
+      const password = values.password;
+      const { token, message } = await confirmResetPassword({ resetToken, password });
+      console.log({token, message})
+  
+      // if (token) {
+      //   // If login successful, navigate to dashboard
+      //   nav(LOGIN_SUCCESS_REDIRECT_URL);
+      // } else {
+      //   // If login fails, show error message
+      //   const data = message ? JSON.parse(message) : "";
+      //   toast.error("Signup Failed", { description: renderMessage(data) });
+      // } 
+    } catch (error) {
+      console.log(error)
+      toast.error(DEFAULT_ERROR_MESSAGE)
+    }
 
     setIsLoading(false);
   }

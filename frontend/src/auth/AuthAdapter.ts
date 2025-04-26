@@ -8,7 +8,7 @@ export type SignupCredentials = {
   full_name?: string | null | undefined;
 };
 export type RequestResetPasswordCredentials = { email: string };
-export type ResetPasswordCredentials = { password: string };
+export type ResetPasswordCredentials = { resetToken: string, password: string };
 
 export type LoginResponse = {
   token: string | null;
@@ -128,8 +128,20 @@ export class UserAuthAdapter implements AuthAdapter {
     }
   }
 
-  async confirmResetPassword(credentials: ConfirmResetPassword): Promise<any> {
-    console.debug("confirmResetPassword", credentials);
-    return {};
+  async confirmResetPassword(credentials: ResetPasswordCredentials): Promise<any> {
+    try {
+      const form = new URLSearchParams();
+      form.append("password", credentials.password);
+      const data = await request("/accounts/confirm-password-reset", "POST",
+        form,
+        {
+          "Authorization": `Bearer ${credentials.resetToken}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      });
+      return { data };
+    } catch (err) {
+      console.error(`Error:`, err);
+      return { err };
+    }
   }
 }
