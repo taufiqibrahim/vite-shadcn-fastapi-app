@@ -7,8 +7,8 @@ from temporalio.client import Client as TemporalClient
 
 from src.auth.models import Account
 from src.auth.services import get_current_active_account
-from src.core.logging import get_logger, setup_logging
 from src.core.database import get_db
+from src.core.logging import get_logger, setup_logging
 from src.dependencies import get_temporal_client
 from src.geospatial_mapping import services
 from src.geospatial_mapping.models import (

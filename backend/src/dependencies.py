@@ -12,12 +12,12 @@ from src.accounts.services import get_account_by_api_key, get_account_by_email
 from src.auth.schemas import TokenPayload
 from src.auth.services.jwt import verify_access_token
 from src.core.config import settings
+from src.core.database import get_db
 from src.core.exceptions import (
     AccountDisabledException,
     CredentialsValidationFailureException,
 )
 from src.core.logging import get_logger, setup_logging
-from src.core.database import get_db
 
 setup_logging()
 logger = get_logger(__name__)

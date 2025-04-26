@@ -27,13 +27,13 @@ from src.auth.services.jwt import (
 )
 from src.auth.services.security import verify_password
 from src.core.config import settings
+from src.core.database import get_db
 from src.core.exceptions import (
     AccountDisabledException,
     EmailAlreadyExistsException,
     InvalidLoginCredentialsException,
 )
 from src.core.logging import get_logger, setup_logging
-from src.core.database import get_db
 from src.dependencies import get_current_active_account
 
 setup_logging()

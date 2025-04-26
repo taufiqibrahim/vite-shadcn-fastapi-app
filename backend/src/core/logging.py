@@ -13,7 +13,7 @@ def setup_logging(level=log_level, log_to_file=False, filename="app.log"):
         "disable_existing_loggers": False,  # <== important!
         "formatters": {
             "default": {
-                "format": "%(asctime)s [%(levelname)s] %(name)s - %(module)s:%(lineno)d - %(message)s",
+                "format": "%(asctime)s [%(levelname)s] %(name)s - %(filename)s:%(lineno)d - %(message)s",
             },
         },
         "handlers": {

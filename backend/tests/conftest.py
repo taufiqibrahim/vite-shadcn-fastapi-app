@@ -16,8 +16,8 @@ from src.accounts.models import Account, AccountType
 from src.accounts.schemas import AccountCreate
 from src.auth.services.jwt import create_access_token, create_refresh_token
 from src.auth.services.security import get_password_hash
-from src.core.logging import get_logger, setup_logging
 from src.core.database import get_db
+from src.core.logging import get_logger, setup_logging
 from src.main import app
 
 # Ensure the src directory is in the import path

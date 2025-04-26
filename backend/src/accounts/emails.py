@@ -34,7 +34,7 @@ async def send_welcome_email(recipient: str):
 
 
 async def send_password_reset_email(recipient: str, password_reset_token: str):
-    url = f"{settings.APP_URL}/account/reset-password?token={password_reset_token}"
+    url = f"{settings.APP_URL}/reset-password?token={password_reset_token}"
     subject = "Reset Password Requested!"
     body = f"""<!DOCTYPE html>
 <html>

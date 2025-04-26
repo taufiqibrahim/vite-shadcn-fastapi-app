@@ -1,6 +1,8 @@
 import json
 from email.message import EmailMessage
 
+import aiosmtplib
+
 from src.core.config import mail_settings, settings
 from src.core.logging import get_logger, setup_logging
 
@@ -28,16 +30,15 @@ async def send_email_smtp(subject: str, body: str, recipient: str):
     message.add_alternative(body, subtype="html")
 
     if mail_settings.MAIL_ENABLED:
-        logger.debug(f"SMTP {mail_settings.MAIL_SMTP_USERNAME}")
-
-        # await aiosmtplib.send(
-        #     message,
-        #     hostname=mail_settings.MAIL_SMTP_HOST,
-        #     port=mail_settings.MAIL_SMTP_PORT,
-        #     start_tls=True,
-        #     username=mail_settings.MAIL_SMTP_USERNAME,
-        #     password=mail_settings.MAIL_SMTP_PASSWORD,
-        # )
+        logger.debug(f"Sending SMTP {mail_settings.MAIL_SMTP_USERNAME}")
+        await aiosmtplib.send(
+            message,
+            hostname=mail_settings.MAIL_SMTP_HOST,
+            port=mail_settings.MAIL_SMTP_PORT,
+            start_tls=True,
+            username=mail_settings.MAIL_SMTP_USERNAME,
+            password=mail_settings.MAIL_SMTP_PASSWORD,
+        )
     else:
         print(
             f"""
