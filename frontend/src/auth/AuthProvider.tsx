@@ -63,6 +63,7 @@ export const AuthProvider: React.FC<{
     enabled: !!accessToken, // only run query if accessToken is set
     retry: false, // disable retries if needed
     refetchOnWindowFocus: false,
+    staleTime: 5 * 60000,
   });
 
   const getUser = async (): Promise<UserMe> => {

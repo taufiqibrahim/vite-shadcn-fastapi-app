@@ -8,7 +8,6 @@ import { useAuth } from "./auth/use-auth";
 import { GeospatialMappingAppRoutes } from "@/pages/apps/geospatial-mapping-app/router";
 
 const ProtectedRoute = () => {
-  console.log("router.ProtectedRoute");
   const { accessToken } = useAuth();
   return accessToken ? <Outlet /> : <Navigate to="/login" replace />;
 };
@@ -61,17 +60,6 @@ export const routes: RouteObject[] = [
         ],
       },
       {
-        path: "billing",
-        children: [
-          {
-            path: "",
-            lazy: async () => ({
-              Component: (await import("@/pages/billing")).default,
-            }),
-          },
-        ],
-      },
-      {
         path: "usage",
         handle: { breadcrumb: "Usage" },
         children: [
@@ -83,22 +71,56 @@ export const routes: RouteObject[] = [
           },
         ],
       },
+      // SettingRoutes,
       {
         path: "settings",
         handle: { breadcrumb: "Settings" },
         children: [
           {
-            path: "",
-            lazy: async () => ({
-              Component: (await import("@/pages/settings")).default,
-            }),
+            path: "profile",
+            handle: { breadcrumb: "Profile" },
+            children: [
+              {
+                path: "user",
+                handle: { breadcrumb: "" },
+                lazy: async () => ({
+                  Component: (await import("@/pages/settings/profile/user"))
+                    .default,
+                }),
+              },
+            ],
           },
           {
-            path: "api-keys",
-            handle: { breadcrumb: "API Keys" },
-            lazy: async () => ({
-              Component: (await import("@/pages/settings/api-keys")).default,
-            }),
+            path: "organizations",
+            handle: { breadcrumb: "Organizations" },
+            children: [
+              {
+                path: "general",
+                handle: { breadcrumb: "" },
+                lazy: async () => ({
+                  Component: (await import("@/pages/settings/organizations"))
+                    .default,
+                }),
+              },
+              {
+                path: "billing",
+                handle: { breadcrumb: "Billing" },
+                lazy: async () => ({
+                  Component: (
+                    await import("@/pages/settings/organizations/billing")
+                  ).default,
+                }),
+              },
+              {
+                path: "api-keys",
+                handle: { breadcrumb: "API Keys" },
+                lazy: async () => ({
+                  Component: (
+                    await import("@/pages/settings/organizations/api-keys")
+                  ).default,
+                }),
+              },
+            ],
           },
         ],
       },

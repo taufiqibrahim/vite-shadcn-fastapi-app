@@ -134,16 +134,20 @@
   }
 }
 
+body {
+  font-family: "Roboto", sans-serif;
+}
+
 @layer base {
   * {
     @apply border-border;
   }
-  body {
+  /* body {
     @apply bg-background text-foreground min-h-screen;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
-  }
+  } */
 }
 
 @theme {
@@ -156,6 +160,8 @@
 
 .font-roboto {
   font-family: "Roboto", sans-serif;
+  letter-spacing: 0.02em;
+  line-height: 1.6;
 }
 
 .font-playfair {

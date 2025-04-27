@@ -1,4 +1,4 @@
-import { SignupForm } from "@/components/auth/signup-form";
+import { SignupForm } from "@/components/account/signup-form";
 import { useFont } from "@/hooks/use-fonts";
 import { KeyRoundIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
