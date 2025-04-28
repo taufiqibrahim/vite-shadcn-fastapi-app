@@ -1,20 +1,21 @@
 
 import { Layout } from "@/components/layout/Layout";
 import { ProfileForm } from "@/components/settings/profile-form";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { Button } from "@/components/ui/button";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useFont } from "@/hooks/use-fonts";
-import { Copy } from "lucide-react";
+// import { Copy } from "lucide-react";
 
 export default function Page() {
   const { font } = useFont();
-  const tabs = [
-    {
-      name: "pnpm",
-      value: "pnpm",
-      content: "pnpm dlx shadcn@latest add tabs",
-    },
-  ]
+  // const tabs = [
+  //   {
+  //     name: "pnpm",
+  //     value: "pnpm",
+  //     content: "pnpm dlx shadcn@latest add tabs",
+  //   },
+  // ]
+
   return (
     <Layout>
       <div className="w-full max-w-7xl space-y-12">

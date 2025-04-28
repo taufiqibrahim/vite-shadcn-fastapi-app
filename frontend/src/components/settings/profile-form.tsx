@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import {
-  EyeIcon,
-  EyeOffIcon,
-  MailIcon,
-  LockIcon,
-  UserIcon,
-} from "lucide-react";
+// import {
+//   EyeIcon,
+//   EyeOffIcon,
+//   MailIcon,
+//   LockIcon,
+//   UserIcon,
+// } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,10 +21,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useNavigate } from "react-router";
-import { useAuth } from "@/auth/use-auth";
-import { toast } from "sonner";
+// import { Checkbox } from "@/components/ui/checkbox";
+// import { useNavigate } from "react-router";
+// import { useAuth } from "@/auth/use-auth";
+// import { toast } from "sonner";
 // import {
 //   DEMO_PASSWORD,
 //   DEMO_USERNAME,
@@ -77,6 +77,7 @@ export function ProfileForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    console.log(values)
     // const email = values.email;
     // const password = values.password;
     // const full_name = values.name;
