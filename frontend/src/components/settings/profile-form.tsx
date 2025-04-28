@@ -125,20 +125,16 @@ export function ProfileForm() {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <div className="relative">
-                  <FormControl>
-                    <div className="relative">
-                      <Input
-                        {...field}
-                        placeholder="Email"
-                        className="pl-10"
-                        autoComplete="email"
-                        disabled
-                      />
-                      <MailIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    </div>
-                  </FormControl>
-                </div>
+                <FormLabel>Email address</FormLabel>
+                <FormDescription>The email address associated with this account</FormDescription>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Email"
+                    autoComplete="email"
+                    disabled
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

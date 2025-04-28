@@ -50,8 +50,8 @@ export default function Page() {
             <div
               className={`flex flex-col justify-center lg:flex-row ${font}`}
             >
-              <div className="flex flex-1 flex-col justify-start py-4 px-5 sm:px-6 lg:px-8 xl:px-12">
-                <div className="mx-auto w-full max-w-md sm:w-[400px]">
+              <div className="flex flex-1 flex-col justify-start py-4 ">
+                <div className="w-full max-w-md sm:w-[400px]">
                   <ProfileForm />
                 </div>
               </div>
