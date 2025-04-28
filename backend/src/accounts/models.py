@@ -1,7 +1,7 @@
 import enum
 import uuid
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Optional
 
 from sqlmodel import TIMESTAMP, Column, Enum, Field, Relationship, SQLModel
 

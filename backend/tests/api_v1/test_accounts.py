@@ -358,7 +358,9 @@ async def test_password_reset_request(mock_send_email, client, test_account_db):
 
 
 @pytest.mark.asyncio
-async def test_password_reset_confirm(client, test_account, test_account_authorized_headers):
+async def test_password_reset_confirm(
+    client, test_account, test_account_authorized_headers
+):
     """Test confirming new password using reset token"""
     response = client.post(
         "/api/v1/accounts/confirm-reset-password",

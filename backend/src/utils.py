@@ -1,7 +1,7 @@
 import json
-from email.message import EmailMessage
 import secrets
 import string
+from email.message import EmailMessage
 
 import aiosmtplib
 
@@ -28,6 +28,18 @@ def generate_public_id(prefix="org", random_length=16):
     alphabet = string.ascii_letters + string.digits
     random_part = "".join(secrets.choice(alphabet) for _ in range(random_length))
     return f"{prefix}-{random_part}"
+
+
+def run_alembic_migration(DB_SQLALCHEMY_URI: str):
+    from alembic.command import upgrade
+    from alembic.config import Config
+
+    alembic_config = Config("alembic.ini")
+    alembic_config.set_main_option("sqlalchemy.url", DB_SQLALCHEMY_URI)
+    upgrade(alembic_config, "head")
+
+    # Rerun setup_logging due to alembic logging is interfere with the app logging
+    setup_logging()
 
 
 async def send_email_smtp(subject: str, body: str, recipient: str):

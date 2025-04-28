@@ -1,11 +1,11 @@
 import uuid
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
-from sqlmodel import Field, Relationship, SQLModel
+from sqlmodel import Field, SQLModel
 
-if TYPE_CHECKING:
-    from src.accounts.models import Account
+# if TYPE_CHECKING:
+#     from src.accounts.models import Account
 
 
 class APIKey(SQLModel, table=True):

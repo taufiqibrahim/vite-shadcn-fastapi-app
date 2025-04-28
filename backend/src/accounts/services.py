@@ -1,7 +1,9 @@
-from typing import List, Optional
 import uuid
+from typing import List, Optional
+
 from fastapi import HTTPException
 from sqlmodel import Session, select
+
 from src.accounts.models import Account, AccountProfile
 from src.accounts.schemas import AccountCreate, AccountDelete, AccountUpdate
 from src.auth.services.security import get_password_hash
@@ -9,7 +11,6 @@ from src.core.exceptions import APINotImplementedError, EmailAlreadyExistsExcept
 from src.core.logging import get_logger, setup_logging
 from src.organizations.models import Organization
 from src.projects.models import Project
-
 
 setup_logging()
 logger = get_logger(__name__)
@@ -51,7 +52,11 @@ async def create_account(db: Session, account: AccountCreate) -> Account:
         db.add(db_account_org)
 
         # Create default project
-        db_account_project = Project(organization=db_account_org, name="Default project", description="Default project")
+        db_account_project = Project(
+            organization=db_account_org,
+            name="Default project",
+            description="Default project",
+        )
         db.add(db_account_project)
 
         logger.debug(f"Created user account: {db_account.email.lower()}")
@@ -91,11 +96,11 @@ async def get_account_by_email(db: Session, email: str) -> Optional[Account]:
     return result
 
 
-async def get_account_by_api_key(db: Session, api_key: str) -> Optional[Account]:
-    result = db.exec(
-        select(Account).join(APIKey).where(APIKey.key == api_key, APIKey.is_active)
-    ).first()
-    return result
+# async def get_account_by_api_key(db: Session, api_key: str) -> Optional[Account]:
+#     result = db.exec(
+#         select(Account).join(APIKey).where(APIKey.key == api_key, APIKey.is_active)
+#     ).first()
+#     return result
 
 
 async def get_accounts(db: Session, skip: int = 0, limit: int = 100) -> List[Account]:

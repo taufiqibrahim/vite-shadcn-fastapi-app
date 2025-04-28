@@ -1,11 +1,12 @@
+import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
-import uuid
 
 from sqlmodel import TIMESTAMP, Column, Field, Relationship, SQLModel, UniqueConstraint
 
 if TYPE_CHECKING:
     from src.organizations.models import Organization
+
 from src.utils import generate_public_id
 
 

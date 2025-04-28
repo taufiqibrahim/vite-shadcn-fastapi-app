@@ -1,19 +1,19 @@
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
 
 # Middlewares
+from sqlmodel import create_engine, text
 from starlette.middleware.cors import CORSMiddleware
 
 # Endpoints
 from src._api.v1 import accounts as account_endpoints_v1
 
 # Core
-from src.core.config import settings
-
-# from contextlib import asynccontextmanager
-
+from src.core.config import secret_settings, settings
+from src.utils import run_alembic_migration
 
 # from src.core.logging import get_logger, setup_logging
 
@@ -26,9 +26,26 @@ from src.core.config import settings
 
 logger = logging.getLogger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Running startup events...")
+
+    logger.info("DATABASE: Create postgis extension")
+    with create_engine(
+        secret_settings.SQLALCHEMY_DATABASE_URI, isolation_level="AUTOCOMMIT"
+    ).connect() as conn:
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS postgis"))
+
+    logger.info("DATABASE: Run alembic migrations")
+    run_alembic_migration(secret_settings.SQLALCHEMY_DATABASE_URI)
+
+    yield
+
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    # lifespan=lifespan,
+    lifespan=lifespan,
 )
 
 # GZIP middleware
@@ -58,5 +75,4 @@ logger.info(f"FRONTEND_HOST={settings.FRONTEND_HOST}")
 
 @app.get("/health", tags=["Default"])
 def health_check():
-    logger.info("000000000000000000    00000000000000000000")
     return {"project_name": settings.PROJECT_NAME, "status": "ok"}
