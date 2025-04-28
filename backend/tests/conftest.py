@@ -120,7 +120,7 @@ def mock_send_email(monkeypatch):
 
 
 # ********* TEST ACCOUNT FIXTURES ********************************************************************
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_account() -> AccountCreate:
     return AccountCreate(
         uid=TEST_ACCOUNT_UID,

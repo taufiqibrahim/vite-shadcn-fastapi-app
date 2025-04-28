@@ -1,15 +1,15 @@
-import uuid
 from typing import List, Optional
-
+import uuid
 from fastapi import HTTPException
 from sqlmodel import Session, select
-
-from src.accounts.models import Account
+from src.accounts.models import Account, AccountProfile
 from src.accounts.schemas import AccountCreate, AccountDelete, AccountUpdate
-from src.api_keys.models import APIKey
 from src.auth.services.security import get_password_hash
 from src.core.exceptions import APINotImplementedError, EmailAlreadyExistsException
 from src.core.logging import get_logger, setup_logging
+from src.organizations.models import Organization
+from src.projects.models import Project
+
 
 setup_logging()
 logger = get_logger(__name__)
@@ -18,26 +18,43 @@ logger = get_logger(__name__)
 async def create_account(db: Session, account: AccountCreate) -> Account:
     logger.debug(f"Creating user account: {account.email}")
 
-    # Check if email already exists
-    existing_account = await get_account_by_email(db, account.email)
-    if existing_account:
-        raise EmailAlreadyExistsException
+    with db.begin():
+        # Check if email already exists
+        existing_account = await get_account_by_email(db, account.email)
+        if existing_account:
+            raise EmailAlreadyExistsException
 
-    # Create the account
-    hashed_password = get_password_hash(account.password) if account.password else None
-    db_account = Account(
-        email=account.email.lower(),
-        hashed_password=hashed_password,
-        disabled=account.disabled,
-        account_type=account.account_type,
-        uid=account.uid if account.uid else uuid.uuid4(),
-    )
+        # Create the account
+        hashed_password = (
+            get_password_hash(account.password) if account.password else None
+        )
+        db_account = Account(
+            email=account.email.lower(),
+            hashed_password=hashed_password,
+            disabled=account.disabled,
+            account_type=account.account_type,
+            uid=account.uid if account.uid else uuid.uuid4(),
+        )
 
-    db.add(db_account)
-    db.commit()
-    db.refresh(db_account)
+        db.add(db_account)
 
-    logger.debug(f"Created user account: {db_account.email.lower()}")
+        # Create account profile
+        db_account_profile = AccountProfile(
+            account=db_account, full_name=account.full_name
+        )
+        db.add(db_account_profile)
+
+        # Create default organization
+        db_account_org = Organization(
+            account=db_account, name="Default org", description="Default organization"
+        )
+        db.add(db_account_org)
+
+        # Create default project
+        db_account_project = Project(organization=db_account_org, name="Default project", description="Default project")
+        db.add(db_account_project)
+
+        logger.debug(f"Created user account: {db_account.email.lower()}")
 
     return db_account
 

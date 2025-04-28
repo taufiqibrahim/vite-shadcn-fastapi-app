@@ -13,6 +13,7 @@ class AccountBase(BaseModel):
 
 
 class AccountCreate(AccountBase):
+    full_name: str
     password: Optional[SecretStr] = None
     account_type: Optional[AccountType] = AccountType.USER
 

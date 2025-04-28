@@ -24,7 +24,10 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 from src.accounts.models import Account, AccountProfile  # noqa
-from src.api_keys.models import APIKey  # noqa
+from src.organizations.models import Organization  # noqa
+from src.projects.models import Project  # noqa
+
+# from src.api_keys.models import APIKey  # noqa
 
 # from src.apps.models import App  # noqa
 # from src.geospatial_mapping.models import Dataset  # noqa

@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from sqlmodel import TIMESTAMP, Column, Enum, Field, Relationship, SQLModel
 
-from src.api_keys.models import APIKey
+from src.organizations.models import Organization
 
 
 class AccountType(enum.Enum):
@@ -24,8 +24,13 @@ class Account(SQLModel, table=True):
     account_type: AccountType = Field(
         sa_column=Column(Enum(AccountType)), default=AccountType.USER
     )
-    api_keys: List[APIKey] = Relationship(back_populates="account")
+
+    # List of organizations owned by this account
+    organizations: list["Organization"] = Relationship(back_populates="account")
+
+    # The profile record of this account
     profile: Optional["AccountProfile"] = Relationship(back_populates="account")
+
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),

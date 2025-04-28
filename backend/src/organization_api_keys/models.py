@@ -14,8 +14,8 @@ class APIKey(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, index=True)
     key: str = Field(unique=True, index=True)
     uid: uuid.UUID = Field(default_factory=uuid.uuid4, unique=True, index=True)
-    account_id: Optional[int] = Field(default=None, foreign_key="account.id")
-    account: Optional["Account"] = Relationship(back_populates="api_keys")
+    # account_id: Optional[int] = Field(default=None, foreign_key="account.id")
+    # account: Optional["Account"] = Relationship(back_populates="api_keys")
     is_active: bool = True
     level: int = Field(default=1)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))

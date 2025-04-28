@@ -2,7 +2,7 @@ import secrets
 
 from sqlmodel import Session
 
-from src.api_keys.models import APIKey
+from src.organization_api_keys.models import APIKey
 
 
 def create_api_key(

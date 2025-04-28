@@ -1,5 +1,7 @@
 import json
 from email.message import EmailMessage
+import secrets
+import string
 
 import aiosmtplib
 
@@ -20,6 +22,12 @@ def stream_json(records):
             first = False
         yield json.dumps(dict(row))
     yield "]"
+
+
+def generate_public_id(prefix="org", random_length=16):
+    alphabet = string.ascii_letters + string.digits
+    random_part = "".join(secrets.choice(alphabet) for _ in range(random_length))
+    return f"{prefix}-{random_part}"
 
 
 async def send_email_smtp(subject: str, body: str, recipient: str):
