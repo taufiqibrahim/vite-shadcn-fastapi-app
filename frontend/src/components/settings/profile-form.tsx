@@ -77,7 +77,7 @@ export function ProfileForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(values)
+    console.log(values);
     // const email = values.email;
     // const password = values.password;
     // const full_name = values.name;
@@ -106,7 +106,9 @@ export function ProfileForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Full name</FormLabel>
-                <FormDescription>The name associated with this account</FormDescription>
+                <FormDescription>
+                  The name associated with this account
+                </FormDescription>
                 <FormControl>
                   <Input
                     {...field}
@@ -127,7 +129,9 @@ export function ProfileForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Email address</FormLabel>
-                <FormDescription>The email address associated with this account</FormDescription>
+                <FormDescription>
+                  The email address associated with this account
+                </FormDescription>
                 <FormControl>
                   <Input
                     {...field}
@@ -146,7 +150,6 @@ export function ProfileForm() {
           </Button>
         </form>
       </Form>
-
     </div>
   );
 }

@@ -1,4 +1,3 @@
-
 import { Layout } from "@/components/layout/Layout";
 import { ProfileForm } from "@/components/settings/profile-form";
 // import { Button } from "@/components/ui/button";
@@ -48,16 +47,13 @@ export default function Page() {
               ))}
             </Tabs> */}
 
-            <div
-              className={`flex flex-col justify-center lg:flex-row ${font}`}
-            >
+            <div className={`flex flex-col justify-center lg:flex-row ${font}`}>
               <div className="flex flex-1 flex-col justify-start py-4 ">
                 <div className="w-full max-w-md sm:w-[400px]">
                   <ProfileForm />
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

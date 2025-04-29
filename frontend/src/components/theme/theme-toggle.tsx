@@ -14,7 +14,29 @@ export function ThemeToggle() {
   const { setTheme } = useTheme();
   const { setFont } = useFont();
 
+  // an array of all possible custom themes
+  const customThemes = [
+    { label: "Facebook", theme: "theme-facebook", font: "font-helvetica" },
+    { label: "Instagram", theme: "theme-instagram", font: "font-sf-pro" },
+    { label: "Airbnb", theme: "theme-airbnb", font: "font-circular" },
+  ];
+  const THEME_CLASSES = customThemes.map((t) => t.theme);
+
   const handleThemeChange = (theme: string, font?: string) => {
+    /**
+     * Every time the user selects a new custom theme:
+     * It removes all previous custom themes safely (html.classList.remove(...THEME_CLASSES)).
+     * It adds the selected custom theme (html.classList.add(themeClass)).
+     * It does NOT touch any other classes (like dark, light, system, etc.).
+     */
+    const html = document.documentElement;
+
+    // Remove any previous custom theme classes
+    html.classList.remove(...THEME_CLASSES);
+
+    // Add the new custom theme
+    html.classList.add(theme);
+
     setTheme(theme);
     if (font) {
       setFont(font);
@@ -25,46 +47,40 @@ export function ThemeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-8 w-8">
-          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Sun className="h-8 w-8 rotate-0 scale-120 transition-all dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-8 w-8 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-120" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("light", "font-sans")}
+        >
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("dark", "font-opensans")}
+        >
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
+        <DropdownMenuItem
+          onClick={() => handleThemeChange("system", "font-sans")}
+        >
           System
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => {
-            document.documentElement.className = "theme-facebook";
-            handleThemeChange("theme-facebook");
-            setFont("font-helvetica");
-          }}
+          onClick={() => handleThemeChange("theme-facebook", "font-helvetica")}
         >
           Facebook
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => {
-            document.documentElement.className = "theme-instagram";
-            handleThemeChange("theme-instagram");
-            setFont("font-sf-pro");
-          }}
+          onClick={() => handleThemeChange("theme-instagram", "font-sf-pro")}
         >
           Instagram
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => {
-            document.documentElement.className = "theme-airbnb";
-            handleThemeChange("theme-airbnb");
-            setFont("font-circular");
-          }}
+          onClick={() => handleThemeChange("theme-airbnb", "font-circular")}
         >
           Airbnb
         </DropdownMenuItem>

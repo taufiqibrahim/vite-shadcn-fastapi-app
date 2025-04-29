@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./Sidebar";
 import { useAuth } from "@/auth/use-auth";
 import { getInitials } from "@/lib/utils";
+import { useFont } from "@/hooks/use-fonts";
 
 export interface LayoutProps {
   children: ReactNode;
@@ -22,10 +23,11 @@ export function Layout({
   fixedHeader = true,
   // showHelpButton = false,
 }: LayoutProps) {
+  const { font } = useFont();
   const { user: userData } = useAuth();
 
   return (
-    <div className="">
+    <div className={`${font}`}>
       {sidebarEnabled && (
         <SidebarProvider>
           <SidebarComponent />

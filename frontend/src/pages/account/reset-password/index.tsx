@@ -1,7 +1,7 @@
 import { JwtPayload } from "@/auth/types";
+import { AccountAuthContainer } from "@/components/account/account-container";
 import { ResetPasswordForm } from "@/components/account/reset-password-form";
 import { Button } from "@/components/ui/button";
-import { useFont } from "@/hooks/use-fonts";
 import { jwtDecode } from "jwt-decode";
 import { KeyRoundIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
@@ -22,9 +22,9 @@ const formContainerVariants = {
   },
 };
 
-export default function Page() {
+export default function ResetPasswordPage() {
   const nav = useNavigate();
-  const { font } = useFont();
+
   const [isTokenExpired, setIsTokenExpired] = useState(false);
   const token = new URLSearchParams(useLocation().search).get("token");
 
@@ -37,52 +37,46 @@ export default function Page() {
   }, [token]);
 
   return (
-    <div
-      className={`flex min-h-screen flex-col justify-center lg:flex-row ${font}`}
-    >
-      <div className="flex flex-1 flex-col justify-start px-5 py-24 sm:px-6 lg:px-8 xl:px-12">
-        <div className="mx-auto w-full max-w-md sm:w-[400px] border rounded shadow p-4">
-          <div className="flex flex-col space-y-2 text-center mb-8">
-            <div className="flex justify-center lg:hidden mb-4">
-              <div className="flex items-center justify-center rounded-full bg-primary p-2">
-                <KeyRoundIcon className="h-6 w-6 text-primary-foreground" />
-              </div>
-            </div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {isTokenExpired ? "Link expired!" : "Reset password"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {isTokenExpired
-                ? "The reset password link has been expired. Please request a new one"
-                : "Enter your new password"}
-            </p>
+    <AccountAuthContainer>
+      <div className="flex flex-col space-y-2 text-center mb-8">
+        <div className="flex justify-center lg:hidden mb-4">
+          <div className="flex items-center justify-center rounded-full bg-primary p-2">
+            <KeyRoundIcon className="h-6 w-6 text-primary-foreground" />
           </div>
-
-          {isTokenExpired ? (
-            <div className="mt-2 text-center">
-              <Button
-                type="button"
-                className="w-max"
-                onClick={() => nav("/account/forgot-password")}
-              >
-                Request password reset
-              </Button>
-            </div>
-          ) : (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="reset-password"
-                variants={formContainerVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              >
-                <ResetPasswordForm resetToken={token as string} />
-              </motion.div>
-            </AnimatePresence>
-          )}
         </div>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {isTokenExpired ? "Link expired!" : "Reset password"}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          {isTokenExpired
+            ? "The reset password link has been expired. Please request a new one"
+            : "Enter your new password"}
+        </p>
       </div>
-    </div>
+
+      {isTokenExpired ? (
+        <div className="mt-2 text-center">
+          <Button
+            type="button"
+            className="w-max"
+            onClick={() => nav("/account/forgot-password")}
+          >
+            Request password reset
+          </Button>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="reset-password"
+            variants={formContainerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <ResetPasswordForm resetToken={token as string} />
+          </motion.div>
+        </AnimatePresence>
+      )}
+    </AccountAuthContainer>
   );
 }
