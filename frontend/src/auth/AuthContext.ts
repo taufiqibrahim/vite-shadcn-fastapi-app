@@ -4,14 +4,17 @@ import {
   LoginResponse,
   ResetPasswordResponse,
   SignupResponse,
-  UserMe,
+  AccountProfile,
 } from "./AuthAdapter";
 
 // Defines the shape of the authentication context
 interface AuthContextType {
   accessToken?: string | null;
-  getUser: () => Promise<UserMe>;
-  user?: UserMe;
+  getUser: () => Promise<AccountProfile>;
+  refetchUser: () => void;
+  user?: AccountProfile;
+  isLoading: boolean;
+  error: unknown;
   signup: (credentials: any) => Promise<SignupResponse>;
   login: (credentials: any) => Promise<LoginResponse>;
   logout: () => void;

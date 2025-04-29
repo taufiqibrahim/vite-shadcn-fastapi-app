@@ -25,7 +25,7 @@ export type ResetPasswordResponse = {
   message: string | null;
 };
 
-export interface UserMe {
+export interface AccountProfile {
   id: number;
   uid: string;
   account_id: number;
@@ -48,7 +48,7 @@ export interface AuthAdapter {
   confirmResetPassword: (
     credentials: ResetPasswordCredentials,
   ) => Promise<ResetPasswordResponse>;
-  getUser: () => Promise<UserMe>;
+  getUser: () => Promise<AccountProfile>;
   refreshToken?: () => Promise<string>;
 }
 
@@ -110,8 +110,8 @@ export class UserAuthAdapter implements AuthAdapter {
 
   logout() {}
 
-  async getUser(): Promise<UserMe> {
-    return await request("/accounts/me", "GET");
+  async getUser(): Promise<AccountProfile> {
+    return await request("/accounts/profile/me", "GET");
   }
 
   async refreshToken(): Promise<any> {

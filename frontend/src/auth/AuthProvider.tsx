@@ -4,7 +4,7 @@ import {
   LoginResponse,
   ResetPasswordResponse,
   SignupResponse,
-  UserMe,
+  AccountProfile,
 } from "./AuthAdapter";
 import { AuthContext } from "./AuthContext";
 import { ACCESS_TOKEN_KEY } from "@/constants";
@@ -57,7 +57,12 @@ export const AuthProvider: React.FC<{
     return { token, message };
   };
 
-  const { data: user } = useQuery<UserMe>({
+  const {
+    data: user,
+    isLoading,
+    error,
+    refetch: refetchUser,
+  } = useQuery<AccountProfile>({
     queryKey: ["auth", "user"],
     queryFn: () => adapter.getUser(),
     enabled: !!accessToken, // only run query if accessToken is set
@@ -66,7 +71,7 @@ export const AuthProvider: React.FC<{
     staleTime: 5 * 60000,
   });
 
-  const getUser = async (): Promise<UserMe> => {
+  const getUser = async (): Promise<AccountProfile> => {
     const data = await adapter.getUser();
     return data;
   };
@@ -78,12 +83,19 @@ export const AuthProvider: React.FC<{
     adapter.logout(); // Optional: call adapter logic if needed
   };
 
+  if (error) {
+    console.error(error);
+  }
+
   // Provide authentication state and actions to child components
   return (
     <AuthContext.Provider
       value={{
         accessToken,
         user,
+        refetchUser,
+        isLoading,
+        error,
         getUser,
         signup,
         login,
@@ -92,7 +104,15 @@ export const AuthProvider: React.FC<{
         confirmResetPassword,
       }}
     >
-      {children}
+      <div className="relative">
+        {isLoading ? (
+          <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50">
+            {/* <Spinner className="w-12 h-12" /> */}
+          </div>
+        ) : (
+          children
+        )}
+      </div>
     </AuthContext.Provider>
   );
 };

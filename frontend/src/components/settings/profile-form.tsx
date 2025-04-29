@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/auth/use-auth";
 // import { Checkbox } from "@/components/ui/checkbox";
 // import { useNavigate } from "react-router";
 // import { useAuth } from "@/auth/use-auth";
@@ -33,7 +34,7 @@ import { Input } from "@/components/ui/input";
 // import { renderMessage } from "@/lib/utils";
 
 const formSchema = z.object({
-  name: z
+  full_name: z
     .string()
     .min(2, { message: "Name must be at least 2 characters" })
     .max(50, { message: "Name cannot exceed 50 characters" }),
@@ -61,15 +62,14 @@ export function ProfileForm() {
   // const nav = useNavigate();
 
   // Auth adapter
-  // const { signup } = useAuth();
-
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      // name: DEMO_USERNAME,
-      email: "",
+      full_name: user?.full_name,
+      email: user?.email,
       // password: DEMO_PASSWORD,
       // termsAccepted: true as const,
     },
@@ -102,7 +102,7 @@ export function ProfileForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
-            name="name"
+            name="full_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Full name</FormLabel>
@@ -113,7 +113,7 @@ export function ProfileForm() {
                   <Input
                     {...field}
                     placeholder="Full Name"
-                    autoComplete="name"
+                    autoComplete="full_name"
                     disabled={isLoading}
                   />
                 </FormControl>
@@ -138,6 +138,7 @@ export function ProfileForm() {
                     placeholder="Email"
                     autoComplete="email"
                     disabled
+                    className="bg-muted"
                   />
                 </FormControl>
                 <FormMessage />

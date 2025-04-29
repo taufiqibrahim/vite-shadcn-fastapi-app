@@ -23,7 +23,7 @@ import { Separator } from "../ui/separator";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { pathname } = useLocation();
-  console.log(pathname);
+
   const navMain = [
     // {
     //   title: "Apps",
@@ -83,7 +83,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // }
 
   const getItemActiveState = (url: string) => {
-    console.log(url);
     if (url === pathname) {
       return true;
     }
