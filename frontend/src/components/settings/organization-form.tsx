@@ -118,7 +118,16 @@ export function OrganizationForm() {
             )}
           />
 
-          <Button type="submit" className="w-max" disabled={isLoading}>
+          <Button
+            type="submit"
+            className="w-max"
+            disabled={
+              isLoading ||
+              form.formState.isLoading ||
+              !form.formState.isValid ||
+              !form.formState.isDirty
+            }
+          >
             {isLoading ? "Saving..." : "Save"}
           </Button>
         </form>
