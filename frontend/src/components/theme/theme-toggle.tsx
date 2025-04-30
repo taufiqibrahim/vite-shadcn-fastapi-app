@@ -10,7 +10,12 @@ import {
 import { useTheme } from "next-themes";
 import { useFont } from "@/hooks/use-fonts";
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function ThemeToggle({ isOpen, onOpenChange }: ThemeToggleProps) {
   const { setTheme } = useTheme();
   const { setFont } = useFont();
 
@@ -44,9 +49,14 @@ export function ThemeToggle() {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-8 w-8 rounded-full border border-input text-xs font-semibold uppercase"
+          data-dropdown-trigger
+        >
           <Sun className="h-8 w-8 rotate-0 scale-120 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-8 w-8 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-120" />
           <span className="sr-only">Toggle theme</span>

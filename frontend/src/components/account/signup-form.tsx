@@ -23,17 +23,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
 import { toast } from "sonner";
-import {
-  DEMO_PASSWORD,
-  DEMO_USERNAME,
-  LOGIN_SUCCESS_REDIRECT_URL,
-} from "@/constants";
+import { LOGIN_SUCCESS_REDIRECT_URL } from "@/constants";
 import { renderMessage } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z
     .string()
-    .min(2, { message: "Name must be at least 2 characters" })
+    .min(5, { message: "Name must be at least 5 characters" })
     .max(50, { message: "Name cannot exceed 50 characters" }),
   email: z
     .string()
@@ -67,9 +63,9 @@ export function SignupForm({ onLoginClick }: { onLoginClick: () => void }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: DEMO_USERNAME,
-      email: DEMO_USERNAME,
-      password: DEMO_PASSWORD,
+      name: "",
+      email: "",
+      password: "",
       termsAccepted: true as const,
     },
   });

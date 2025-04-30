@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/auth/use-auth";
 
 const formSchema = z.object({
-  full_name: z
+  organization_name: z
     .string()
     .min(2, { message: "Name must be at least 2 characters" })
     .max(50, { message: "Name cannot exceed 50 characters" }),
@@ -34,14 +34,14 @@ const formSchema = z.object({
     .email({ message: "Please enter a valid email address" }),
 });
 
-export function ProfileForm() {
+export function OrganizationForm() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      full_name: user?.full_name,
+      organization_name: "user?.organization_name",
       email: user?.email,
     },
   });
@@ -73,18 +73,19 @@ export function ProfileForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField
             control={form.control}
-            name="full_name"
+            name="organization_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Full name</FormLabel>
+                <FormLabel>Organization name</FormLabel>
                 <FormDescription>
-                  The name associated with this account
+                  Human-friendly label for your organization, shown in user
+                  interfaces
                 </FormDescription>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Full Name"
-                    autoComplete="full_name"
+                    placeholder="Organization Name"
+                    autoComplete="organization_name"
                     disabled={isLoading}
                   />
                 </FormControl>

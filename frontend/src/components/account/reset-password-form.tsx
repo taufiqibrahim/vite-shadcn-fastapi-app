@@ -15,11 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/auth/use-auth";
-import {
-  DEFAULT_ERROR_MESSAGE,
-  DEMO_PASSWORD,
-  LOGIN_SUCCESS_REDIRECT_URL,
-} from "@/constants";
+import { DEFAULT_ERROR_MESSAGE, LOGIN_SUCCESS_REDIRECT_URL } from "@/constants";
 import { toast } from "sonner";
 import { renderMessage } from "@/lib/utils";
 
@@ -46,7 +42,7 @@ export function ResetPasswordForm({ resetToken }: { resetToken: string }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      password: DEMO_PASSWORD,
+      password: "",
     },
   });
 

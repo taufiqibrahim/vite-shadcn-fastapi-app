@@ -45,3 +45,8 @@ class AccountUpdate(BaseModel):
 
 class AccountDelete(BaseModel):
     id: int
+
+class AccountProfileMe(AccountBase):
+    full_name: str
+    created_at: str
+    updatedt_at: str

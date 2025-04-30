@@ -11,7 +11,7 @@ from src.accounts.emails import (
     send_welcome_email,
 )
 from src.accounts.models import Account, AccountType
-from src.accounts.schemas import AccountCreate, AccountUpdate
+from src.accounts.schemas import AccountCreate, AccountProfileMe, AccountUpdate
 from src.accounts.services import (
     create_account,
     get_account,
@@ -35,6 +35,7 @@ from src.core.exceptions import (
 )
 from src.core.logging import get_logger, setup_logging
 from src.dependencies import get_current_active_account
+
 
 setup_logging()
 logger = get_logger(__name__)
@@ -112,8 +113,15 @@ async def login(
     )
 
 
-@router.get("/me", status_code=status.HTTP_200_OK)
-async def get_self_account(
+@router.get("/profile/me", status_code=status.HTTP_200_OK, response_model=AccountProfileMe)
+async def get_self_account_profile(
+    db: Session = Depends(get_db),
+    current_account: Account = Depends(get_current_active_account),
+):
+    return await get_account(db=db, account_id=current_account.id)
+
+@router.patch("/profile/me", status_code=status.HTTP_200_OK)
+async def update_account_profile(
     db: Session = Depends(get_db),
     current_account: Account = Depends(get_current_active_account),
 ):

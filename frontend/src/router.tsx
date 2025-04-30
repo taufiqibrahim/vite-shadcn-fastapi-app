@@ -98,8 +98,9 @@ export const routes: RouteObject[] = [
                 path: "general",
                 handle: { breadcrumb: "" },
                 lazy: async () => ({
-                  Component: (await import("@/pages/settings/organizations"))
-                    .default,
+                  Component: (
+                    await import("@/pages/settings/organizations/general")
+                  ).default,
                 }),
               },
               {

@@ -6,6 +6,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { AppBreadcrumbs } from "@/components/layout/Breadcrumbs";
 import { UserNav } from "@/components/layout/UserNav";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { LanguageToggle } from "@/components/language-toggle";
 
 export interface HeaderProps {
   user: User;
@@ -15,6 +17,9 @@ export interface HeaderProps {
 
 export function Header({ user, fixed = false }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<
+    "theme" | "lang" | "usernav" | null
+  >(null);
 
   useEffect(() => {
     if (!fixed) return;
@@ -42,8 +47,21 @@ export function Header({ user, fixed = false }: HeaderProps) {
           <AppBreadcrumbs />
         </div>
       </div>
-      <div className="px-4">
-        <UserNav user={user} />
+      <div className="px-4 flex items-center gap-2">
+        <LanguageToggle
+          isOpen={openDropdown === "lang"}
+          onOpenChange={(open) => setOpenDropdown(open ? "lang" : null)}
+        />
+        {/* <ThemeToggle /> */}
+        <ThemeToggle
+          isOpen={openDropdown === "theme"}
+          onOpenChange={(open) => setOpenDropdown(open ? "theme" : null)}
+        />
+        <UserNav
+          user={user}
+          isOpen={openDropdown === "usernav"}
+          onOpenChange={(open) => setOpenDropdown(open ? "usernav" : null)}
+        />
       </div>
     </header>
   );

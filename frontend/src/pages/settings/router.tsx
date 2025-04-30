@@ -18,7 +18,8 @@ export const SettingRoutes: RouteObject = {
           path: "",
           handle: { breadcrumb: "" },
           lazy: async () => ({
-            Component: (await import("@/pages/settings/organizations")).default,
+            Component: (await import("@/pages/settings/organizations/general"))
+              .default,
           }),
         },
         {

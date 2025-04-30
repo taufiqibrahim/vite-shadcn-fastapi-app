@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlmodel import Session, select
 
 from src.accounts.models import Account, AccountProfile
-from src.accounts.schemas import AccountCreate, AccountDelete, AccountUpdate
+from src.accounts.schemas import AccountCreate, AccountDelete, AccountProfileMe, AccountUpdate
 from src.auth.services.security import get_password_hash
 from src.core.exceptions import APINotImplementedError, EmailAlreadyExistsException
 from src.core.logging import get_logger, setup_logging
@@ -86,9 +86,16 @@ async def delete_account(db: Session, account: AccountDelete) -> Account:
     raise APINotImplementedError
 
 
-async def get_account(db: Session, account_id: int) -> Optional[Account]:
-    result = db.exec(select(Account).where(Account.id == account_id))
-    return result.first()
+async def get_account(db: Session, account_id: int) -> Optional[AccountProfileMe]:
+    account, profile = db.exec(select(Account, AccountProfile).join(AccountProfile).where(Account.id == account_id)).first()
+    return AccountProfileMe(
+        uid=account.uid,
+        email=account.email,
+        disabled=account.disabled,
+        full_name=profile.full_name,
+        created_at=profile.created_at.isoformat(),
+        updatedt_at=profile.updated_at.isoformat(),
+    )
 
 
 async def get_account_by_email(db: Session, email: str) -> Optional[Account]:

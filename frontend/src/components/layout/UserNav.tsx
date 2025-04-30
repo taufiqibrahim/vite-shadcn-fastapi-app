@@ -12,9 +12,11 @@ import { LogOut } from "lucide-react";
 
 export interface UserNavProps {
   user: User;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function UserNav({ user }: UserNavProps) {
+export function UserNav({ user, isOpen, onOpenChange }: UserNavProps) {
   const handleLogout = (event: any) => {
     event.preventDefault();
     localStorage.removeItem(ACCESS_TOKEN_KEY);
@@ -22,7 +24,7 @@ export function UserNav({ user }: UserNavProps) {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={isOpen} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <Avatar className="h-8 w-8 border cursor-pointer shadow-xs">
           <AvatarImage src={user.avatar} alt={user.fullName} />
