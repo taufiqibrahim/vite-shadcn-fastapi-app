@@ -1,102 +1,149 @@
 import { ReactNode, useState } from "react";
-import {
-  AuthAdapter,
-  LoginResponse,
-  ResetPasswordResponse,
-  SignupResponse,
-  AccountProfile,
-} from "./AuthAdapter";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "@/auth/use-auth";
 import { ACCESS_TOKEN_KEY } from "@/constants";
-import { useQuery } from "@tanstack/react-query";
+import { LoginCredentials, ResetPasswordResponse, SignupCredentials } from "./types";
+import { request } from "@/lib/api";
 
-/**
- *
- * AuthProvider supplies authentication state and logic to the app
- * @param param0
- * @returns
- */
-export const AuthProvider: React.FC<{
-  adapter: AuthAdapter;
-  children: ReactNode;
-}> = ({ adapter, children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+
   // Initialize token from localStorage for session persistence
   const [accessToken, setAccessToken] = useState<string | null>(() => {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
   });
 
-  // Sign up the user, stores token, and updates state
-  const signup = async (credentials: any): Promise<SignupResponse> => {
-    const { token, message } = await adapter.signup(credentials);
-    if (token) {
-      localStorage.setItem(ACCESS_TOKEN_KEY, token);
-      setAccessToken(token);
+  const isLoading = false;
+
+  // Sign up the user, stores token, and update state
+  const signup = async (credentials: SignupCredentials) => {
+    try {
+      const form = new URLSearchParams();
+      form.append("email", credentials.email);
+      form.append("full_name", credentials.full_name);
+      form.append("password", credentials.password);
+
+      const data = await request("/accounts/signup", "POST", form, {
+        "Content-Type": "application/x-www-form-urlencoded",
+      });
+
+      if (data.access_token) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token);
+        setAccessToken(data.access_token);
+      }
+
+      return {
+        token: data.access_token,
+        message: data.message ?? "Login successful",
+      };
+
+    } catch (err: any) {
+      console.error("Login error:", err);
+      let errorMessage = "Login failed";
+      if (typeof err === "string") errorMessage = err;
+      else if (err?.message) errorMessage = err.message;
+      else if (err?.detail) errorMessage = err.detail;
+
+      return {
+        token: null,
+        message: errorMessage,
+      };
     }
-    return { token, message };
   };
 
-  // Logs in the user, stores token, and updates state
-  const login = async (credentials: any): Promise<LoginResponse> => {
-    const { token, message } = await adapter.login(credentials);
-    if (token) {
-      localStorage.setItem(ACCESS_TOKEN_KEY, token);
-      setAccessToken(token);
+  // Log in the user, stores token, and update state
+  const login = async (credentials: LoginCredentials) => {
+    try {
+      const form = new URLSearchParams();
+      form.append("username", credentials.email);
+      form.append("password", credentials.password);
+
+      const data = await request("/accounts/login", "POST", form, {
+        "Content-Type": "application/x-www-form-urlencoded",
+      });
+
+      if (data.access_token) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token);
+        setAccessToken(data.access_token);
+      }
+
+      return {
+        token: data.access_token,
+        message: data.message ?? "Login successful",
+      };
+
+    } catch (err: any) {
+      console.error("Login error:", err);
+      let errorMessage = "Login failed";
+      if (typeof err === "string") errorMessage = err;
+      else if (err?.message) errorMessage = err.message;
+      else if (err?.detail) errorMessage = err.detail;
+
+      return {
+        token: null,
+        message: errorMessage,
+      };
     }
-    return { token, message };
   };
 
   const requestResetPassword = async (credentials: any): Promise<any> => {
-    const { data } = await adapter.requestResetPassword(credentials);
-    return { data };
+    try {
+      const form = new URLSearchParams();
+      form.append("email", credentials.email);
+      const data = await request("/accounts/reset-password", "POST", form, {
+        "Content-Type": "application/x-www-form-urlencoded",
+      });
+      return { data };
+    } catch (err) {
+      console.error(`Error:`, err);
+      return { err };
+    }
   };
 
   const confirmResetPassword = async (
     credentials: any,
   ): Promise<ResetPasswordResponse> => {
-    const { token, message } = await adapter.confirmResetPassword(credentials);
-    return { token, message };
-  };
+    try {
+      const form = new URLSearchParams();
+      form.append("password", credentials.password);
+      const data = await request(
+        "/accounts/confirm-reset-password",
+        "POST",
+        form,
+        {
+          Authorization: `Bearer ${credentials.resetToken}`,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      );
 
-  const {
-    data: user,
-    isLoading,
-    error,
-    refetch: refetchUser,
-  } = useQuery<AccountProfile>({
-    queryKey: ["auth", "user"],
-    queryFn: () => adapter.getUser(),
-    enabled: !!accessToken, // only run query if accessToken is set
-    retry: false, // disable retries if needed
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60000,
-  });
+      if (data.access_token) {
+        localStorage.setItem(ACCESS_TOKEN_KEY, data.access_token);
+      }
 
-  const getUser = async (): Promise<AccountProfile> => {
-    const data = await adapter.getUser();
-    return data;
+      return { token: data.access_token, message: data.message ?? "Success" };
+    } catch (err) {
+      console.error(`Error:`, err);
+      return {
+        token: null,
+        message: String(err),
+      };
+    }
   };
 
   // Logs out the user and clears authentication state
   const logout = () => {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     setAccessToken(null);
-    adapter.logout(); // Optional: call adapter logic if needed
   };
-
-  if (error) {
-    console.error(error);
-  }
 
   // Provide authentication state and actions to child components
   return (
     <AuthContext.Provider
       value={{
         accessToken,
-        user,
-        refetchUser,
-        isLoading,
-        error,
-        getUser,
+        //         user,
+        //         refetchUser,
+        //         isLoading,
+        //         error,
+        //         getUser,
         signup,
         login,
         logout,
@@ -109,10 +156,46 @@ export const AuthProvider: React.FC<{
           <div className="absolute inset-0 bg-white/60 backdrop-blur-sm flex items-center justify-center z-50">
             {/* <Spinner className="w-12 h-12" /> */}
           </div>
-        ) : (
-          children
-        )}
+        ) : (children)}
       </div>
     </AuthContext.Provider>
   );
-};
+}
+
+
+// import { ReactNode, useState } from "react";
+// import {
+//   AuthAdapter,
+//   LoginResponse,
+//   ResetPasswordResponse,
+//   SignupResponse,
+// } from "./AuthAdapter";
+// import { AuthContext } from "./AuthContext";
+// import { ACCESS_TOKEN_KEY } from "@/constants";
+// import { useQuery } from "@tanstack/react-query";
+// import { AccountProfileMe } from "@/client";
+
+//   const {
+//     data: user,
+//     isLoading,
+//     error,
+//     refetch: refetchUser,
+//   } = useQuery<AccountProfileMe>({
+//     queryKey: ["auth", "user"],
+//     queryFn: () => adapter.getUser(),
+//     enabled: !!accessToken, // only run query if accessToken is set
+//     retry: false, // disable retries if needed
+//     refetchOnWindowFocus: false,
+//     staleTime: 5 * 60000,
+//   });
+
+//   const getUser = async (): Promise<AccountProfileMe> => {
+//     const data = await adapter.getUser();
+//     return data;
+//   };
+
+//   if (error) {
+//     console.error(error);
+//   }
+
+// };

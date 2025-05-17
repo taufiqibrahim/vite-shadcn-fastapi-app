@@ -1,7 +1,24 @@
-import { useContext } from "react";
-import { AuthContext } from "./AuthContext";
+import { createContext, useContext } from "react";
+import { LoginResponse, ResetPasswordCredentials, ResetPasswordResponse, SignupResponse } from "./types";
+// import { AuthContext } from "./AuthContext";
 
-// Custom hook to consume the AuthContext safely
+// Defines the shape of the authentication context
+interface AuthContextType {
+  accessToken?: string | null;
+  // getUser: () => Promise<AccountProfileMe>;
+  // refetchUser: () => void;
+  // user?: AccountProfileMe;
+  // isLoading: boolean;
+  // error: unknown;
+  signup: (credentials: any) => Promise<SignupResponse>;
+  login: (credentials: any) => Promise<LoginResponse>;
+  logout: () => void;
+  requestResetPassword: (credentials: any) => Promise<any>;
+  confirmResetPassword: (credentials: ResetPasswordCredentials) => Promise<ResetPasswordResponse>;
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null);
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

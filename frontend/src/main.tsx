@@ -4,20 +4,18 @@ import "./index.css";
 import { RouterProvider } from "react-router";
 import { router } from "./router";
 import { AuthProvider } from "./auth/AuthProvider";
-import { UserAuthAdapter } from "./auth/AuthAdapter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./components/theme-provider";
 import { Toaster } from "./components/ui/sonner";
 import { DEFAULT_TOASTER_DURATION_MS } from "./constants";
 
-const authAdapter = new UserAuthAdapter();
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider adapter={authAdapter}>
+        <AuthProvider>
           <RouterProvider router={router} />
           <Toaster
             position="bottom-center"
