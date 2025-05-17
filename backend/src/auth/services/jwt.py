@@ -8,7 +8,7 @@ from fastapi import Header
 from jose import ExpiredSignatureError, JWTError, jwt
 from jwt import InvalidSignatureError
 
-from src.auth import schemas
+from src.auth import models
 from src.core.config import secret_settings, settings
 from src.core.exceptions import InvalidAccessTokenException
 from src.core.logging import get_logger, setup_logging
@@ -58,7 +58,7 @@ def create_refresh_token(data: dict) -> str:
     return encoded_jwt
 
 
-def verify_access_token(token: str) -> Optional[schemas.TokenPayload]:
+def verify_access_token(token: str) -> Optional[models.TokenPayload]:
     try:
         # Decode and verify signature
         payload = jwt.decode(
@@ -66,7 +66,7 @@ def verify_access_token(token: str) -> Optional[schemas.TokenPayload]:
         )
 
         # Parse payload into schema
-        token_data = schemas.TokenPayload(**payload)
+        token_data = models.TokenPayload(**payload)
 
         # Validate expiration manually (if your schema doesn't use auto-validation)
         if token_data.exp and datetime.fromtimestamp(

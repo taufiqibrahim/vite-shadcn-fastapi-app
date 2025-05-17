@@ -5,7 +5,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.auth import models, schemas
+from src.auth import models
 from src.auth.services.jwt import create_access_token
 
 
@@ -52,7 +52,7 @@ async def get_or_create_oauth_account(
     return oauth_account
 
 
-def create_oauth_token(oauth_account: models.OAuthAccount) -> schemas.Token:
+def create_oauth_token(oauth_account: models.OAuthAccount) -> models.Token:
     access_token = create_access_token(
         data={
             "sub": oauth_account.email,
@@ -60,4 +60,4 @@ def create_oauth_token(oauth_account: models.OAuthAccount) -> schemas.Token:
             "provider": oauth_account.provider,
         }
     )
-    return schemas.Token(access_token=access_token, token_type="bearer")
+    return models.Token(access_token=access_token, token_type="bearer")

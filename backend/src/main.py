@@ -13,7 +13,7 @@ from src._api.v1 import accounts as account_endpoints_v1
 
 # Core
 from src.core.config import secret_settings, settings
-from src.utils import run_alembic_migration
+from src.utils import run_alembic_migration, set_operation_ids
 
 # from src.core.logging import get_logger, setup_logging
 
@@ -69,6 +69,10 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+# Set operation_ids after adding all routes
+set_operation_ids(app)
+
 logger.info(f"BACKEND_CORS_ORIGINS={settings.BACKEND_CORS_ORIGINS}")
 logger.info(f"FRONTEND_HOST={settings.FRONTEND_HOST}")
 

@@ -15,8 +15,7 @@ from src.core.logging import get_logger, setup_logging
 setup_logging()
 logger = get_logger(__name__)
 
-from src.accounts.models import Account, AccountType
-from src.accounts.schemas import AccountCreate
+from src.accounts.models import Account, AccountCreate, AccountType
 
 
 # ********* SIGNUP TESTS *********
@@ -333,11 +332,12 @@ async def test_refresh_token_succesful(client, test_random_account_refresh_token
 async def test_get_own_profile(client, test_account_authorized_headers):
     """Test get current account info"""
     response = client.get(
-        "/api/v1/accounts/me", headers=test_account_authorized_headers
+        "/api/v1/accounts/profile/me", headers=test_account_authorized_headers
     )
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
     assert "email" in data
+    assert "organizations" in data
 
 
 # async def test_update_own_profile(client, test_account_authorized_headers):

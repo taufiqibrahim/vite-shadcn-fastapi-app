@@ -4,10 +4,19 @@ from typing import List, Optional
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from src.accounts.models import Account, AccountProfile
-from src.accounts.schemas import AccountCreate, AccountDelete, AccountProfileMe, AccountUpdate
+from src.accounts.models import (
+    Account,
+    AccountCreate,
+    AccountDelete,
+    AccountProfile,
+    AccountProfileMe,
+    AccountUpdate,
+)
 from src.auth.services.security import get_password_hash
-from src.core.exceptions import APINotImplementedError, EmailAlreadyExistsException
+from src.core.exceptions import (
+    APINotImplementedError,
+    EmailAlreadyExistsException,
+)
 from src.core.logging import get_logger, setup_logging
 from src.organizations.models import Organization
 from src.projects.models import Project
@@ -47,7 +56,10 @@ async def create_account(db: Session, account: AccountCreate) -> Account:
 
         # Create default organization
         db_account_org = Organization(
-            account=db_account, name="Default org", description="Default organization"
+            account=db_account,
+            name="Default org",
+            description="Default organization",
+            is_default_org=True,
         )
         db.add(db_account_org)
 
@@ -56,6 +68,7 @@ async def create_account(db: Session, account: AccountCreate) -> Account:
             organization=db_account_org,
             name="Default project",
             description="Default project",
+            is_default_project=True,
         )
         db.add(db_account_project)
 
@@ -86,19 +99,30 @@ async def delete_account(db: Session, account: AccountDelete) -> Account:
     raise APINotImplementedError
 
 
-async def get_account(db: Session, account_id: int) -> Optional[AccountProfileMe]:
-    account, profile = db.exec(select(Account, AccountProfile).join(AccountProfile).where(Account.id == account_id)).first()
+async def get_account(db: Session, account_id: int) -> Optional[Account]:
+    account = db.exec(select(Account).where(Account.id == account_id)).first()
+    return account
+
+
+async def get_account_profile(db: Session, account_id: int):
+    account, profile = db.exec(
+        select(Account, AccountProfile)
+        .join(AccountProfile)
+        .where(Account.id == account_id)
+    ).first()
     return AccountProfileMe(
         uid=account.uid,
         email=account.email,
         disabled=account.disabled,
         full_name=profile.full_name,
+        organizations=account.organizations,
         created_at=profile.created_at.isoformat(),
-        updatedt_at=profile.updated_at.isoformat(),
+        updated_at=profile.updated_at.isoformat(),
     )
 
 
 async def get_account_by_email(db: Session, email: str) -> Optional[Account]:
+    logger.debug("get_account_by_email")
     result = db.exec(select(Account).where(Account.email == email.lower())).first()
     return result
 

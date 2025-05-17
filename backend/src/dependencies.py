@@ -1,15 +1,13 @@
-# import asyncio
 from typing import Optional
 
 from fastapi import Depends, Header, Request
 from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError
 from sqlmodel import Session
-# from temporalio.client import Client as TemporalClient
 
 from src.accounts.models import Account
 from src.accounts.services import get_account_by_email
-from src.auth.schemas import TokenPayload
+from src.auth.models import TokenPayload
 from src.auth.services.jwt import verify_access_token
 from src.core.config import settings
 from src.core.database import get_db
@@ -89,25 +87,8 @@ async def get_current_active_account(
 ) -> Account:
     logger.debug("get_current_active_account")
     current_active_account = await current_account
+    if current_active_account is None:
+        raise CredentialsValidationFailureException
     if current_active_account.disabled:
         raise AccountDisabledException
     return current_active_account
-
-
-# class TemporalClientProvider:
-#     def __init__(self):
-#         self._client: TemporalClient | None = None
-#         self._lock = asyncio.Lock()
-
-#     async def get(self) -> TemporalClient:
-#         async with self._lock:
-#             if not self._client:
-#                 self._client = await TemporalClient.connect(settings.TEMPORAL_ADDRESS)
-#             return self._client
-
-
-# temporal_client_provider = TemporalClientProvider()
-
-
-# async def get_temporal_client() -> TemporalClient:
-#     return await temporal_client_provider.get()

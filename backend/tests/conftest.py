@@ -7,13 +7,14 @@ from unittest.mock import AsyncMock
 import pytest
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
+import pytest_asyncio
 from sqlmodel import Session, create_engine, text
 from sqlmodel.pool import StaticPool
 
 from alembic.command import upgrade
 from alembic.config import Config
-from src.accounts.models import Account, AccountType
-from src.accounts.schemas import AccountCreate
+from src.accounts.models import Account, AccountCreate, AccountType
+from src.accounts.services import create_account
 from src.auth.services.jwt import create_access_token, create_refresh_token
 from src.auth.services.security import get_password_hash
 from src.core.database import get_db
@@ -130,20 +131,16 @@ def test_account() -> AccountCreate:
     )
 
 
-@pytest.fixture(scope="session", autouse=True)
-def test_account_db(session_db, test_account) -> Account:
-    account = Account(
-        email=test_account.email,
-        hashed_password=get_password_hash(test_account.password),
-        account_type=AccountType.USER,
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def test_account_db(session_db, test_account) -> Account:
+    account = await create_account(
+        db=session_db,
+        account=test_account,
     )
-    session_db.add(account)
-    session_db.commit()
-    session_db.refresh(account)
     return account
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def test_account_access_token(test_account_db):
     data = {
         "sub": test_account_db.email,
@@ -151,11 +148,11 @@ def test_account_access_token(test_account_db):
     }
 
     # Create token with custom expiration
-    token = create_access_token(data, expires_delta=timedelta(minutes=15))
+    token = create_access_token(data, expires_delta=timedelta(minutes=60))
     return token
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def test_account_refresh_token(test_account_db):
     data = {
         "sub": test_account_db.email,
@@ -167,7 +164,7 @@ def test_account_refresh_token(test_account_db):
     return token
 
 
-@pytest.fixture
+@pytest.fixture(scope="session", autouse=True)
 def test_account_authorized_headers(test_account_access_token):
     return {"Authorization": f"Bearer {test_account_access_token}"}
 

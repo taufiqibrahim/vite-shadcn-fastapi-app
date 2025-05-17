@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.accounts.models import Account
 from src.accounts.services import get_account_by_email
-from src.auth.schemas import Token
+from src.auth.models import Token
 from src.auth.services.jwt import create_access_token
 from src.auth.services.security import verify_password
 from src.core.exceptions import AccountDisabledException

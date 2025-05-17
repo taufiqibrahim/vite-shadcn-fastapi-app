@@ -8,10 +8,10 @@ TODO
 ### Quickstart
 ```bash
 cd backend
-poetry run pytest
+pytest
 ```
 
 ### Test With Coverage Report
 ```bash
-poetry run pytest -v --cov=src --cov-report=term-missing
+pytest -v --cov=src --cov-report=term-missing
 ```

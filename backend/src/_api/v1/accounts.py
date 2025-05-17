@@ -10,15 +10,21 @@ from src.accounts.emails import (
     send_password_reset_succeed_email,
     send_welcome_email,
 )
-from src.accounts.models import Account, AccountType
-from src.accounts.schemas import AccountCreate, AccountProfileMe, AccountUpdate
+from src.accounts.models import (
+    Account,
+    AccountCreate,
+    AccountProfileMe,
+    AccountType,
+    AccountUpdate,
+)
 from src.accounts.services import (
     create_account,
     get_account,
     get_account_by_email,
+    get_account_profile,
     update_account,
 )
-from src.auth.schemas import Token, TokenRefresh
+from src.auth.models import Token, TokenRefresh
 from src.auth.services.jwt import (
     create_access_token,
     create_refresh_token,
@@ -35,7 +41,6 @@ from src.core.exceptions import (
 )
 from src.core.logging import get_logger, setup_logging
 from src.dependencies import get_current_active_account
-
 
 setup_logging()
 logger = get_logger(__name__)
@@ -113,12 +118,15 @@ async def login(
     )
 
 
-@router.get("/profile/me", status_code=status.HTTP_200_OK, response_model=AccountProfileMe)
+@router.get(
+    "/profile/me", status_code=status.HTTP_200_OK, response_model=AccountProfileMe
+)
 async def get_self_account_profile(
     db: Session = Depends(get_db),
     current_account: Account = Depends(get_current_active_account),
 ):
-    return await get_account(db=db, account_id=current_account.id)
+    return await get_account_profile(db=db, account_id=current_account.id)
+
 
 @router.patch("/profile/me", status_code=status.HTTP_200_OK)
 async def update_account_profile(

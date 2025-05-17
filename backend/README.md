@@ -23,26 +23,26 @@ Create `backend/.env` based on `backend/.env.example` and update accordingly.
 Testing
 ```bash
 # Run all test
-poetry run pytest tests/
+pytest tests/
 
 # Run specific test
-poetry run pytest tests/api_v1/test_auth.py
+pytest tests/api_v1/test_auth.py
 
 # Print log and verbose
-poetry run pytest tests/api_v1/test_auth.py -sv
+pytest tests/api_v1/test_auth.py -sv
 
 # Run with coverage report
-poetry run pytest --cov=src --cov-report=term-missing
+pytest --cov=src --cov-report=term-missing
 ```
 
 Linting using flake8
 ```bash
-poetry run flake8 src/
+flake8 src/
 ```
 
 Code formatting using black
 ```bash
-poetry run black .
+black .
 ```
 
 ## Database
@@ -88,5 +88,5 @@ This repository provides demo data which can be invoked using following command:
 # make sure in backend directory
 cd backend
 
-poetry run python src/scripts/load_demo_data.py
+python src/scripts/load_demo_data.py
 ```

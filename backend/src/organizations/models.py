@@ -1,3 +1,5 @@
+# Database SQLModel
+
 import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Optional
@@ -8,17 +10,11 @@ if TYPE_CHECKING:
     from src.accounts.models import Account
     from src.projects.models import Project
 
+from src.projects.models import ProjectPublic
 from src.utils import generate_public_id
 
 
-class Organization(SQLModel, table=True):
-    __tablename__ = "organization"
-    __table_args__ = (
-        UniqueConstraint("account_id", "name", name=f"uq_{__tablename__}_owner_name"),
-    )
-
-    id: Optional[int] = Field(default=None, primary_key=True, index=True)
-    uid: uuid.UUID = Field(default_factory=uuid.uuid4, unique=True, index=True)
+class OrganizationBase(SQLModel):
     public_id: str = Field(
         default_factory=lambda: generate_public_id(prefix="org"),
         unique=True,
@@ -26,6 +22,17 @@ class Organization(SQLModel, table=True):
     )
     name: str = Field(index=True)
     description: Optional[str]
+    is_default_org: Optional[bool] = False
+
+
+class Organization(OrganizationBase, table=True):
+    __tablename__ = "organization"
+    __table_args__ = (
+        UniqueConstraint("account_id", "name", name=f"uq_{__tablename__}_owner_name"),
+    )
+
+    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    uid: uuid.UUID = Field(default_factory=uuid.uuid4, unique=True, index=True)
 
     # Account owner
     account_id: int = Field(
@@ -43,3 +50,15 @@ class Organization(SQLModel, table=True):
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column=Column(TIMESTAMP, onupdate=datetime.now(timezone.utc)),
     )
+
+
+class OrganizationPublic(OrganizationBase):
+    uid: uuid.UUID
+    public_id: str
+    name: str
+    description: Optional[str]
+    is_default_org: Optional[bool] = False
+    # account: Optional["Account"]
+    projects: list["ProjectPublic"]
+    created_at: datetime
+    updated_at: datetime

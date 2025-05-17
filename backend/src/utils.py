@@ -1,10 +1,13 @@
 import json
+import re
 import secrets
 import string
 from email.message import EmailMessage
 
 import aiosmtplib
 
+from fastapi import FastAPI
+from fastapi.routing import APIRoute
 from src.core.config import mail_settings, settings
 from src.core.logging import get_logger, setup_logging
 
@@ -72,3 +75,58 @@ EMAIL PRINTED (MAIL_ENABLED={mail_settings.MAIL_ENABLED})
 *********************************************************
 """
         )
+
+
+HTTP_METHOD_TO_VERB = {
+    "get": "get",
+    "post": "post",
+    "put": "put",
+    "patch": "patch",
+    "delete": "delete"
+}
+
+def to_camel_case(parts: list[str]) -> str:
+    return "".join(part.capitalize() for part in parts)
+
+def generate_operation_id(path: str, method: str) -> str:
+    parts = path.strip("/").split("/")
+    version = None
+
+    # Extract version like v1, v2
+    for i, part in enumerate(parts):
+        if re.fullmatch(r"v\d+", part):
+            version = part.upper()  # V1, V2
+            parts.pop(i)
+            break
+
+    # Remove "api" prefix if present
+    parts = [p for p in parts if p != "api"]
+
+    # Replace path parameters like {id} → ById
+    processed_parts = []
+    for p in parts:
+        match = re.match(r"{(.*?)}", p)
+        if match:
+            param_name = match.group(1)
+            processed_parts.append(f"By{to_camel_case([param_name])}")
+        else:
+            processed_parts.append(p)
+
+    # Determine base resource (e.g., pets)
+    base = processed_parts[0] if processed_parts else "resource"
+    suffix = processed_parts[1:] if len(processed_parts) > 1 else []
+
+    verb = HTTP_METHOD_TO_VERB.get(method.lower(), method.lower())
+    operation_id = verb + to_camel_case([base] + suffix)
+
+    if version:
+        operation_id += version
+
+    return operation_id
+
+def set_operation_ids(app: FastAPI):
+    for route in app.routes:
+        if isinstance(route, APIRoute):
+            if not route.operation_id:
+                method = list(route.methods)[0].lower()
+                route.operation_id = generate_operation_id(route.path, method)
