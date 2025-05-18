@@ -2,13 +2,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-// import {
-//   EyeIcon,
-//   EyeOffIcon,
-//   MailIcon,
-//   LockIcon,
-//   UserIcon,
-// } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -35,35 +28,21 @@ const formSchema = z.object({
 });
 
 export function OrganizationForm() {
-  const { user } = useAuth();
+  const { user: userData } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const defaultOrg = userData?.organizations.find(org => org.is_default_org);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      organization_name: "user?.organization_name",
-      email: user?.email,
+      organization_name: defaultOrg?.name,
+      email: userData?.email,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(values);
-    // const email = values.email;
-    // const password = values.password;
-    // const full_name = values.name;
-    // // Call auth adapter signup function with credentials
-    // const { token, message } = await signup({ email, password, full_name });
-
-    // if (token) {
-    //   // If login successful, navigate to dashboard
-    //   nav(LOGIN_SUCCESS_REDIRECT_URL);
-    // } else {
-    //   // If login fails, show error message
-    //   const data = message ? JSON.parse(message) : "";
-    //   toast.error("Signup Failed", { description: renderMessage(data) });
-    // }
-
+    // Logic here
     setIsLoading(false);
   }
 
