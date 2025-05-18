@@ -5,12 +5,12 @@
 //   initials?: string;
 // }
 
-// export interface JwtPayload {
-//   sub: string;
-//   id: number;
-//   exp: number;
-//   jti: string;
-// }
+export interface JwtPayload {
+  sub: string;
+  id: number;
+  exp: number;
+  jti: string;
+}
 
 export type LoginCredentials = { email: string; password: string };
 export type SignupCredentials = {

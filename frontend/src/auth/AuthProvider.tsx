@@ -3,6 +3,7 @@ import { AuthContext } from "@/auth/use-auth";
 import { ACCESS_TOKEN_KEY } from "@/constants";
 import { LoginCredentials, ResetPasswordResponse, SignupCredentials } from "./types";
 import { request } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
@@ -134,16 +135,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAccessToken(null);
   };
 
+  // Get user data
+  const { data: user, refetch: refetchUser } = useQuery({
+    queryKey: ["apps"],
+    queryFn: () => request("/accounts/profile/me", "GET"),
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    enabled: !!accessToken,
+    retry: false,
+    refetchOnWindowFocus: false,
+  })
+
   // Provide authentication state and actions to child components
   return (
     <AuthContext.Provider
       value={{
         accessToken,
-        //         user,
-        //         refetchUser,
-        //         isLoading,
-        //         error,
-        //         getUser,
+        user,
+        refetchUser,
+        // isLoading,
+        // error,
         signup,
         login,
         logout,
@@ -161,41 +171,3 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     </AuthContext.Provider>
   );
 }
-
-
-// import { ReactNode, useState } from "react";
-// import {
-//   AuthAdapter,
-//   LoginResponse,
-//   ResetPasswordResponse,
-//   SignupResponse,
-// } from "./AuthAdapter";
-// import { AuthContext } from "./AuthContext";
-// import { ACCESS_TOKEN_KEY } from "@/constants";
-// import { useQuery } from "@tanstack/react-query";
-// import { AccountProfileMe } from "@/client";
-
-//   const {
-//     data: user,
-//     isLoading,
-//     error,
-//     refetch: refetchUser,
-//   } = useQuery<AccountProfileMe>({
-//     queryKey: ["auth", "user"],
-//     queryFn: () => adapter.getUser(),
-//     enabled: !!accessToken, // only run query if accessToken is set
-//     retry: false, // disable retries if needed
-//     refetchOnWindowFocus: false,
-//     staleTime: 5 * 60000,
-//   });
-
-//   const getUser = async (): Promise<AccountProfileMe> => {
-//     const data = await adapter.getUser();
-//     return data;
-//   };
-
-//   if (error) {
-//     console.error(error);
-//   }
-
-// };

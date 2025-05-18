@@ -1,13 +1,13 @@
 import { createContext, useContext } from "react";
 import { LoginResponse, ResetPasswordCredentials, ResetPasswordResponse, SignupResponse } from "./types";
-// import { AuthContext } from "./AuthContext";
+import { AccountProfileMe } from "@/client";
+
 
 // Defines the shape of the authentication context
 interface AuthContextType {
   accessToken?: string | null;
-  // getUser: () => Promise<AccountProfileMe>;
-  // refetchUser: () => void;
-  // user?: AccountProfileMe;
+  user?: AccountProfileMe;
+  refetchUser: () => void;
   // isLoading: boolean;
   // error: unknown;
   signup: (credentials: any) => Promise<SignupResponse>;
