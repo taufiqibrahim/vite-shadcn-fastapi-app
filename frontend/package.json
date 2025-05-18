@@ -10,9 +10,10 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "generate-client": "openapi-ts --input http://localhost:8000/openapi.json --output ./src/client --client axios"
+    "openapi-ts": "openapi-ts"
   },
   "dependencies": {
+    "@hey-api/client-axios": "^0.7.0",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-avatar": "^1.1.7",
     "@radix-ui/react-checkbox": "^1.2.3",
@@ -58,6 +59,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
+    "@hey-api/openapi-ts": "^0.66.7",
     "@types/node": "^22.15.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
