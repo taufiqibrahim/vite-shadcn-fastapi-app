@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "org": {
+      "apiKeys": {
+        "list": {
+          "searchPlaceholder": "Find API keys...",
+          "emptyTitle": "No API Key yet"
+        }
+      }
+    }
+  }
+}

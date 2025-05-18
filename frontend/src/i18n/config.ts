@@ -20,8 +20,13 @@ i18n
     lng: savedLanguage,
     fallbackLng: "en",
     debug: false,
+    // ns: ["common", "settings"],
+    // defaultNS: "common",
     interpolation: {
       escapeValue: false,
+    },
+    react: {
+      useSuspense: true,
     },
   });
 

@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "org": {
+      "apiKeys": {
+        "list": {
+          "searchPlaceholder": "Cari API key...",
+          "emptyTitle": "Belum ada API Key"
+        }
+      }
+    }
+  }
+}

@@ -1,8 +1,10 @@
 import { Layout } from "@/components/layout/Layout";
 import EntityListLayout from "@/components/layout/EntityListLayout";
 import { KeyRoundIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Page() {
+  const { t } = useTranslation();
   const apiKeys = []
   return (
     <Layout>
@@ -10,7 +12,8 @@ export default function Page() {
         {/* <DemoEmptyState title="API Keys" /> */}
         <EntityListLayout
           title="API Keys"
-          searchPlaceholder="Find API keys..."
+          searchPlaceholder={t("settings.org.apiKeys.list.searchPlaceholder")}
+          emptyTitle={t("settings.org.apiKeys.list.emptyTitle")}
           // filters={
           //   <>
           //     <Button variant="outline" size="sm" className="h-10 gap-1">
