@@ -5,7 +5,6 @@ import {
   RouteObject,
 } from "react-router";
 import { useAuth } from "./auth/use-auth";
-import { GeospatialMappingAppRoutes } from "@/pages/apps/geospatial-mapping-app/router";
 
 const ProtectedRoute = () => {
   const { accessToken } = useAuth();
@@ -56,7 +55,6 @@ export const routes: RouteObject[] = [
               Component: (await import("@/pages/apps")).default,
             }),
           },
-          GeospatialMappingAppRoutes,
         ],
       },
       {
