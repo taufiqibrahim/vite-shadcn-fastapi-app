@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { ProfileForm } from "@/components/settings/profile-form";
 
-export default function Page() {
+export default function ProfileUserPage() {
   return (
     <Layout>
       <div className="w-full max-w-7xl space-y-12">

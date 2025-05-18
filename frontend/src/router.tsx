@@ -71,7 +71,6 @@ export const routes: RouteObject[] = [
           },
         ],
       },
-      // SettingRoutes,
       {
         path: "settings",
         handle: { breadcrumb: "Settings" },
@@ -84,8 +83,7 @@ export const routes: RouteObject[] = [
                 path: "user",
                 handle: { breadcrumb: "" },
                 lazy: async () => ({
-                  Component: (await import("@/pages/settings/profile/user"))
-                    .default,
+                  Component: (await import("@/pages/settings/profile/user")).default,
                 }),
               },
             ],
@@ -98,27 +96,21 @@ export const routes: RouteObject[] = [
                 path: "general",
                 handle: { breadcrumb: "" },
                 lazy: async () => ({
-                  Component: (
-                    await import("@/pages/settings/organizations/general")
-                  ).default,
+                  Component: (await import("@/pages/settings/organizations/general")).default,
                 }),
               },
               {
                 path: "billing",
                 handle: { breadcrumb: "Billing" },
                 lazy: async () => ({
-                  Component: (
-                    await import("@/pages/settings/organizations/billing")
-                  ).default,
+                  Component: (await import("@/pages/settings/organizations/billing")).default,
                 }),
               },
               {
                 path: "api-keys",
                 handle: { breadcrumb: "API Keys" },
                 lazy: async () => ({
-                  Component: (
-                    await import("@/pages/settings/organizations/api-keys")
-                  ).default,
+                  Component: (await import("@/pages/settings/organizations/api-keys")).default,
                 }),
               },
             ],
